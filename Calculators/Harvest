@@ -1,1 +1,479 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Harvest Cost Calculator</title>
+
+<!-- SDKs kept consistent with your other calcs -->
+<script src="/_sdk/element_sdk.js"></script>
+<script src="/_sdk/data_sdk.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+  /* ========= Hydro Oasis Scoped Theme (NO global bleed) ========= */
+  :root{
+    --bg:#FDFBF4; --text:#333; --heading:#2D5C4E;
+    --btn:#2D5C4E; --btn-hover:#A76DAB; --btn-text:#fff;
+    --card:#fff; --card-border:#E7E5DC; --icon:#2D5C4E; --err:#BE5C5C;
+
+    /* Results sections + tiles (match your other calcs) */
+    --sec-border:#D9E2DE;
+    --sec-head-bg:#F3F7F5;
+    --sec-head-text:#2D5C4E;
+    --tile-bg:#FFFFFF;
+    --tile-border:#E7E5DC;
+    --tile-label:#5C6F69;
+    --tile-value:#2D5C4E;
+  }
+
+  #harvest-calc, #harvest-calc * { box-sizing:border-box; font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial; }
+  #harvest-calc { background:var(--bg); color:var(--text); padding:16px; }
+  #harvest-calc .wrap{ max-width:1100px; margin:0 auto; }
+
+  /* Base card + watermark */
+  #harvest-calc .card{
+    background:var(--card); border:1px solid var(--card-border); border-radius:16px;
+    padding:20px; box-shadow:0 6px 20px rgba(0,0,0,.06); position:relative; overflow:hidden;
+    margin:18px 0;
+  }
+  #harvest-calc .wm-img{
+    position:absolute; right:-28px; bottom:-28px; width:260px; opacity:.06;
+    pointer-events:none; user-select:none; z-index:0;
+    filter:saturate(.95) contrast(.95);
+  }
+  @media (min-width:768px){ #harvest-calc .wm-img{ width:320px; } }
+
+  /* Title */
+  #harvest-calc .title-block{ text-align:center; margin:6px 0 10px; position:relative; z-index:1; }
+  #harvest-calc .title-block h1{ color:var(--heading); font-weight:800; font-size:clamp(26px,3.2vw,36px); margin:0; letter-spacing:.3px; }
+  #harvest-calc .subtitle{ color:#456E62; font-size:14px; }
+
+  /* Section titles */
+  #harvest-calc .sec-title{ color:var(--heading); font-weight:800; font-size:18px; display:flex; align-items:center; gap:8px; margin:14px 0 12px; position:relative; z-index:1; }
+  #harvest-calc .dot{ width:18px; height:18px; border-radius:4px; background:var(--icon); display:inline-block; }
+
+  /* Grid + inputs */
+  #harvest-calc .grid{ display:grid; gap:14px; position:relative; z-index:1; }
+  #harvest-calc .g-3{ grid-template-columns: repeat(3,1fr); }
+  #harvest-calc .g-2{ grid-template-columns: repeat(2,1fr); }
+  @media (max-width:820px){ #harvest-calc .g-3, #harvest-calc .g-2{ grid-template-columns:1fr; } }
+
+  #harvest-calc label{ display:block; font-size:13px; color:#516A64; margin:2px 0 6px; }
+  #harvest-calc .input, #harvest-calc select{
+    width:100%; padding:12px 12px; border-radius:10px; border:1px solid #D1D1D1; background:#fff; font-size:16px;
+    appearance:none; -webkit-appearance:none;
+  }
+  #harvest-calc .help{ font-size:12px; color:#6B7C77; margin-top:6px; }
+  #harvest-calc .error{ border-color:var(--err)!important; }
+  #harvest-calc .error-msg{ color:var(--err); font-size:12px; margin:8px 0; display:none; }
+  #harvest-calc .error-msg.show{ display:block; }
+
+  /* Buttons */
+  #harvest-calc .btn{
+    background:var(--btn); color:var(--btn-text); border:1px solid var(--btn);
+    border-radius:12px; padding:12px 18px; font-weight:700; cursor:pointer; transition:.15s; position:relative; z-index:1;
+  }
+  #harvest-calc .btn:hover{ background:var(--btn-hover); border-color:var(--btn-hover); }
+  #harvest-calc .btn-ghost{ background:#f3f5f1; color:#1f3b33; border-color:#d9e2de; }
+  #harvest-calc .btn-ghost:hover{ background:#e8eee9; }
+  #harvest-calc .remove{ background:#ef4444; border-color:#ef4444; }
+  #harvest-calc .remove:hover{ background:#dc2626; border-color:#dc2626; }
+  #harvest-calc .center{ text-align:center; }
+
+  /* Week mini-cards (match Nutrient cards look) */
+  #harvest-calc .week-card{ background:#f8faf8; border:1px solid #e2e7e4; border-radius:12px; padding:16px; }
+  #harvest-calc .week-head{ display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:10px; }
+  #harvest-calc .week-title{ font-weight:700; color:#1f3b33; }
+
+  /* Results section cards + tiles */
+  #harvest-calc .sec-card{
+    border:1px solid var(--sec-border); border-radius:12px; padding:12px; background:#fff; margin-top:14px;
+  }
+  #harvest-calc .sec-head{
+    display:flex; align-items:center; gap:8px; background:var(--sec-head-bg); color:var(--sec-head-text);
+    padding:8px 10px; border-radius:9px; font-weight:800; font-size:14px;
+  }
+  #harvest-calc .sec-head .icon{ font-size:16px; line-height:1; }
+  #harvest-calc .stats{
+    display:grid; grid-template-columns: repeat(4, minmax(140px,1fr)); gap:10px; padding:10px 6px 6px;
+  }
+  @media (max-width:980px){ #harvest-calc .stats{ grid-template-columns: repeat(2, minmax(140px,1fr)); } }
+  @media (max-width:560px){ #harvest-calc .stats{ grid-template-columns: 1fr; } }
+  #harvest-calc .stat{
+    background:var(--tile-bg); border:1px solid var(--tile-border); border-radius:10px; padding:10px 12px; text-align:center;
+    box-shadow:0 2px 6px rgba(0,0,0,.03);
+  }
+  #harvest-calc .stat .label{ font-size:12px; color:var(--tile-label); font-weight:700; letter-spacing:.2px; }
+  #harvest-calc .stat .value{ margin-top:4px; font-size:18px; font-weight:800; color:var(--tile-value); }
+</style>
+</head>
+<body>
+<div id="harvest-calc">
+  <div class="wrap">
+    <!-- Main Card -->
+    <div class="card">
+      <img class="wm-img" src="https://cdn.shopify.com/s/files/1/0709/5261/6094/files/Cactus_Mascot.png?v=1750645317" alt="" aria-hidden="true">
+
+      <div class="title-block">
+        <h1 id="page-title">Harvest Cost Calculator</h1>
+        <div class="subtitle">Sum weekly inputs and see cost per gram, ounce, pound, and kilogram</div>
+      </div>
+
+      <!-- Vegetative -->
+      <div class="sec-title"><span class="dot" aria-hidden="true"></span><span id="vegetative-label">Vegetative Cost</span></div>
+      <div id="vegetative-weeks" class="grid" style="gap:12px;"></div>
+      <div class="center" style="margin-top:10px;">
+        <button class="btn btn-ghost" type="button" onclick="addWeek('vegetative')">＋ Add Week</button>
+      </div>
+
+      <!-- Flowering -->
+      <div class="sec-title" style="margin-top:18px;"><span class="dot" aria-hidden="true"></span><span id="flowering-label">Flowering Cost</span></div>
+      <div id="flowering-weeks" class="grid" style="gap:12px;"></div>
+      <div class="center" style="margin-top:10px;">
+        <button class="btn btn-ghost" type="button" onclick="addWeek('flowering')">＋ Add Week</button>
+      </div>
+
+      <!-- Harvest weight + options -->
+      <div class="sec-title" style="margin-top:18px;"><span class="dot" aria-hidden="true"></span><span>Harvest Output</span></div>
+      <div class="grid g-2">
+        <div>
+          <label id="harvest-weight-label" for="harvest-weight">Harvest Weight (g)</label>
+          <input id="harvest-weight" type="number" class="input" min="0.01" step="0.01" placeholder="Enter weight in grams">
+          <div class="help">Enter > 0 to compute per-weight costs.</div>
+        </div>
+        <div class="center" style="align-self:end;">
+          <label style="font-size:14px;">
+            <input id="round-results" type="checkbox" checked style="margin-right:6px; vertical-align:-2px;"> Round results to two decimals
+          </label>
+        </div>
+      </div>
+
+      <!-- Errors -->
+      <div id="error-container" class="error-msg"></div>
+
+      <!-- Actions -->
+      <div class="center" style="margin-top:14px;">
+        <button class="btn" id="calculate-button" type="button" onclick="calculateResults()">Calculate</button>
+      </div>
+    </div>
+
+    <!-- Results Card -->
+    <div id="results-card" class="card" style="display:none;">
+      <img class="wm-img" src="https://cdn.shopify.com/s/files/1/0709/5261/6094/files/Cactus_Mascot.png?v=1750645317" alt="" aria-hidden="true">
+      <div id="results-container"></div>
+
+      <div class="center" style="margin-top:12px;">
+        <button id="downloadBtn" class="btn" type="button" style="display:none;">Download Results (PDF)</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  /* ========= Config ========= */
+  const defaultConfig = {
+    page_title: "Harvest Cost Calculator",
+    vegetative_label: "Vegetative Cost",
+    flowering_label: "Flowering Cost",
+    harvest_weight_label: "Harvest Weight (g)",
+    calculate_button_text: "Calculate",
+    download_button_text: "Download Results (PDF)"
+  };
+
+  /* ========= State ========= */
+  let vegetativeWeeks = [];
+  let floweringWeeks = [];
+  let weekCounter = 0;
+  let calculationResults = null;
+
+  const $ = (id)=>document.getElementById(id);
+
+  /* ========= UI Helpers (shared patterns) ========= */
+  function makeSection(title, icon){
+    const sec = document.createElement('div');
+    sec.className = 'sec-card';
+    const head = document.createElement('div');
+    head.className = 'sec-head';
+    head.innerHTML = `<span class="icon" aria-hidden="true">${icon||'📊'}</span><span>${title}</span>`;
+    const stats = document.createElement('div');
+    stats.className = 'stats';
+    sec.append(head, stats);
+    return {sec, stats};
+  }
+  function statTile(label, value){
+    const d = document.createElement('div'); d.className='stat';
+    d.innerHTML = `<div class="label">${label}</div><div class="value">${value}</div>`;
+    return d;
+  }
+  function formatMoney(v, round=true){
+    if(!Number.isFinite(v)) return '$0.00';
+    const n = round ? v.toFixed(2) : (v.toFixed(6).replace(/\.?0+$/,''));
+    return '$' + (round ? n : (n.includes('.') ? (n.split('.')[1].length<2? Number(v).toFixed(2): n) : (n + '.00')));
+  }
+
+  /* ========= Weeks CRUD ========= */
+  function addWeek(section){
+    const weekId = `week-${weekCounter++}`;
+    const weekData = { id: weekId, nutrient:0, water:0, electricity:0 };
+
+    if(section==='vegetative'){ vegetativeWeeks.push(weekData); renderWeeks('vegetative'); }
+    else { floweringWeeks.push(weekData); renderWeeks('flowering'); }
+  }
+
+  function removeWeek(section, weekId){
+    if(section==='vegetative'){ vegetativeWeeks = vegetativeWeeks.filter(w=>w.id!==weekId); renderWeeks('vegetative'); }
+    else { floweringWeeks = floweringWeeks.filter(w=>w.id!==weekId); renderWeeks('flowering'); }
+  }
+
+  function updateWeekData(section, weekId, field, value){
+    const weeks = (section==='vegetative') ? vegetativeWeeks : floweringWeeks;
+    const week = weeks.find(w=>w.id===weekId);
+    if(!week) return;
+    const num = parseFloat(value);
+    if (Number.isFinite(num) && num >= 0) {
+      week[field] = num;
+    } else if (value === '') {
+      // keep empty as NaN to trigger validation
+      week[field] = NaN;
+    } else {
+      week[field] = NaN;
+    }
+  }
+
+  function renderWeeks(section){
+    const container = $(`${section}-weeks`);
+    const weeks = (section==='vegetative') ? vegetativeWeeks : floweringWeeks;
+
+    if(weeks.length===0){
+      container.innerHTML = `<div class="week-card" style="text-align:center; color:#6B7C77;">No weeks added yet. Click “＋ Add Week”.</div>`;
+      return;
+    }
+
+    container.innerHTML = weeks.map((week, i)=>`
+      <div class="week-card">
+        <div class="week-head">
+          <div class="week-title">${section==='vegetative'?'Veg':'Flower'} – Week ${i+1}</div>
+          <button class="btn remove" type="button" onclick="removeWeek('${section}','${week.id}')">Remove</button>
+        </div>
+
+        <div class="grid g-3">
+          <div>
+            <label>Nutrient Cost ($)</label>
+            <input type="number" class="input" min="0" step="0.01" value="${Number.isFinite(week.nutrient)?week.nutrient:0}"
+                   onchange="updateWeekData('${section}','${week.id}','nutrient', this.value)">
+          </div>
+          <div>
+            <label>Water Cost ($)</label>
+            <input type="number" class="input" min="0" step="0.01" value="${Number.isFinite(week.water)?week.water:0}"
+                   onchange="updateWeekData('${section}','${week.id}','water', this.value)">
+          </div>
+          <div>
+            <label>Electricity Cost ($)</label>
+            <input type="number" class="input" min="0" step="0.01" value="${Number.isFinite(week.electricity)?week.electricity:0}"
+                   onchange="updateWeekData('${section}','${week.id}','electricity', this.value)">
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  /* ========= Validation & Calculation ========= */
+  function validate(){
+    const err = $('error-container');
+    err.classList.remove('show'); err.textContent='';
+
+    const allWeeks = [...vegetativeWeeks, ...floweringWeeks];
+    if(allWeeks.length===0) return "Please add at least one week to calculate costs.";
+
+    const harvestWeight = parseFloat($('harvest-weight').value);
+    if(!(harvestWeight>0)) return "Please enter a valid harvest weight (> 0 grams).";
+
+    // All visible fields must be numeric >= 0 (allow 0)
+    for(const w of allWeeks){
+      const fields = [w.nutrient, w.water, w.electricity];
+      if(fields.some(v => !Number.isFinite(v) || v < 0)){
+        return "Please enter numbers ≥ 0 for Nutrient, Water, and Electricity in each week.";
+      }
+    }
+    return null;
+  }
+
+  function calculateResults(){
+    const err = validate();
+    const errBox = $('error-container');
+    if(err){
+      errBox.textContent = err; errBox.classList.add('show');
+      $('results-card').style.display='none';
+      $('downloadBtn').style.display='none';
+      calculationResults = null;
+      return;
+    }
+
+    const allWeeks = [...vegetativeWeeks, ...floweringWeeks];
+    const harvestWeight = parseFloat($('harvest-weight').value);
+    const round = $('round-results').checked;
+
+    let totalNutrient=0, totalWater=0, totalElectricity=0;
+    allWeeks.forEach(w=>{
+      totalNutrient += w.nutrient||0;
+      totalWater    += w.water||0;
+      totalElectricity += w.electricity||0;
+    });
+    const totalCost = totalNutrient + totalWater + totalElectricity;
+
+    const G_PER_OZ = 28.3495, G_PER_LB = 453.592, G_PER_KG = 1000;
+
+    function per(v){ return {
+      gram: v/harvestWeight,
+      ounce: (v/harvestWeight)*G_PER_OZ,
+      pound: (v/harvestWeight)*G_PER_LB,
+      kilogram: (v/harvestWeight)*G_PER_KG
+    };}
+
+    calculationResults = {
+      round,
+      parts:{
+        nutrient: per(totalNutrient),
+        water: per(totalWater),
+        electricity: per(totalElectricity),
+        total: per(totalCost)
+      },
+      totals:{ totalNutrient, totalWater, totalElectricity, totalCost },
+      harvestWeight
+    };
+
+    renderResults();
+    $('results-card').style.display='block';
+    $('downloadBtn').style.display='inline-block';
+  }
+
+  /* ========= Render results in Hydro Oasis tiles ========= */
+  function addCostSection(root, title, icon, data, round){
+    const sec = makeSection(title, icon);
+    sec.stats.appendChild(statTile('Per Gram',     formatMoney(data.gram, round)));
+    sec.stats.appendChild(statTile('Per Ounce',    formatMoney(data.ounce, round)));
+    sec.stats.appendChild(statTile('Per Pound',    formatMoney(data.pound, round)));
+    sec.stats.appendChild(statTile('Per Kilogram', formatMoney(data.kilogram, round)));
+    root.appendChild(sec.sec);
+  }
+
+  function renderResults(){
+    const root = $('results-container');
+    root.innerHTML = '';
+    const R = calculationResults.round;
+    const P = calculationResults.parts;
+
+    // Absolute totals (renamed to Total Cost)
+    const abs = makeSection('Total Cost', '💵');
+    abs.stats.appendChild(statTile('Nutrients', formatMoney(calculationResults.totals.totalNutrient, R)));
+    abs.stats.appendChild(statTile('Water',     formatMoney(calculationResults.totals.totalWater, R)));
+    abs.stats.appendChild(statTile('Electricity', formatMoney(calculationResults.totals.totalElectricity, R)));
+    abs.stats.appendChild(statTile('All Inputs',  formatMoney(calculationResults.totals.totalCost, R)));
+    root.appendChild(abs.sec);
+
+    // Per-weight sections (no "per Unit Weight" wording)
+    addCostSection(root, 'Nutrient Cost', '🧪', P.nutrient, R);
+    addCostSection(root, 'Water Cost', '💧', P.water, R);
+    addCostSection(root, 'Electricity Cost', '⚡', P.electricity, R);
+    addCostSection(root, 'Total Cost (per weight)', '📈', P.total, R);
+  }
+
+  /* ========= PDF ========= */
+  function downloadPDF(){
+    if(!calculationResults) return;
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    const R = calculationResults.round;
+    let y = 30, line = 8, margin = 18, pageH = doc.internal.pageSize.height;
+    const check = need => { if(y+need > pageH - margin){ doc.addPage(); y = 30; } };
+
+    // Title
+    const title = ($('page-title')?.textContent) || defaultConfig.page_title;
+    doc.setFont('helvetica','bold'); doc.setFontSize(22);
+    const w = doc.getTextWidth(title);
+    doc.text(title, (doc.internal.pageSize.width - w)/2, y); y += 16;
+
+    // Harvest info
+    doc.setFont('helvetica','bold'); doc.setFontSize(14);
+    doc.text('Harvest Output', margin, y); y += 10;
+    doc.setFont('helvetica','normal'); doc.setFontSize(12);
+    doc.text(`Harvest Weight: ${calculationResults.harvestWeight} g`, margin, y); y += 12;
+
+    // Absolute totals
+    check(40);
+    doc.setFont('helvetica','bold'); doc.setFontSize(14);
+    doc.text('Total Cost', margin, y); y += 10;
+    doc.setFont('helvetica','normal'); doc.setFontSize(12);
+    doc.text(`Nutrients: ${formatMoney(calculationResults.totals.totalNutrient, R)}`, margin, y); y += line;
+    doc.text(`Water: ${formatMoney(calculationResults.totals.totalWater, R)}`, margin, y); y += line;
+    doc.text(`Electricity: ${formatMoney(calculationResults.totals.totalElectricity, R)}`, margin, y); y += line;
+    doc.text(`All Inputs: ${formatMoney(calculationResults.totals.totalCost, R)}`, margin, y); y += 12;
+
+    // Helper
+    function writeSection(h, p){
+      check(50);
+      doc.setFont('helvetica','bold'); doc.setFontSize(14);
+      doc.text(h, margin, y); y += 10;
+      doc.setFont('helvetica','normal'); doc.setFontSize(12);
+      doc.text(`Per Gram: ${formatMoney(p.gram, R)}`, margin, y); y += line;
+      doc.text(`Per Ounce: ${formatMoney(p.ounce, R)}`, margin, y); y += line;
+      doc.text(`Per Pound: ${formatMoney(p.pound, R)}`, margin, y); y += line;
+      doc.text(`Per Kilogram: ${formatMoney(p.kilogram, R)}`, margin, y); y += 12;
+    }
+
+    writeSection('Nutrient Cost', calculationResults.parts.nutrient);
+    writeSection('Water Cost', calculationResults.parts.water);
+    writeSection('Electricity Cost', calculationResults.parts.electricity);
+    writeSection('Total Cost (per weight)', calculationResults.parts.total);
+
+    doc.save('HarvestCostCalculatorResults.pdf');
+  }
+
+  /* ========= elementSdk wiring ========= */
+  function onConfigChange(cfg){
+    $('page-title').textContent = cfg.page_title || defaultConfig.page_title;
+    $('vegetative-label').textContent = cfg.vegetative_label || defaultConfig.vegetative_label;
+    $('flowering-label').textContent  = cfg.flowering_label  || defaultConfig.flowering_label;
+    $('harvest-weight-label').textContent = cfg.harvest_weight_label || defaultConfig.harvest_weight_label;
+    $('calculate-button').textContent = cfg.calculate_button_text || defaultConfig.calculate_button_text;
+    const dl = $('downloadBtn'); if(dl) dl.textContent = cfg.download_button_text || defaultConfig.download_button_text;
+  }
+
+  document.addEventListener('DOMContentLoaded', ()=>{
+    // SDK init (safe & consistent with other calcs)
+    try{
+      if (window.elementSdk && typeof window.elementSdk.init === 'function') {
+        window.elementSdk.init({
+          defaultConfig,
+          onConfigChange,
+          mapToEditPanelValues: (cfg)=>new Map([
+            ["page_title", cfg.page_title || defaultConfig.page_title],
+            ["vegetative_label", cfg.vegetative_label || defaultConfig.vegetative_label],
+            ["flowering_label", cfg.flowering_label || defaultConfig.flowering_label],
+            ["harvest_weight_label", cfg.harvest_weight_label || defaultConfig.harvest_weight_label],
+            ["calculate_button_text", cfg.calculate_button_text || defaultConfig.calculate_button_text],
+            ["download_button_text", cfg.download_button_text || defaultConfig.download_button_text]
+          ])
+        });
+      }
+    }catch(e){ console.warn('Element SDK init skipped:', e); }
+
+    // First render
+    renderWeeks('vegetative');
+    renderWeeks('flowering');
+
+    // Wire PDF
+    $('downloadBtn').addEventListener('click', downloadPDF);
+
+    // Enter key → calculate
+    ['harvest-weight'].forEach(id=>{
+      $(id).addEventListener('keypress', e=>{ if(e.key==='Enter') calculateResults(); });
+    });
+  });
+</script>
+</body>
+</html>
 
