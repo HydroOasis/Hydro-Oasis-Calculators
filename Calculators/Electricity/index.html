@@ -1498,6 +1498,25 @@ const CEA = (() => {
 })();
 </script>
   <script>
+// --- Emergency shim so Electricity works in htmlpreview/raw.github ---
+(function ensureHOAForPreview(){
+  if (window.HOA) return; // real shared helper already loaded in normal environments
+  // Absolute paths that work in preview (public repo required)
+  var RAW_BASE = 'https://raw.githubusercontent.com/HydroOasis/Hydro-Oasis-Calculators/main/';
+  window.HOA = {
+    DATA: {
+      elecTariffs: RAW_BASE + 'data/electricity_tariffs.json'
+    },
+    fetchJSON: async function(path){
+      const res = await fetch(path, { cache: 'no-cache' });
+      if (!res.ok) throw new Error('Fetch failed: ' + path + ' ('+res.status+')');
+      return res.json();
+    }
+  };
+  console.log('[Shim] HOA provided for Electricity preview:', HOA.DATA.elecTariffs);
+})();
+</script>
+  <script>
 async function initElecTariffs(){
   if (initElecTariffs.initialized) return;
   initElecTariffs.initialized = true;
