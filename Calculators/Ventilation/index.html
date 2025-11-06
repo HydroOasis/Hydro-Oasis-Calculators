@@ -1,1 +1,580 @@
+<body>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Air Ventilation Calculator</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 
+<style>
+  /* ========= Hydro Oasis Palette + Tile Vars ========= */
+  :root{
+    --bg:#FDFBF4; --bg-alt:#FFFFFF; --text:#333333; --heading:#2D5C4E; --link:#2D5C4E; --link-hover:#A76DAB;
+    --btn:#2D5C4E; --btn-text:#FFFFFF; --btn-hover:#A76DAB; --card:#FFFFFF; --card-border:#E7E5DC;
+    --icon:#2D5C4E; --icon-hover:#A76DAB; --input-bg:#FFFFFF; --input-text:#000000; --input-ph:#565656; --input-border:#D1D1D1;
+    --banner:#F9C3B6; --accent:#F4EA9C; --err:#BE5C5C;
+
+    /* Results cards + tiles */
+    --sec-border:#D9E2DE;
+    --sec-head-bg:#F3F7F5;
+    --sec-head-text:#2D5C4E;
+    --tile-bg:#FFFFFF;
+    --tile-border:#E7E5DC;
+    --tile-label:#5C6F69;
+    --tile-value:#2D5C4E;
+  }
+
+  /* ========= Scoped base (no global bleed) ========= */
+  #vent-calc, #vent-calc * { box-sizing:border-box; font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans"; }
+  #vent-calc{ background:var(--bg); color:var(--text); padding:16px; }
+  #vent-calc .vc-wrap{ max-width:1100px; margin:0 auto; }
+
+  .card{ background:var(--card); border:1px solid var(--card-border); border-radius:16px; padding:20px; margin:18px 0;
+    box-shadow:0 6px 20px rgba(0,0,0,.06); }
+  .with-watermark{ position:relative; overflow:hidden; }
+  .wm-img{ position:absolute; right:-28px; bottom:-28px; width:220px; height:auto; opacity:.06; pointer-events:none; user-select:none;
+    filter:saturate(.9) contrast(.95); }
+  @media (min-width:768px){ .wm-img{ width:300px; } }
+
+  /* ===== Titles (scoped like nutrient calc) ===== */
+  #vent-calc .title-block{ text-align:center; margin:6px 0 10px; position:relative; z-index:1; }
+  #vent-calc .title-block h1{
+    margin:0; color:var(--heading); font-weight:800; font-size:clamp(26px,3.2vw,36px); letter-spacing:.3px;
+  }
+  #vent-calc .vc-sub{ color:#456E62; margin-top:6px; font-size:14px; }
+
+  .sec-title{ color:var(--heading); font-weight:800; font-size:18px; display:flex; align-items:center; gap:8px; margin:14px 0 14px; }
+  .sec-title .dot{ width:18px; height:18px; border-radius:4px; background:var(--icon); display:inline-block; }
+
+  .grid{ display:grid; gap:14px; }
+  .g-3{ grid-template-columns: repeat(3, 1fr); }
+  .g-2{ grid-template-columns: repeat(2, 1fr); }
+  @media (max-width:820px){ .g-3, .g-2 { grid-template-columns:1fr; } }
+
+  label{ display:block; font-size:13px; color:#516A64; margin:2px 0 6px; }
+  input[type="number"], select{
+    appearance:none; -webkit-appearance:none; outline:none; background:var(--input-bg); color:var(--input-text);
+    border:1px solid var(--input-border); border-radius:10px; padding:12px 12px; width:100%; font-size:16px;
+  }
+  input::placeholder{ color:var(--input-ph); }
+
+  .inline-field{ display:flex; gap:8px; align-items:center; }
+  .inline-field .grow{ flex:1 1 auto; }
+  .inline-field .unit-select{ flex:0 0 96px; }
+  .unit-select select{ text-align:center; padding-left:0; padding-right:0; font-weight:700; }
+  @media (max-width:390px){ .inline-field .unit-select{ flex-basis:86px; } input, select{ font-size:15px; } }
+
+  .inline-options{ display:flex; gap:18px; flex-wrap:wrap; margin:6px 0 10px;}
+  .inline-options label{ display:flex; align-items:center; gap:8px; font-size:14px; cursor:pointer; }
+  input[type="radio"], input[type="checkbox"]{ width:18px; height:18px; }
+
+  .help{ font-size:12px; color:#6B7C77; margin-top:6px; }
+  .error{ border-color:var(--err) !important; }
+  .error-msg{ color:var(--err); font-size:12px; margin-top:6px; }
+  .hidden{ display:none; }
+
+  .btn{ background:var(--btn); color:var(--btn-text); border:1px solid var(--btn);
+    border-radius:12px; padding:14px 20px; font-weight:700; font-size:16px; display:inline-block; text-align:center; cursor:pointer;
+    transition:.15s; min-width:240px; }
+  .btn:hover{ background:var(--btn-hover); border-color:var(--btn-hover); }
+
+  /* ===== Results: section cards + tiles ===== */
+  .sec-card{
+    border:1px solid var(--sec-border);
+    border-radius:12px;
+    padding:12px;
+    background:#fff;
+    margin-top:14px;
+  }
+  .sec-head{
+    display:flex; align-items:center; gap:8px;
+    background:var(--sec-head-bg);
+    color:var(--sec-head-text);
+    padding:8px 10px;
+    border-radius:9px;
+    font-weight:800; font-size:14px;
+  }
+  .sec-head .icon{ font-size:16px; line-height:1; }
+  .stats{
+    display:grid;
+    grid-template-columns: repeat(5, minmax(120px,1fr));
+    gap:10px;
+    padding:10px 6px 6px;
+  }
+  @media (max-width:980px){ .stats{ grid-template-columns: repeat(2, minmax(140px,1fr)); } }
+  @media (max-width:560px){ .stats{ grid-template-columns: 1fr; } }
+  .stat{
+    background:var(--tile-bg);
+    border:1px solid var(--tile-border);
+    border-radius:10px;
+    padding:10px 12px;
+    text-align:center;
+    box-shadow:0 2px 6px rgba(0,0,0,.03);
+  }
+  .stat .label{ font-size:12px; color:var(--tile-label); font-weight:700; letter-spacing:.2px; }
+  .stat .value{ margin-top:4px; font-size:18px; font-weight:800; color:var(--tile-value); }
+
+  .list{ font-size:14px; line-height:1.5; }
+  .subhead{ margin:10px 0 6px; font-weight:700; }
+  .pill{ background:#F7FAF9; border:1px solid var(--tile-border); padding:10px 12px; border-radius:10px; margin:6px 0; font-weight:700; }
+
+  .pick{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:12px; border-radius:10px; background:#FFFFFF;
+    text-decoration:none; color:inherit; border:1px solid var(--tile-border);
+    transition:transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+  }
+  .pick:hover{ transform:translateY(-1px); box-shadow:0 6px 16px rgba(0,0,0,.08); border-color:#d6d6d6; }
+  .pick:active{ transform:translateY(0); box-shadow:0 3px 10px rgba(0,0,0,.08); }
+</style>
+
+<div id="vent-calc">
+  <div class="vc-wrap">
+
+    <div class="card with-watermark">
+      <img class="wm-img" src="https://cdn.shopify.com/s/files/1/0709/5261/6094/files/Cactus_Mascot.png?v=1750645317" alt="" aria-hidden="true">
+
+      <div class="title-block">
+        <h1>Air Ventilation Calculator</h1>
+        <div class="vc-sub">Calculate the perfect airflow for your room ventilation needs</div>
+      </div>
+
+      <div class="sec-title"><span class="dot" aria-hidden="true"></span><span>Room Dimensions</span></div>
+
+      <div class="grid g-2" style="margin-bottom:14px;">
+        <div>
+          <label for="unit-system">Unit System</label>
+          <select id="unit-system">
+            <option value="metric">Metric (m)</option>
+            <option value="imperial">Imperial (ft)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid g-3">
+        <div>
+          <label for="length">Length (<span id="length-unit">m</span>)</label>
+          <input type="number" id="length" placeholder="Enter room length" min="0" step="0.1">
+          <div class="help">Enter a positive number.</div>
+        </div>
+        <div>
+          <label for="width">Width (<span id="width-unit">m</span>)</label>
+          <input type="number" id="width" placeholder="Enter room width" min="0" step="0.1">
+          <div class="help">Enter a positive number.</div>
+        </div>
+        <div>
+          <label for="height">Height (<span id="height-unit">m</span>)</label>
+          <input type="number" id="height" placeholder="Enter room height" min="0" step="0.1">
+          <div class="help">Enter a positive number.</div>
+        </div>
+      </div>
+      <div id="dim-err" class="error-msg hidden">Please enter room length, width, and height.</div>
+
+      <div class="sec-title"><span class="dot" aria-hidden="true"></span><span>Ventilation Calculation</span></div>
+
+      <div class="grid g-2" style="margin-bottom:10px;">
+        <div>
+          <label for="stage">Grow Stage Preset (optional)</label>
+          <select id="stage">
+            <option value="">None</option>
+            <option value="seed">Seedling/Clone (15–20 ACH)</option>
+            <option value="veg">Vegetative (20–30 ACH)</option>
+            <option value="flower">Flowering (30–40 ACH)</option>
+            <option value="high">High Heat/CO₂ (40–60 ACH)</option>
+          </select>
+          <div class="help">Selecting a preset fills a recommended ACH (you can still edit it).</div>
+        </div>
+        <div>
+          <label style="visibility:hidden">Scrubbing</label>
+          <label style="display:flex;align-items:center;gap:8px;">
+            <input type="checkbox" id="show-scrub"> Show recirculating / scrubbing targets
+          </label>
+        </div>
+      </div>
+
+      <div class="grid g-2">
+        <div>
+          <label for="ach">Desired Air Changes per Hour (ACH)</label>
+          <input type="number" id="ach" placeholder="Enter target ACH (optional)" min="0" step="0.1">
+          <div id="ach-err" class="error-msg hidden">Enter ACH or Flow Rate to calculate.</div>
+          <div class="help">Leave empty if you know your fan’s flow rate.</div>
+        </div>
+
+        <div>
+          <label for="flow-rate">Fan Flow Rate</label>
+          <div class="inline-field">
+            <div class="grow">
+              <input type="number" id="flow-rate" placeholder="Enter fan flow (optional)" min="0" step="1">
+            </div>
+            <div class="unit-select">
+              <select id="flow-rate-unit" aria-label="Flow rate unit">
+                <option value="cmh">m³/h</option>
+                <option value="cfm">CFM</option>
+              </select>
+            </div>
+          </div>
+          <div id="flow-err" class="error-msg hidden">Enter Flow Rate or ACH to calculate.</div>
+          <div class="help">Leave empty if you want to calculate required flow rate.</div>
+        </div>
+      </div>
+
+      <div style="margin-top:16px;">
+        <div class="sec-title" style="font-size:16px;"><span class="dot" aria-hidden="true"></span><span>Optional Loss / Safety Model</span></div>
+
+        <div class="inline-options">
+          <label><input type="radio" name="loss-mode" id="loss-mode-simple" checked> Simple Safety Margin (%)</label>
+          <label><input type="radio" name="loss-mode" id="loss-mode-detailed"> Detailed Losses (filter, ducting, bends)</label>
+        </div>
+
+        <div id="tolerance-row" class="grid g-3">
+          <div>
+            <label for="tolerance">Safety Margin (%)</label>
+            <input type="number" id="tolerance" placeholder="Add % buffer (e.g., 25)" min="0" max="100" step="1">
+            <div class="help">Adds a fixed buffer to the calculated requirement.</div>
+          </div>
+        </div>
+
+        <div id="detailed-losses" class="grid g-3 hidden" style="margin-top:6px;">
+          <div>
+            <label style="display:flex; align-items:center; gap:8px; margin-top:24px;">
+              <input id="has-filter" type="checkbox"> Carbon Filter (≈22% loss)
+            </label>
+          </div>
+          <div>
+            <label for="duct-length">Duct Length (m)</label>
+            <input type="number" id="duct-length" placeholder="Total duct length" min="0" step="0.1">
+            <div class="help">~4% loss per metre (rule of thumb).</div>
+          </div>
+          <div>
+            <label for="bends">90° Bends (count)</label>
+            <input type="number" id="bends" placeholder="Number of 90° bends" min="0" step="1">
+            <div class="help">~10% loss per 90° bend.</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="text-align:center; margin-top:18px;">
+        <button id="calculate-btn" type="button" class="btn">Calculate Ventilation</button>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div id="results" class="hidden" aria-live="polite" aria-atomic="true"></div>
+  </div>
+</div>
+
+<script>
+  const CUBIC_METERS_TO_CUBIC_FEET = 35.3147;
+  const CFM_TO_CMH = 1.69901;
+  const $ = (id)=>document.getElementById(id);
+
+  function toCFM(cmh){ return cmh/CFM_TO_CMH; }
+  function toCMH(cfm){ return cfm*CFM_TO_CMH; }
+  function volumeM3(L,W,H,isMetric){ return isMetric ? L*W*H : (L*W*H)/CUBIC_METERS_TO_CUBIC_FEET; }
+
+  const fanMap = [
+    { maxCMH: 200, items:[
+      { title:'4” Inline Fan ~190 m³/h', url:'#', note:'Small tents up to ~0.6×1.2m' },
+      { title:'4” Inline + Carbon Filter Kit', url:'#', note:'Odour control starter' }
+    ]},
+    { maxCMH: 400, items:[
+      { title:'6” Inline Fan ~360 m³/h', url:'#', note:'1.2×1.2m–1.5×1.5m' },
+      { title:'6” EC Inline (Speed Control)', url:'#', note:'Quieter & efficient' }
+    ]},
+    { maxCMH: 800, items:[
+      { title:'8” Inline Fan ~700–800 m³/h', url:'#', note:'Large tents / filter runs' },
+      { title:'8” EC Inline + Carbon Kit', url:'#', note:'Flowering + odour control' }
+    ]},
+    { maxCMH: 1200, items:[
+      { title:'10” Inline Fan ~1000–1200 m³/h', url:'#', note:'Commercial-lite setups' },
+      { title:'10” Silenced EC Inline', url:'#', note:'Low noise, high flow' }
+    ]},
+    { maxCMH: Infinity, items:[
+      { title:'12” / Industrial EC Fan', url:'#', note:'Large rooms / multi-tent' },
+      { title:'Dual-Fan / HVAC Consultation', url:'#', note:'Custom ducting & control' }
+    ]}
+  ];
+
+  const fieldsToPersist = [
+    'unit-system','length','width','height','ach','flow-rate','flow-rate-unit',
+    'tolerance','has-filter','duct-length','bends','stage','loss-mode-simple','loss-mode-detailed','show-scrub'
+  ];
+
+  const getLossModeDetailed = ()=> $('loss-mode-detailed').checked;
+  function estimateLossFactorDetailed(){
+    const hasFilter = $('has-filter').checked;
+    const duct = parseFloat($('duct-length').value)||0;
+    const bends = parseFloat($('bends').value)||0;
+    const filterLoss = hasFilter ? 0.22 : 0;
+    const ductLoss = 0.04 * duct;
+    const bendLoss = 0.10 * bends;
+    return Math.min(0.7, filterLoss + ductLoss + bendLoss);
+  }
+  function getTolerancePct(){
+    const v = parseFloat($('tolerance').value);
+    return Number.isFinite(v)? Math.min(Math.max(v,0),100) : 0;
+  }
+
+  /* ===== Section builders (cards + tiles) ===== */
+  function makeSection(title, icon){
+    const sec = document.createElement('div'); sec.className='sec-card';
+    const head = document.createElement('div'); head.className='sec-head';
+    head.innerHTML = `<span class="icon">${icon||'📊'}</span><span>${title}</span>`;
+    const stats = document.createElement('div'); stats.className='stats';
+    sec.append(head, stats);
+    return {sec, stats};
+  }
+  function statTile(label, value){
+    const d = document.createElement('div'); d.className='stat';
+    d.innerHTML = `<div class="label">${label}</div><div class="value">${value}</div>`;
+    return d;
+  }
+
+  function hideResults(){ $('results').classList.add('hidden'); $('results').innerHTML=''; }
+  function showResults(){ $('results').classList.remove('hidden'); }
+
+  function readNum(id){
+    const v = parseFloat($(id).value);
+    return Number.isFinite(v)? v : null;
+  }
+  function clearErrors(ids){
+    ids.forEach(id=>$(id).classList.remove('error'));
+    ['ach-err','flow-err','dim-err'].forEach(id=>$(id).classList.add('hidden'));
+  }
+
+  function getInputs(){
+    const ids = ['length','width','height','ach','flow-rate','tolerance','duct-length','bends'];
+    clearErrors(ids);
+    const L = readNum('length'), W=readNum('width'), H=readNum('height');
+    const ach = readNum('ach'), flow=readNum('flow-rate');
+
+    let ok = true;
+    if(!(L>0)){ $('length').classList.add('error'); ok=false; }
+    if(!(W>0)){ $('width').classList.add('error'); ok=false; }
+    if(!(H>0)){ $('height').classList.add('error'); ok=false; }
+    if(!ok){ $('dim-err').classList.remove('hidden'); return null; }
+
+    if(!(ach>0) && !(flow>0)){
+      $('ach').classList.add('error');
+      $('flow-rate').classList.add('error');
+      $('ach-err').classList.remove('hidden');
+      $('flow-err').classList.remove('hidden');
+      return null;
+    }
+    return {L,W,H,ach,flow};
+  }
+
+  function renderStorePicks(targetRatedCMH, host){
+    const tier = fanMap.find(t=>targetRatedCMH <= t.maxCMH) || fanMap[fanMap.length-1];
+    const wrap = document.createElement('div');
+    wrap.style.background = '#F7FAF9';
+    wrap.style.border = '1px solid var(--tile-border)';
+    wrap.style.borderRadius = '12px';
+    wrap.style.padding = '14px';
+    wrap.innerHTML = `
+      <div style="font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:8px;">
+        🛒 Store Picks for ~${Math.round(targetRatedCMH)} m³/h
+      </div>
+      <div style="display:grid;gap:8px;">
+        ${tier.items.map(it=>`
+          <a href="${it.url}" target="_blank" rel="noopener" class="pick">
+            <div>
+              <div style="font-weight:700;">${it.title}</div>
+              ${it.note?`<div style="font-size:12px;opacity:.9;">${it.note}</div>`:''}
+            </div>
+            <span style="font-size:12px;opacity:.9;">View →</span>
+          </a>`).join('')}
+      </div>`;
+    host.appendChild(wrap);
+  }
+
+  function calculate(){
+    const inputs = getInputs();
+    if(!inputs){ hideResults(); return; }
+
+    const metric = $('unit-system').value==='metric';
+    const unitSel = $('flow-rate-unit').value;
+    const detailed = getLossModeDetailed();
+    const loss = detailed ? estimateLossFactorDetailed() : 0;
+    const tol = detailed ? 0 : getTolerancePct();
+    const showScrub = $('show-scrub').checked;
+
+    const vol = volumeM3(inputs.L, inputs.W, inputs.H, metric);
+    const volFt3 = vol * 35.3147;
+
+    // Build results fresh
+    const root = $('results'); root.innerHTML='';
+
+    // Room volume section
+    const sVol = makeSection('Room Volume', '📦');
+    sVol.stats.appendChild(statTile('Volume (m³)', vol.toFixed(2)+' m³'));
+    sVol.stats.appendChild(statTile('Volume (ft³)', volFt3.toFixed(2)+' ft³'));
+    root.appendChild(sVol.sec);
+
+    if(inputs.ach && !inputs.flow){
+      // Required airflow case
+      const cmh = (vol * inputs.ach) * (1 + (tol||0)/100) / (1 - (loss||0));
+      const cfm = toCFM(cmh);
+
+      const core = makeSection('Required Airflow', '🧮');
+      core.stats.appendChild(statTile('Target ACH', inputs.ach.toFixed(1)));
+      core.stats.appendChild(statTile('Required Rated (m³/h)', Math.round(cmh)));
+      core.stats.appendChild(statTile('Required Rated (CFM)', Math.round(cfm)));
+      core.stats.appendChild(statTile('Model', detailed ? 'Detailed Losses' : (tol?`${tol}% Margin`:'No Margin')));
+      core.stats.appendChild(statTile('Intake for Neg. Pressure (≈85%)', Math.round(cmh*0.85) + ' m³/h'));
+      root.appendChild(core.sec);
+
+      const rec = makeSection('Recommendations', '📋');
+      const recList=document.createElement('div'); recList.className='list';
+      recList.innerHTML =
+        `<div class="subhead">Grow Room Fans</div>
+         <div class="pill">Extraction: ${Math.round(cmh)} m³/h (${Math.round(cfm)} CFM)</div>
+         <div class="pill">Intake: ${Math.round(cmh*0.85)} m³/h (${Math.round(toCFM(cmh*0.85))} CFM)</div>`;
+      rec.sec.appendChild(recList);
+
+      if(showScrub){
+        const scrub60 = (vol*60)/(1-(loss||0));
+        const scrub120= (vol*120)/(1-(loss||0));
+        const s=document.createElement('div'); s.className='list';
+        s.innerHTML =
+          `<div class="subhead">Recirculating / Scrubbing Targets</div>
+           <div class="pill">Odour control (≈60 ACH): ~${Math.round(scrub60)} m³/h (${Math.round(toCFM(scrub60))} CFM)</div>
+           <div class="pill">Heavy odour (≈120 ACH): ~${Math.round(scrub120)} m³/h (${Math.round(toCFM(scrub120))} CFM)</div>`;
+        rec.sec.appendChild(s);
+      }
+      const picksHost = document.createElement('div'); picksHost.style.marginTop='10px';
+      rec.sec.appendChild(picksHost);
+      renderStorePicks(cmh, picksHost);
+      root.appendChild(rec.sec);
+
+    } else if(inputs.flow && !inputs.ach){
+      // Given fan, compute ACH
+      let ratedCMH, ratedCFM;
+      if(unitSel==='cmh'){ ratedCMH = inputs.flow; ratedCFM = toCFM(inputs.flow); }
+      else { ratedCFM = inputs.flow; ratedCMH = toCMH(inputs.flow); }
+      const actualACH = (ratedCMH * (1 - (loss||0))) / vol;
+
+      const core = makeSection('Fan Assessment', '🧪');
+      core.stats.appendChild(statTile('Rated (m³/h)', Math.round(ratedCMH)));
+      core.stats.appendChild(statTile('Rated (CFM)', Math.round(ratedCFM)));
+      core.stats.appendChild(statTile('Effective ACH', actualACH.toFixed(1)));
+      core.stats.appendChild(statTile('Model', detailed ? 'Detailed Losses' : (tol?`${tol}% Margin`:'No Margin')));
+      root.appendChild(core.sec);
+
+      const rec = makeSection('Recommendations', '📋');
+      const d=document.createElement('div'); d.className='list';
+      function stage(actual){
+        if(actual>=40) return '✓ All stages incl. CO₂/high-heat';
+        if(actual>=30) return '✓ Flowering & late veg';
+        if(actual>=20) return '✓ Early–mid vegetative';
+        if(actual>=15) return '✓ Seedlings / clones only';
+        return '⚠ Not recommended for mature plants';
+      }
+      d.innerHTML =
+        `<div class="subhead">Grow Room Ventilation Assessment</div>
+         <div class="pill">${actualACH<15?'⚠ Insufficient – risk of heat/poor air':'OK'}</div>
+         <div class="subhead">Suitable Grow Stages</div>
+         <div class="pill">${stage(actualACH)}</div>`;
+      rec.sec.appendChild(d);
+
+      const picksHost = document.createElement('div'); picksHost.style.marginTop='10px';
+      rec.sec.appendChild(picksHost);
+      renderStorePicks(ratedCMH, picksHost);
+      root.appendChild(rec.sec);
+
+    } else if(inputs.ach && inputs.flow){
+      // Compare fan vs target
+      let ratedCMH, ratedCFM;
+      if(unitSel==='cmh'){ ratedCMH = inputs.flow; ratedCFM = toCFM(inputs.flow); }
+      else { ratedCFM = inputs.flow; ratedCMH = toCMH(inputs.flow); }
+      const actualACH = (ratedCMH * (1 - (loss||0))) / vol;
+      const reqCMH = (vol * inputs.ach) * (1 + (tol||0)/100) / (1 - (loss||0));
+      const reqCFM = toCFM(reqCMH);
+
+      const core = makeSection('Fan vs Target', '🎯');
+      core.stats.appendChild(statTile('Target ACH', inputs.ach.toFixed(1)));
+      core.stats.appendChild(statTile('Effective ACH', actualACH.toFixed(1)));
+      core.stats.appendChild(statTile('Required (m³/h)', Math.round(reqCMH)));
+      core.stats.appendChild(statTile('Required (CFM)', Math.round(reqCFM)));
+      core.stats.appendChild(statTile('Difference (ACH)', (actualACH-inputs.ach).toFixed(1)));
+      root.appendChild(core.sec);
+
+      const rec = makeSection('Recommendations', '📋');
+      const d=document.createElement('div'); d.className='list';
+      const diff = actualACH - inputs.ach;
+      let assess = '';
+      if(Math.abs(diff)<1) assess='✅ Excellent match! Your fan meets the target.';
+      else if(diff>0) assess=`⚡ Fan exceeds target by ${Math.abs(diff).toFixed(1)} ACH`;
+      else assess=`⚠ Fan under target by ${Math.abs(diff).toFixed(1)} ACH`;
+      d.innerHTML =
+        `<div class="subhead">Grow Room Ventilation Assessment</div>
+         <div class="pill">${assess}</div>
+         <div class="subhead">Upgrade Suggestion</div>
+         <div class="pill">To reach <b>${inputs.ach} ACH</b> you need ~${Math.round(reqCMH)} m³/h (${Math.round(reqCFM)} CFM) rated.</div>`;
+      rec.sec.appendChild(d);
+
+      const picksHost = document.createElement('div'); picksHost.style.marginTop='10px';
+      rec.sec.appendChild(picksHost);
+      renderStorePicks(reqCMH, picksHost);
+      root.appendChild(rec.sec);
+    } else {
+      hideResults(); return;
+    }
+
+    showResults();
+  }
+
+  function syncLossUI(){
+    const detailed = getLossModeDetailed();
+    $('tolerance-row').classList.toggle('hidden', detailed);
+    $('detailed-losses').classList.toggle('hidden', !detailed);
+  }
+
+  function updateUnitLabels(){
+    const metric = $('unit-system').value === 'metric';
+    const unit = metric ? 'm' : 'ft';
+    $('length-unit').textContent = unit;
+    $('width-unit').textContent = unit;
+    $('height-unit').textContent = unit;
+    $('flow-rate-unit').value = metric ? 'cmh' : 'cfm';
+  }
+
+  function saveState(){
+    const s = Object.fromEntries(fieldsToPersist.map(id=>{
+      const el = $(id);
+      return [id, (el.type==='checkbox'||el.type==='radio') ? el.checked : el.value];
+    }));
+    localStorage.setItem('ventCalc', JSON.stringify(s));
+  }
+  function loadState(){
+    const raw = localStorage.getItem('ventCalc');
+    if(!raw){ updateUnitLabels(); syncLossUI(); return; }
+    try{
+      const s = JSON.parse(raw);
+      fieldsToPersist.forEach(id=>{
+        if(s[id]!==undefined){
+          const el = $(id);
+          if(el.type==='checkbox'||el.type==='radio') el.checked = !!s[id];
+          else el.value = s[id];
+        }
+      });
+    }catch(e){}
+    updateUnitLabels(); syncLossUI();
+  }
+
+  $('unit-system').addEventListener('change', ()=>{ updateUnitLabels(); hideResults(); saveState(); });
+  $('loss-mode-simple').addEventListener('change', ()=>{ syncLossUI(); hideResults(); saveState(); });
+  $('loss-mode-detailed').addEventListener('change', ()=>{ syncLossUI(); hideResults(); saveState(); });
+  $('stage').addEventListener('change', ()=>{
+    const v = $('stage').value;
+    const map = { seed:17.5, veg:25, flower:35, high:50 };
+    $('ach').value = map[v] || '';
+    hideResults(); saveState();
+  });
+  ['length','width','height','ach','flow-rate','flow-rate-unit','has-filter','duct-length','bends','tolerance','show-scrub']
+    .forEach(id=> $(id).addEventListener('input', ()=>{ hideResults(); saveState(); }));
+
+  $('calculate-btn').addEventListener('click', (e)=>{ e.preventDefault(); calculate(); });
+
+  window.addEventListener('DOMContentLoaded', ()=>{ loadState(); });
+  updateUnitLabels(); syncLossUI();
+</script>
+</body>
