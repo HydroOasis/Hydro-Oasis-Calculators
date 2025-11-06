@@ -527,6 +527,7 @@
   <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
  </head>
  <body>
+  <div id="elecFetchError" class="error-message" style="display:none"></div>
   <div class="hoa-calc" id="ecalc">
    <div class="container"><img class="wm-img" src="https://cdn.shopify.com/s/files/1/0709/5261/6094/files/Cactus_Mascot.png?v=1750645317" alt="">
     <div class="header">
@@ -838,279 +839,34 @@
             modal.classList.remove('show');
         }
 
-        function fetchTariffData() {
+        async function fetchTariffData() {
             const retailer = document.getElementById('retailer-select').value;
             const plan = document.getElementById('plan-select').value;
             const region = document.getElementById('region-select').value;
-            
+
             if (!retailer || !plan || !region) {
-                document.getElementById('fetch-status').innerHTML = 
+                document.getElementById('fetch-status').innerHTML =
                     '<div class="error-message">Please select all fields</div>';
                 return;
             }
-            
-            document.getElementById('fetch-status').innerHTML = 
-                '<div style="color: #4f46e5;">Fetching tariff data...</div>';
-            
-            // Simulate API call with comprehensive Australian tariff data
-            setTimeout(() => {
-                // Current Australian electricity tariff data (November 2, 2025)
-                const sampleTariffs = {
-                    // NSW Retailers
-                    origin: {
-                        'basic-plan': {
-                            onPeakRate: 35.84, offPeakRate: 35.84, // Flat rate
-                            onPeakTimes: [{ start: '00:00', end: '23:59', days: [0,1,2,3,4,5,6] }],
-                            offPeakTimes: []
-                        },
-                        'time-of-use': {
-                            onPeakRate: 54.72, offPeakRate: 21.18,
-                            onPeakTimes: [{ start: '14:00', end: '20:00', days: [1,2,3,4,5] }],
-                            offPeakTimes: [{ start: '20:00', end: '14:00', days: [0,1,2,3,4,5,6] }]
-                        }
-                    },
-                    agl: {
-                        'basic-plan': {
-                            onPeakRate: 35.26, offPeakRate: 35.26, // Flat rate
-                            onPeakTimes: [{ start: '00:00', end: '23:59', days: [0,1,2,3,4,5,6] }],
-                            offPeakTimes: []
-                        },
-                        'time-of-use': {
-                            onPeakRate: 53.17, offPeakRate: 20.84,
-                            onPeakTimes: [{ start: '14:00', end: '20:00', days: [1,2,3,4,5] }],
-                            offPeakTimes: [{ start: '20:00', end: '14:00', days: [0,1,2,3,4,5,6] }]
-                        }
-                    },
-                    energyaustralia: {
-                        'basic-plan': {
-                            onPeakRate: 36.12, offPeakRate: 36.12, // Flat rate
-                            onPeakTimes: [{ start: '00:00', end: '23:59', days: [0,1,2,3,4,5,6] }],
-                            offPeakTimes: []
-                        },
-                        'time-of-use': {
-                            onPeakRate: 55.31, offPeakRate: 21.56,
-                            onPeakTimes: [{ start: '14:00', end: '20:00', days: [1,2,3,4,5] }],
-                            offPeakTimes: [{ start: '20:00', end: '14:00', days: [0,1,2,3,4,5,6] }]
-                        }
-                    },
-                    red: {
-                        'living-energy': {
-                            onPeakRate: 33.67, offPeakRate: 33.67, // Flat rate
-                            onPeakTimes: [{ start: '00:00', end: '23:59', days: [0,1,2,3,4,5,6] }],
-                            offPeakTimes: []
-                        }
-                    },
-                    amber: {
-                        'wholesale-plan': {
-                            onPeakRate: 42.15, offPeakRate: 18.92,
-                            onPeakTimes: [{ start: '16:00', end: '21:00', days: [1,2,3,4,5] }],
-                            offPeakTimes: [{ start: '21:00', end: '16:00', days: [0,1,2,3,4,5,6] }]
-                        }
-                    },
-                    
-                    // VIC Retailers
-                    lumo: {
-                        'basic-plan': {
-                            onPeakRate: 30.47, offPeakRate: 30.47, // Flat rate
-                            onPeakTimes: [{ start: '00:00', end: '23:59', days: [0,1,2,3,4,5,6] }],
-                            offPeakTimes: []
-                        },
-                        'time-of-use': {
-                            onPeakRate: 38.34, offPeakRate: 20.23,
-                            onPeakTimes: [{ start: '15:00', end: '21:00', days: [1,2,3,4,5] }],
-                            offPeakTimes: [{ start: '21:00', end: '15:00', days: [0,1,2,3,4,5,6] }]
-                        }
-                    },
-                    alinta: {
-                        'home-deal': {
-                            onPeakRate: 30.08, offPeakRate: 30.08, // Flat rate
-                            onPeakTimes: [{ start: '00:00', end: '23:59', days: [0,1,2,3,4,5,6] }],
-                            offPeakTimes: []
-                        }
-                    },
-                    momentum: {
-                        'classic-plan': {
-                            onPeakRate: 30.33, offPeakRate: 30.33, // Flat rate
-                            onPeakTimes: [{ start: '00:00', end: '23:59', days: [0,1,2,3,4,5,6] }],
-                            offPeakTimes: []
-                        }
-                    },
-                    simply: {
-                        'simply-save': {
-                            onPeakRate: 31.49, offPeakRate: 31.49, // Flat rate
-                            onPeakTimes: [{ start: '00:00', end: '23:59', days: [0,1,2,3,4,5,6] }],
-                            offPeakTimes: []
-                        }
-                    },
-                    powershop: {
-                        'standard-plan': {
-                            onPeakRate: 30.93, offPeakRate: 30.93, // Flat rate
-                            onPeakTimes: [{ start: '00:00', end: '23:59', days: [0,1,2,3,4,5,6] }],
-                            offPeakTimes: []
-                        }
-                    },
-                    
-                    // QLD Retailers
-                    ergon: {
-                        'tariff-11': {
-                            onPeakRate: 31.38, offPeakRate: 31.38, // Flat rate
-                            onPeakTimes: [{ start: '00:00', end: '23:59', days: [0,1,2,3,4,5,6] }],
-                            offPeakTimes: []
-                        },
-                        'tariff-12': {
-                            onPeakRate: 35.49, offPeakRate: 24.26,
-                            onPeakTimes: [{ start: '07:00', end: '09:00', days: [1,2,3,4,5] }, { start: '17:00', end: '20:00', days: [1,2,3,4,5] }],
-                            offPeakTimes: [{ start: '20:00', end: '07:00', days: [0,1,2,3,4,5,6] }, { start: '09:00', end: '17:00', days: [1,2,3,4,5] }]
-                        }
-                    },
-                    energex: {
-                        'tariff-11': {
-                            onPeakRate: 31.38, offPeakRate: 31.38, // Flat rate
-                            onPeakTimes: [{ start: '00:00', end: '23:59', days: [0,1,2,3,4,5,6] }],
-                            offPeakTimes: []
-                        }
-                    },
-                    
-                    // SA Retailers
-                    sapowernetworks: {
-                        'flexible-tariff': {
-                            onPeakRate: 52.34, offPeakRate: 14.26,
-                            onPeakTimes: [{ start: '15:00', end: '21:00', days: [1,2,3,4,5] }],
-                            offPeakTimes: [{ start: '21:00', end: '15:00', days: [0,1,2,3,4,5,6] }]
-                        },
-                        'single-rate': {
-                            onPeakRate: 43.96, offPeakRate: 43.96, // Flat rate
-                            onPeakTimes: [{ start: '00:00', end: '23:59', days: [0,1,2,3,4,5,6] }],
-                            offPeakTimes: []
-                        }
-                    },
-                    
-                    // WA Retailers
-                    synergy: {
-                        'a1-tariff': {
-                            onPeakRate: 33.64, offPeakRate: 33.64, // Flat rate
-                            onPeakTimes: [{ start: '00:00', end: '23:59', days: [0,1,2,3,4,5,6] }],
-                            offPeakTimes: []
-                        },
-                        'a2-tariff': {
-                            onPeakRate: 59.72, offPeakRate: 16.82,
-                            onPeakTimes: [{ start: '15:00', end: '21:00', days: [1,2,3,4,5] }, { start: '15:00', end: '21:00', days: [6,0] }],
-                            offPeakTimes: [{ start: '21:00', end: '15:00', days: [0,1,2,3,4,5,6] }]
-                        }
-                    },
-                    horizon: {
-                        'standard-tariff': {
-                            onPeakRate: 59.35, offPeakRate: 59.35, // Flat rate (regional WA)
-                            onPeakTimes: [{ start: '00:00', end: '23:59', days: [0,1,2,3,4,5,6] }],
-                            offPeakTimes: []
-                        }
-                    },
-                    
-                    // TAS Retailers
-                    aurora: {
-                        'residential-tariff': {
-                            onPeakRate: 31.59, offPeakRate: 31.59, // Flat rate
-                            onPeakTimes: [{ start: '00:00', end: '23:59', days: [0,1,2,3,4,5,6] }],
-                            offPeakTimes: []
-                        },
-                        'time-of-use': {
-                            onPeakRate: 38.52, offPeakRate: 19.26,
-                            onPeakTimes: [{ start: '07:00', end: '10:00', days: [1,2,3,4,5] }, { start: '16:00', end: '19:00', days: [1,2,3,4,5] }],
-                            offPeakTimes: [{ start: '19:00', end: '07:00', days: [0,1,2,3,4,5,6] }, { start: '10:00', end: '16:00', days: [1,2,3,4,5] }]
-                        }
-                    },
-                    
-                    // ACT Retailers
-                    actew: {
-                        'standard-tariff': {
-                            onPeakRate: 28.12, offPeakRate: 28.12, // Flat rate
-                            onPeakTimes: [{ start: '00:00', end: '23:59', days: [0,1,2,3,4,5,6] }],
-                            offPeakTimes: []
-                        },
-                        'time-of-use': {
-                            onPeakRate: 32.09, offPeakRate: 19.26,
-                            onPeakTimes: [{ start: '07:00', end: '09:00', days: [1,2,3,4,5] }, { start: '17:00', end: '20:00', days: [1,2,3,4,5] }],
-                            offPeakTimes: [{ start: '20:00', end: '07:00', days: [0,1,2,3,4,5,6] }, { start: '09:00', end: '17:00', days: [1,2,3,4,5] }]
-                        }
-                    }
-                };
-                
-                const tariffData = sampleTariffs[retailer]?.[plan];
-                
-                if (tariffData) {
-                    // Update rates
-                    const $onInput = document.getElementById('on-peak-rate');
-                    if ($onInput && !$onInput.dataset.userEdited && ($onInput.value === '' || $onInput.value == null)) {
-                        $onInput.value = tariffData.onPeakRate;
-                    }
-                    const $offInput = document.getElementById('off-peak-rate');
-                    if ($offInput && !$offInput.dataset.userEdited && ($offInput.value === '' || $offInput.value == null)) {
-                        $offInput.value = tariffData.offPeakRate;
-                    }
-                    
-                    // Clear existing time ranges
-                    document.getElementById('on-peak-ranges').innerHTML = '';
-                    document.getElementById('off-peak-ranges').innerHTML = '';
-                    
-                    // Populate on-peak time ranges
-                    tariffData.onPeakTimes.forEach(timeRange => {
-                        const rangeDiv = document.createElement('div');
-                        rangeDiv.className = 'time-range';
-                        rangeDiv.innerHTML = `
-                            <input type="time" class="time-input" value="${timeRange.start}">
-                            <span>to</span>
-                            <input type="time" class="time-input" value="${timeRange.end}">
-                            <button class="btn btn-danger" onclick="removeTimeRange(this)" style="padding: 4px 8px; font-size: 12px;">×</button>
-                        `;
-                        document.getElementById('on-peak-ranges').appendChild(rangeDiv);
-                    });
-                    
-                    // Populate off-peak time ranges
-                    tariffData.offPeakTimes.forEach(timeRange => {
-                        const rangeDiv = document.createElement('div');
-                        rangeDiv.className = 'time-range';
-                        rangeDiv.innerHTML = `
-                            <input type="time" class="time-input" value="${timeRange.start}">
-                            <span>to</span>
-                            <input type="time" class="time-input" value="${timeRange.end}">
-                            <button class="btn btn-danger" onclick="removeTimeRange(this)" style="padding: 4px 8px; font-size: 12px;">×</button>
-                        `;
-                        document.getElementById('off-peak-ranges').appendChild(rangeDiv);
-                    });
-                    
-                    // Update day selections for on-peak
-                    const onPeakDayBtns = document.querySelector('[data-type="on-peak"] .days-selector').querySelectorAll('.day-btn');
-                    onPeakDayBtns.forEach(btn => {
-                        const dayValue = parseInt(btn.dataset.day);
-                        if (tariffData.onPeakTimes.some(range => range.days.includes(dayValue))) {
-                            btn.classList.add('active');
-                        } else {
-                            btn.classList.remove('active');
-                        }
-                    });
-                    
-                    // Update day selections for off-peak
-                    const offPeakDayBtns = document.querySelector('[data-type="off-peak"] .days-selector').querySelectorAll('.day-btn');
-                    offPeakDayBtns.forEach(btn => {
-                        const dayValue = parseInt(btn.dataset.day);
-                        if (tariffData.offPeakTimes.some(range => range.days.includes(dayValue))) {
-                            btn.classList.add('active');
-                        } else {
-                            btn.classList.remove('active');
-                        }
-                    });
-                    
-                    document.getElementById('fetch-status').innerHTML = 
-                        '<div style="color: #10b981;">Tariff data and time ranges loaded successfully!</div>';
-                    
-                    setTimeout(() => {
-                        closeTariffModal();
-                    }, 1500);
-                } else {
-                    document.getElementById('fetch-status').innerHTML = 
-                        '<div class="error-message">Tariff data not available for this combination</div>';
-                }
-            }, 1500);
+
+            const statusEl = document.getElementById('fetch-status');
+            statusEl.innerHTML =
+                '<div style="color: #4f46e5;">Loading shared tariff data…</div>';
+
+            try {
+                await initElecTariffs();
+                statusEl.innerHTML =
+                    '<div style="color: #10b981;">Tariffs loaded. Use the selectors above to choose your plan.</div>';
+                setTimeout(() => {
+                    closeTariffModal();
+                    statusEl.innerHTML = '';
+                }, 1500);
+            } catch (error) {
+                console.warn('Tariff modal fetch failed', error);
+                statusEl.innerHTML =
+                    '<div class="error-message">Unable to load tariffs from the shared dataset.</div>';
+            }
         }
 
         // Validation functions
@@ -1699,6 +1455,25 @@
     </script>
  <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99881531a63cf0c8',t:'MTc2MjEzMzE3OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
   <script src="../../shared/js/hoa-calcs.js"></script>
+<script>
+/* ===== CEA calc core (drop-in) ===== */
+const CEA = (() => {
+  const BUS = document.createElement('div');
+  const on  = (evt, fn) => BUS.addEventListener(evt, fn);
+  const emit = (evt, detail) => BUS.dispatchEvent(new CustomEvent(evt,{detail}));
+
+  function getRunId() {
+    const k = 'cea.runId';
+    let id = localStorage.getItem(k);
+    if (!id) { id = 'RUN-' + Math.random().toString(36).slice(2,8).toUpperCase(); localStorage.setItem(k, id); }
+    return id;
+  }
+  function save(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch{} }
+  function load(key, fallback=null) { try { const v = localStorage.getItem(key); return v? JSON.parse(v): fallback; } catch{ return fallback; } }
+
+  return { on, emit, getRunId, save, load };
+})();
+</script>
   <script>
 async function initElecTariffs(){
   if (initElecTariffs.initialized) return;
@@ -1724,8 +1499,20 @@ async function initElecTariffs(){
   let tariffs = [];
   try {
     tariffs = await HOA.fetchJSON(HOA.DATA.elecTariffs);
-  } catch(e) { console.warn('Tariffs fetch failed', e); return; }
-  if (!Array.isArray(tariffs)) return;
+  } catch(e) {
+    console.warn('Tariffs fetch failed', e);
+    const $err = document.getElementById('elecFetchError');
+    if ($err) { $err.textContent = 'Could not load electricity tariffs data.'; $err.style.display = 'block'; }
+    return;
+  }
+  if (!Array.isArray(tariffs)) {
+    const $err = document.getElementById('elecFetchError');
+    if ($err) { $err.textContent = 'Could not load electricity tariffs data.'; $err.style.display = 'block'; }
+    return;
+  }
+
+  const $errBanner = document.getElementById('elecFetchError');
+  if ($errBanner) { $errBanner.style.display = 'none'; }
 
   const regions = [...new Set(tariffs.map(t=>t.region))].sort();
   $region.innerHTML = '<option value="">Select region…</option>' + regions.map(r=>`<option>${r}</option>`).join('');
@@ -1761,6 +1548,7 @@ async function initElecTariffs(){
 
   function applyTariffToInputs(){
     const t = tariffs.find(x => (!$region.value || x.region===$region.value) && x.retailer===$retailer.value && x.plan===$plan.value);
+    console.log('[Elec] Applying tariff from JSON', t);
     if (!t) return;
 
     const setRate = (el, value) => {
@@ -1783,6 +1571,8 @@ async function initElecTariffs(){
       setRate($off, t.off_c_per_kWh ?? t.offPeakRate ?? t.off);
       setRate($sh, t.shoulder_c_per_kWh ?? t.shoulder);
     }
+
+    console.log('[Elec] Set rates → flat:', $flat?.value, 'on:', $on?.value, 'off:', $off?.value, 'shoulder:', $sh?.value);
   }
 
   syncRetailers();
@@ -1797,23 +1587,4 @@ if (document.readyState === 'complete') {
 }
   </script>
 </body>
-<script>
-/* ===== CEA calc core (drop-in) ===== */
-const CEA = (() => {
-  const BUS = document.createElement('div');
-  const on  = (evt, fn) => BUS.addEventListener(evt, fn);
-  const emit = (evt, detail) => BUS.dispatchEvent(new CustomEvent(evt,{detail}));
-
-  function getRunId() {
-    const k = 'cea.runId';
-    let id = localStorage.getItem(k);
-    if (!id) { id = 'RUN-' + Math.random().toString(36).slice(2,8).toUpperCase(); localStorage.setItem(k, id); }
-    return id;
-  }
-  function save(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch{} }
-  function load(key, fallback=null) { try { const v = localStorage.getItem(key); return v? JSON.parse(v): fallback; } catch{ return fallback; } }
-
-  return { on, emit, getRunId, save, load };
-})();
-</script>
 </html>
