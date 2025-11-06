@@ -1,1 +1,586 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Nutrient Program Calculator</title>
 
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- SDKs -->
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+
+  <!-- jsPDF + autotable -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+
+  <style>
+    /* ========= Hydro Oasis scoped theme ========= */
+    #npcalc {
+      --bg:#FDFBF4; --text:#333; --heading:#2D5C4E;
+      --btn:#2D5C4E; --btn-hover:#A76DAB; --btn-text:#fff;
+      --card:#fff; --card-border:#E7E5DC; --icon:#2D5C4E; --err:#BE5C5C;
+      position:relative; background:var(--bg); color:var(--text);
+      font-family:'Nunito',sans-serif; line-height:1.6;
+      box-sizing:border-box; padding:40px 20px;
+    }
+    #npcalc * { box-sizing:border-box; }
+
+    .container { max-width:1400px; margin:0 auto; }
+
+    /* ========= Main calculator shell ========= */
+    .calc-shell{
+      position:relative; /* needed for watermark anchoring */
+      background:var(--card);
+      border:1px solid var(--card-border);
+      border-radius:14px;
+      box-shadow:0 2px 8px rgba(49,71,58,.08);
+      padding:28px 24px 34px;
+      overflow:hidden; /* keep watermark neatly clipped */
+    }
+
+    /* ========= Bottom-right mascot watermark ========= */
+    .mascot-watermark{
+      position:absolute;
+      right:14px;
+      bottom:14px;
+      width:min(160px,20%);
+      opacity:.12;
+      pointer-events:none;
+      user-select:none;
+      -webkit-user-drag:none;
+      filter: drop-shadow(0 1px 0 rgba(0,0,0,.02));
+    }
+    @media (max-width:600px){
+      .mascot-watermark{ width:96px; opacity:.14; }
+    }
+
+    /* ========= Title + small subtitle ========= */
+    .calc-title{
+      font-family:'Inter',system-ui,sans-serif;
+      font-weight:800; letter-spacing:.2px;
+      color:var(--heading);
+      text-align:center; margin:4px 0 6px 0;
+      font-size:clamp(28px,4vw,40px);
+    }
+    .calc-subtitle{
+      text-align:center; color:#56645d;
+      font-family:'Inter',system-ui,sans-serif;
+      font-weight:500; font-size:clamp(12px,2.1vw,14px);
+      margin:0 0 24px 0;
+    }
+
+    /* ========= Controls, weeks, products ========= */
+    .config-section{ margin:10px 0 24px; text-align:center; }
+    .config-section label{ display:block; font-weight:700; color:var(--heading); margin-bottom:10px; font-size:1.05em; }
+    .config-section select{
+      padding:12px 20px; font-size:1em; background:#fff; border:1px solid #c4c8b8; border-radius:10px; color:#31473a; min-width:300px; cursor:pointer;
+    }
+    .config-section select:focus{ outline:none; border-color:var(--heading); }
+
+    .stages-container{ display:flex; flex-direction:column; gap:28px; margin-bottom:28px; }
+    .stage{ background:#f7f5eb; padding:24px; border-radius:14px; box-shadow:0 2px 8px rgba(49,71,58,.08); }
+    .stage-header{ display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; }
+    .stage-title{ font-size:1.6em; font-weight:800; color:var(--heading); margin:0; }
+    .add-week-btn{
+      background:var(--btn); color:#fff; border:none; padding:10px 18px; border-radius:20px;
+      font-weight:700; cursor:pointer;
+    }
+    .add-week-btn:hover{ background:#48685b; }
+
+    .week-card{ background:#fcfaf3; border-radius:12px; padding:18px; margin-bottom:16px; border:1px solid #e3e2d7; box-shadow:0 2px 6px rgba(49,71,58,.06); }
+    .week-header{ display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+    .week-title{ font-size:1.25em; font-weight:800; color:var(--heading); margin:0; }
+    .week-controls{ display:flex; gap:8px; align-items:center; }
+    .toggle-btn,.remove-week-btn{
+      border:none; padding:6px 12px; border-radius:10px; font-weight:700; cursor:pointer; font-size:.85em;
+    }
+    .toggle-btn{ background:#e3e2d7; color:var(--heading); }
+    .toggle-btn:hover{ background:#d5d4c9; }
+    .remove-week-btn{ background:#b54848; color:#fff; }
+    .remove-week-btn:hover{ background:#a03d3d; }
+    .week-body{ display:block; }
+    .week-body.hidden{ display:none; }
+
+    .product-row{ background:#fff; border:1px solid #dddcd2; border-radius:8px; padding:14px; margin-bottom:10px; box-shadow:0 2px 4px rgba(49,71,58,.06); }
+    .product-fields{ display:grid; grid-template-columns:1fr 1fr auto; gap:12px; align-items:end; }
+    @media (max-width:700px){ .product-fields{ grid-template-columns:1fr; } }
+    .field-group{ display:flex; flex-direction:column; }
+    .field-group label{ font-weight:700; color:var(--heading); margin-bottom:6px; font-size:.95em; }
+    .field-group input{
+      padding:10px 12px; font-size:1em; background:#fff; border:1px solid #c4c8b8; border-radius:8px; color:#31473a;
+    }
+    .remove-product-btn{
+      background:#b03d3c; color:#fff; border:none; padding:10px 14px; border-radius:8px; font-weight:700; cursor:pointer;
+    }
+    .add-product-btn{
+      background:transparent; color:var(--heading); border:2px dashed #c4c8b8; padding:10px 14px; border-radius:8px; font-weight:700; cursor:pointer; width:100%; margin-top:8px;
+    }
+    .add-product-btn:hover{ border-color:var(--heading); background:rgba(53,88,74,.05); }
+
+    .reservoir-section{
+      background:#f7f5eb; padding:24px; border-radius:14px; margin-bottom:24px; box-shadow:0 2px 8px rgba(49,71,58,.08);
+    }
+    .reservoir-section label{ display:block; font-weight:800; color:var(--heading); margin-bottom:10px; font-size:1.1em; }
+    .reservoir-section input{
+      padding:12px 16px; font-size:1.05em; background:#fff; border:1px solid #c4c8b8; border-radius:10px; color:#31473a; max-width:300px; width:100%;
+    }
+
+    .calculate-btn,.download-btn{
+      background:var(--btn); color:#fff; border:none; padding:14px 36px; border-radius:12px; font-weight:800; cursor:pointer; font-size:1.1em; display:block; margin:26px auto;
+      box-shadow:0 4px 12px rgba(53,88,74,.2);
+    }
+    .calculate-btn:hover,.download-btn:hover{ background:#48685b; }
+
+    .error-message{ color:var(--err); font-weight:800; text-align:center; margin:18px 0; font-size:1.05em; }
+
+    /* ========= Matrix ========= */
+    .results-section{ margin-top:28px; }
+    .stage-results{ background:#f7f5eb; padding:24px; border-radius:14px; margin-bottom:24px; box-shadow:0 2px 8px rgba(49,71,58,.08); }
+    .stage-results h2{ font-size:1.5em; font-weight:800; color:var(--heading); margin:0 0 18px 0; text-align:center; }
+
+    .feed-chart-matrix{ overflow-x:auto; border-radius:10px; border:1px solid #c4c8b8; background:#fff; }
+    .feed-chart-matrix table{ width:100%; border-collapse:collapse; background:#fff; }
+    .feed-chart-matrix th,.feed-chart-matrix td{ border:1px solid #c4c8b8; padding:12px; text-align:center; vertical-align:middle; }
+    .feed-chart-matrix thead th{ position:sticky; top:0; z-index:8; background:var(--heading); color:#fff; font-weight:800; }
+    .matrix-week-header{ min-width:120px; white-space:nowrap; }
+    .matrix-nutrient-header{ text-align:left; min-width:200px; position:sticky; left:0; z-index:12; }
+    .matrix-nutrient-name{
+      background:#f7f5eb; font-weight:700; text-align:left; color:var(--heading); min-width:200px; position:sticky; left:0; z-index:10; border-right:2px solid #c4c8b8;
+    }
+    .matrix-data-cell{ background:#fff; min-width:120px; }
+    .matrix-rate-value{ font-weight:800; color:var(--heading); font-size:.95em; line-height:1.2; }
+    .matrix-total-value{ font-size:.85em; color:#666; margin-top:3px; line-height:1.2; }
+    .matrix-empty-cell{ background:#f9f9f9; color:#999; font-style:italic; font-size:1.05em; }
+
+    @media (max-width:768px){
+      .feed-chart-matrix table{ min-width:800px; }
+      .matrix-nutrient-name{ min-width:180px; }
+      .matrix-week-header,.matrix-data-cell{ min-width:100px; }
+      .feed-chart-matrix th,.feed-chart-matrix td{ padding:8px; }
+    }
+
+    /* ========= On-page chip watermark (optional) ========= */
+    #ho-watermark{
+      position:fixed; right:16px; bottom:12px;
+      background:rgba(45,92,78,.08); color:#2D5C4E;
+      border:1px solid #E7E5DC; border-radius:10px; padding:6px 10px;
+      font:600 12px/1 'Inter',system-ui,sans-serif; backdrop-filter:blur(2px); z-index:50;
+    }
+
+    @view-transition{ navigation:auto; }
+
+/* ====== HARD SCOPE / THEME-CONFLICT PATCH (paste after existing styles) ====== */
+#npcalc .container{ max-width:1400px; margin:0 auto; }
+
+#npcalc .calc-shell{
+  background:var(--card) !important;
+  border:1px solid var(--card-border) !important;
+  border-radius:14px !important;
+  box-shadow:0 2px 8px rgba(49,71,58,.08) !important;
+}
+
+/* Panels / cards */
+#npcalc .stage,
+#npcalc .reservoir-section,
+#npcalc .stage-results{ background:#f7f5eb !important; }
+
+#npcalc .week-card{ background:#fcfaf3 !important; }
+#npcalc .product-row{ background:#fff !important; }
+
+/* Matrix + table */
+#npcalc .feed-chart-matrix{ background:#fff !important; border:1px solid #c4c8b8 !important; }
+#npcalc .feed-chart-matrix thead th{
+  background:var(--heading) !important;
+  color:#fff !important;
+}
+
+/* Buttons */
+#npcalc .add-week-btn,
+#npcalc .calculate-btn,
+#npcalc .download-btn{
+  background:var(--btn) !important; color:var(--btn-text) !important;
+}
+#npcalc .toggle-btn{ background:#e3e2d7 !important; color:var(--heading) !important; }
+#npcalc .remove-week-btn{ background:#b54848 !important; color:#fff !important; }
+
+/* Fonts — prevent global heading font from bleeding in */
+#npcalc,
+#npcalc input,
+#npcalc button{ font-family:'Nunito', sans-serif !important; }
+#npcalc .calc-title,
+#npcalc .calc-subtitle,
+#npcalc .stage-title,
+#npcalc .week-title,
+#npcalc .config-section label,
+#npcalc .field-group label{ font-family:'Inter', system-ui, sans-serif !important; }
+
+/* Text + palette guards */
+#npcalc .calc-title,
+#npcalc .stage-title,
+#npcalc .week-title,
+#npcalc .matrix-rate-value{ color:var(--heading) !important; }
+#npcalc{ color:var(--text) !important; background:var(--bg) !important; }
+
+/* Make sure sticky headers stay above any theme z-index tricks */
+#npcalc .feed-chart-matrix thead th{ z-index:8 !important; }
+#npcalc .matrix-nutrient-header,
+#npcalc .matrix-nutrient-name{ position:sticky !important; left:0 !important; z-index:12 !important; }
+
+  </style>
+</head>
+<body id="npcalc">
+  <div class="container">
+    <div class="calc-shell">
+      <!-- Title + small subtitle -->
+      <h1 class="calc-title">Nutrient Program Calculator</h1>
+      <p class="calc-subtitle">Build a week-by-week feed chart with ml/L and per-reservoir totals, then export to PDF.</p>
+
+      <div class="config-section">
+        <label for="configSelect">Configuration</label>
+        <select id="configSelect">
+          <option value="custom">Custom</option>
+          <option value="preset1">Canna Aqua Programme (AU)</option>
+          <option value="preset2">Nutrifield Hydro Programme</option>
+          <option value="preset3">Cyco Platinum Series Programme</option>
+          <option value="preset4">Professor's Nutrients Programme</option>
+          <option value="preset5">Remo Nutrients Programme</option>
+          <option value="preset6">Growth Technology Ionic Programme</option>
+          <option value="preset7">Plant Magic Plus Programme</option>
+          <option value="preset8">Advanced Nutrients pH Perfect Programme</option>
+        </select>
+      </div>
+
+      <div class="stages-container">
+        <div class="stage" data-stage="vegetative">
+          <div class="stage-header">
+            <h2 class="stage-title">Vegetative</h2>
+            <button class="add-week-btn" onclick="addWeek('vegetative')">+ Add Week</button>
+          </div>
+          <div class="weeks-container" id="vegetativeWeeks"></div>
+        </div>
+
+        <div class="stage" data-stage="flowering">
+          <div class="stage-header">
+            <h2 class="stage-title">Flowering</h2>
+            <button class="add-week-btn" onclick="addWeek('flowering')">+ Add Week</button>
+          </div>
+          <div class="weeks-container" id="floweringWeeks"></div>
+        </div>
+      </div>
+
+      <div class="reservoir-section">
+        <label for="reservoirSize">Reservoir Size (L)</label>
+        <input type="number" id="reservoirSize" placeholder="Enter reservoir size" min="0" step="0.1">
+      </div>
+
+      <button class="calculate-btn" onclick="calculate()">Calculate</button>
+
+      <div id="errorMessage" class="error-message" style="display:none;"></div>
+      <div id="resultsSection" class="results-section" style="display:none;"></div>
+      <button id="downloadBtn" class="download-btn" style="display:none;" onclick="downloadPDF()">Download PDF</button>
+
+      <!-- Mascot watermark (swap src to your hosted asset path) -->
+      <img
+        class="mascot-watermark"
+        src="https://cdn.shopify.com/s/files/1/0709/5261/6094/files/Cactus_Mascot.png?v=1750645317"
+        alt=""
+        aria-hidden="true"
+        decoding="async"
+        loading="lazy"
+      />
+    </div>
+  </div>
+
+  <!-- Optional chip watermark -->
+  <div id="ho-watermark">Hydro Oasis • Nutrient Program</div>
+
+  <script>
+    /* ===== Static display text (still mirrored to elementSdk if present) ===== */
+    const defaultConfig = {
+      page_title: "Nutrient Program Calculator",
+      page_subtitle: "Build a week-by-week feed chart with ml/L and per-reservoir totals, then export to PDF."
+    };
+    let config = { ...defaultConfig };
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange: (newCfg)=>{ config = { ...config, ...newCfg }; },
+        mapToCapabilities: () => ({ recolorables:[], borderables:[], fontEditable:undefined, fontSizeable:undefined }),
+        mapToEditPanelValues: (cfg)=> new Map([['page_title',cfg.page_title],['page_subtitle',cfg.page_subtitle]])
+      });
+      window.elementSdk.setConfig({ page_title: config.page_title, page_subtitle: config.page_subtitle });
+    }
+
+    /* ===== Presets ===== */
+    const presets = { /* ... keep your existing presets exactly as you pasted ... */ 
+      preset1:{name:"Canna Aqua Programme (AU)",vegetative:[{week:1,products:[{name:"Canna Aqua Vega A",rate:2.5},{name:"Canna Aqua Vega B",rate:2.5},{name:"Canna Rhizotonic",rate:4}]},{week:2,products:[{name:"Canna Aqua Vega A",rate:3.5},{name:"Canna Aqua Vega B",rate:3.5},{name:"Canna Rhizotonic",rate:4}]},{week:3,products:[{name:"Canna Aqua Vega A",rate:4},{name:"Canna Aqua Vega B",rate:4},{name:"Canna Rhizotonic",rate:4},{name:"Canna Cannazym",rate:2.5}]},{week:4,products:[{name:"Canna Aqua Vega A",rate:4},{name:"Canna Aqua Vega B",rate:4},{name:"Canna Cannazym",rate:2.5}]}],flowering:[{week:1,products:[{name:"Canna Aqua Flores A",rate:4},{name:"Canna Aqua Flores B",rate:4},{name:"Canna Cannazym",rate:2.5}]},{week:2,products:[{name:"Canna Aqua Flores A",rate:4.5},{name:"Canna Aqua Flores B",rate:4.5},{name:"Canna Cannazym",rate:2.5}]},{week:3,products:[{name:"Canna Aqua Flores A",rate:5},{name:"Canna Aqua Flores B",rate:5},{name:"Canna PK 13/14",rate:1.5}]},{week:4,products:[{name:"Canna Aqua Flores A",rate:5},{name:"Canna Aqua Flores B",rate:5},{name:"Canna PK 13/14",rate:1.5}]},{week:5,products:[{name:"Canna Aqua Flores A",rate:5},{name:"Canna Aqua Flores B",rate:5},{name:"Canna PK 13/14",rate:1.5}]},{week:6,products:[{name:"Canna Aqua Flores A",rate:4.5},{name:"Canna Aqua Flores B",rate:4.5},{name:"Canna Cannazym",rate:2.5}]},{week:7,products:[{name:"Canna Aqua Flores A",rate:4},{name:"Canna Aqua Flores B",rate:4},{name:"Canna Cannazym",rate:2.5}]},{week:8,products:[{name:"Canna Aqua Flores A",rate:3},{name:"Canna Aqua Flores B",rate:3}]},{week:9,products:[{name:"Canna Cannazym",rate:2.5}]}]},
+      /* ... preset2 .. preset8 unchanged ... */
+      preset2:{name:"Nutrifield Hydro Programme",vegetative:[{week:1,products:[{name:"Nutrifield Hydro A",rate:2},{name:"Nutrifield Hydro B",rate:2},{name:"Nutrifield Root Nectar",rate:1}]},{week:2,products:[{name:"Nutrifield Hydro A",rate:3},{name:"Nutrifield Hydro B",rate:3},{name:"Nutrifield Root Nectar",rate:1.5},{name:"Nutrifield Veg Ignitor",rate:2}]},{week:3,products:[{name:"Nutrifield Hydro A",rate:4},{name:"Nutrifield Hydro B",rate:4},{name:"Nutrifield Veg Ignitor",rate:2.5},{name:"Nutrifield Organic Kelp",rate:1}]},{week:4,products:[{name:"Nutrifield Hydro A",rate:4},{name:"Nutrifield Hydro B",rate:4},{name:"Nutrifield Veg Ignitor",rate:2.5},{name:"Nutrifield Organic Kelp",rate:1}]}],flowering:[{week:1,products:[{name:"Nutrifield Hydro A",rate:4},{name:"Nutrifield Hydro B",rate:4},{name:"Nutrifield Bloom Ignitor",rate:2}]},{week:2,products:[{name:"Nutrifield Hydro A",rate:4.5},{name:"Nutrifield Hydro B",rate:4.5},{name:"Nutrifield Bloom Ignitor",rate:2.5}]},{week:3,products:[{name:"Nutrifield Hydro A",rate:5},{name:"Nutrifield Hydro B",rate:5},{name:"Nutrifield Bloom Ignitor",rate:3},{name:"Nutrifield PK Heavy",rate:1.5}]},{week:4,products:[{name:"Nutrifield Hydro A",rate:5},{name:"Nutrifield Hydro B",rate:5},{name:"Nutrifield Bloom Ignitor",rate:3},{name:"Nutrifield PK Heavy",rate:2}]},{week:5,products:[{name:"Nutrifield Hydro A",rate:5},{name:"Nutrifield Hydro B",rate:5},{name:"Nutrifield PK Heavy",rate:2}]},{week:6,products:[{name:"Nutrifield Hydro A",rate:4.5},{name:"Nutrifield Hydro B",rate:4.5},{name:"Nutrifield PK Heavy",rate:2},{name:"Nutrifield Organic Kelp",rate:1}]},{week:7,products:[{name:"Nutrifield Hydro A",rate:4},{name:"Nutrifield Hydro B",rate:4},{name:"Nutrifield Organic Kelp",rate:1}]},{week:8,products:[{name:"Nutrifield Hydro A",rate:3},{name:"Nutrifield Hydro B",rate:3}]},{week:9,products:[{name:"Nutrifield Organic Kelp",rate:1}]}]},
+      preset3:{name:"Cyco Platinum Series Programme",vegetative:[{week:1,products:[{name:"Cyco Grow A",rate:2.5},{name:"Cyco Grow B",rate:2.5},{name:"Cyco B1 Boost",rate:1},{name:"Cyco Ryzofuel",rate:1}]},{week:2,products:[{name:"Cyco Grow A",rate:3.5},{name:"Cyco Grow B",rate:3.5},{name:"Cyco B1 Boost",rate:1.5},{name:"Cyco Ryzofuel",rate:2}]},{week:3,products:[{name:"Cyco Grow A",rate:4.5},{name:"Cyco Grow B",rate:4.5},{name:"Cyco B1 Boost",rate:2},{name:"Cyco Ryzofuel",rate:2.5}]},{week:4,products:[{name:"Cyco Grow A",rate:4.5},{name:"Cyco Grow B",rate:4.5},{name:"Cyco B1 Boost",rate:2},{name:"Cyco Silica",rate:1}]}],flowering:[{week:1,products:[{name:"Cyco Bloom A",rate:4},{name:"Cyco Bloom B",rate:4},{name:"Cyco B1 Boost",rate:2}]},{week:2,products:[{name:"Cyco Bloom A",rate:4.5},{name:"Cyco Bloom B",rate:4.5},{name:"Cyco B1 Boost",rate:2},{name:"Cyco Potash Plus",rate:1}]},{week:3,products:[{name:"Cyco Bloom A",rate:5},{name:"Cyco Bloom B",rate:5},{name:"Cyco Potash Plus",rate:1.5},{name:"Cyco Swell",rate:1.5}]},{week:4,products:[{name:"Cyco Bloom A",rate:5},{name:"Cyco Bloom B",rate:5},{name:"Cyco Potash Plus",rate:2},{name:"Cyco Swell",rate:2}]},{week:5,products:[{name:"Cyco Bloom A",rate:5},{name:"Cyco Bloom B",rate:5},{name:"Cyco Swell",rate:2.5},{name:"Cyco Uptake",rate:1}]},{week:6,products:[{name:"Cyco Bloom A",rate:4.5},{name:"Cyco Bloom B",rate:4.5},{name:"Cyco Swell",rate:2},{name:"Cyco Uptake",rate:1.5}]},{week:7,products:[{name:"Cyco Bloom A",rate:4},{name:"Cyco Bloom B",rate:4},{name:"Cyco Uptake",rate:1.5}]},{week:8,products:[{name:"Cyco Bloom A",rate:3},{name:"Cyco Bloom B",rate:3},{name:"Cyco Uptake",rate:1}]},{week:9,products:[{name:"Cyco Uptake",rate:1}]}]},
+      preset4:{name:"Professor's Nutrients Programme",vegetative:[{week:1,products:[{name:"Professor's A-B Grow",rate:3},{name:"Professor's Sippy Cup",rate:1},{name:"Professor's Take Root",rate:1}]},{week:2,products:[{name:"Professor's A-B Grow",rate:4},{name:"Professor's Sippy Cup",rate:1.5},{name:"Professor's Take Root",rate:2}]},{week:3,products:[{name:"Professor's A-B Grow",rate:5},{name:"Professor's Sippy Cup",rate:2},{name:"Professor's Take Root",rate:2.5}]},{week:4,products:[{name:"Professor's A-B Grow",rate:5},{name:"Professor's Sippy Cup",rate:2},{name:"Professor's Nutrients Cal-Mag",rate:1}]}],flowering:[{week:1,products:[{name:"Professor's A-B Bloom",rate:4.5},{name:"Professor's Sippy Cup",rate:2}]},{week:2,products:[{name:"Professor's A-B Bloom",rate:5},{name:"Professor's Sippy Cup",rate:2},{name:"Professor's Most Wanted",rate:1}]},{week:3,products:[{name:"Professor's A-B Bloom",rate:5.5},{name:"Professor's Most Wanted",rate:1.5},{name:"Professor's Nutrients PK",rate:1.5}]},{week:4,products:[{name:"Professor's A-B Bloom",rate:5.5},{name:"Professor's Most Wanted",rate:2},{name:"Professor's Nutrients PK",rate:2}]},{week:5,products:[{name:"Professor's A-B Bloom",rate:5},{name:"Professor's Most Wanted",rate:2.5},{name:"Professor's Nutrients PK",rate:2.5}]},{week:6,products:[{name:"Professor's A-B Bloom",rate:4.5},{name:"Professor's Most Wanted",rate:2},{name:"Professor's Nutrients PK",rate:2}]},{week:7,products:[{name:"Professor's A-B Bloom",rate:4},{name:"Professor's Most Wanted",rate:1.5}]},{week:8,products:[{name:"Professor's A-B Bloom",rate:3},{name:"Professor's Nutrients Cal-Mag",rate:1}]},{week:9,products:[{name:"Professor's Nutrients Cal-Mag",rate:1}]}]},
+      preset5:{name:"Remo Nutrients Programme",vegetative:[{week:1,products:[{name:"Remo Micro",rate:2},{name:"Remo Grow",rate:2},{name:"Remo VeloKelp",rate:1}]},{week:2,products:[{name:"Remo Micro",rate:3},{name:"Remo Grow",rate:3},{name:"Remo VeloKelp",rate:1.5},{name:"Remo Nature's Candy",rate:2}]},{week:3,products:[{name:"Remo Micro",rate:4},{name:"Remo Grow",rate:4},{name:"Remo VeloKelp",rate:2},{name:"Remo Nature's Candy",rate:2.5}]},{week:4,products:[{name:"Remo Micro",rate:4},{name:"Remo Grow",rate:4},{name:"Remo VeloKelp",rate:2},{name:"Remo Nature's Candy",rate:2.5},{name:"Remo Magnifical",rate:1}]}],flowering:[{week:1,products:[{name:"Remo Micro",rate:4},{name:"Remo Bloom",rate:4},{name:"Remo Nature's Candy",rate:2.5}]},{week:2,products:[{name:"Remo Micro",rate:4.5},{name:"Remo Bloom",rate:4.5},{name:"Remo Nature's Candy",rate:3},{name:"Remo Magnifical",rate:1.5}]},{week:3,products:[{name:"Remo Micro",rate:5},{name:"Remo Bloom",rate:5},{name:"Remo Magnifical",rate:2},{name:"Remo AstroFlower",rate:1.5}]},{week:4,products:[{name:"Remo Micro",rate:5},{name:"Remo Bloom",rate:5},{name:"Remo AstroFlower",rate:2},{name:"Remo Nature's Candy",rate:2}]},{week:5,products:[{name:"Remo Micro",rate:4.5},{name:"Remo Bloom",rate:4.5},{name:"Remo AstroFlower",rate:2.5},{name:"Remo Nature's Candy",rate:2}]},{week:6,products:[{name:"Remo Micro",rate:4},{name:"Remo Bloom",rate:4},{name:"Remo AstroFlower",rate:2},{name:"Remo Magnifical",rate:1.5}]},{week:7,products:[{name:"Remo Micro",rate:3.5},{name:"Remo Bloom",rate:3.5},{name:"Remo Nature's Candy",rate:1.5}]},{week:8,products:[{name:"Remo Micro",rate:3},{name:"Remo Bloom",rate:3}]},{week:9,products:[{name:"Remo VeloKelp",rate:1}]}]},
+      preset6:{name:"Growth Technology Ionic Programme",vegetative:[{week:1,products:[{name:"Ionic Hydro Grow",rate:2.5}]},{week:2,products:[{name:"Ionic Hydro Grow",rate:3.5},{name:"Ionic Boost",rate:1}]},{week:3,products:[{name:"Ionic Hydro Grow",rate:4.5},{name:"Ionic Boost",rate:1.5},{name:"Ionic PK Boost",rate:.5}]},{week:4,products:[{name:"Ionic Hydro Grow",rate:4.5},{name:"Ionic Boost",rate:1.5},{name:"Ionic Cal-Mag Pro",rate:1}]}],flowering:[{week:1,products:[{name:"Ionic Hydro Bloom",rate:4},{name:"Ionic Boost",rate:1.5}]},{week:2,products:[{name:"Ionic Hydro Bloom",rate:4.5},{name:"Ionic Boost",rate:2},{name:"Ionic PK Boost",rate:1}]},{week:3,products:[{name:"Ionic Hydro Bloom",rate:5},{name:"Ionic PK Boost",rate:1.5}]},{week:4,products:[{name:"Ionic Hydro Bloom",rate:5},{name:"Ionic PK Boost",rate:2}]},{week:5,products:[{name:"Ionic Hydro Bloom",rate:4.5},{name:"Ionic PK Boost",rate:2}]},{week:6,products:[{name:"Ionic Hydro Bloom",rate:4},{name:"Ionic PK Boost",rate:1.5},{name:"Ionic Cal-Mag Pro",rate:1}]},{week:7,products:[{name:"Ionic Hydro Bloom",rate:3.5},{name:"Ionic Boost",rate:1}]},{week:8,products:[{name:"Ionic Hydro Bloom",rate:3}]},{week:9,products:[{name:"Ionic Cal-Mag Pro",rate:1}]}]},
+      preset7:{name:"Plant Magic Plus Programme",vegetative:[{week:1,products:[{name:"Plant Magic Hydro Grow",rate:2},{name:"Plant Magic Root Stimulant",rate:1}]},{week:2,products:[{name:"Plant Magic Hydro Grow",rate:3},{name:"Plant Magic Root Stimulant",rate:1.5},{name:"Plant Magic Catalyst",rate:1}]},{week:3,products:[{name:"Plant Magic Hydro Grow",rate:4},{name:"Plant Magic Catalyst",rate:1.5},{name:"Plant Magic Magne-Cal+",rate:1}]},{week:4,products:[{name:"Plant Magic Hydro Grow",rate:4},{name:"Plant Magic Catalyst",rate:1.5},{name:"Plant Magic Magne-Cal+",rate:1},{name:"Plant Magic Evolution",rate:1}]}],flowering:[{week:1,products:[{name:"Plant Magic Hydro Bloom",rate:4},{name:"Plant Magic Catalyst",rate:1.5}]},{week:2,products:[{name:"Plant Magic Hydro Bloom",rate:4.5},{name:"Plant Magic Catalyst",rate:2},{name:"Plant Magic Bloom Boost",rate:1}]},{week:3,products:[{name:"Plant Magic Hydro Bloom",rate:5},{name:"Plant Magic Bloom Boost",rate:1.5},{name:"Plant Magic PK 4-8",rate:1}]},{week:4,products:[{name:"Plant Magic Hydro Bloom",rate:5},{name:"Plant Magic Bloom Boost",rate:2},{name:"Plant Magic PK 4-8",rate:1.5}]},{week:5,products:[{name:"Plant Magic Hydro Bloom",rate:4.5},{name:"Plant Magic PK 4-8",rate:2},{name:"Plant Magic Magne-Cal+",rate:1}]},{week:6,products:[{name:"Plant Magic Hydro Bloom",rate:4},{name:"Plant Magic PK 4-8",rate:1.5},{name:"Plant Magic Magne-Cal+",rate:1}]},{week:7,products:[{name:"Plant Magic Hydro Bloom",rate:3.5},{name:"Plant Magic Evolution",rate:1}]},{week:8,products:[{name:"Plant Magic Hydro Bloom",rate:3},{name:"Plant Magic Evolution",rate:1}]},{week:9,products:[{name:"Plant Magic Evolution",rate:1}]}]},
+      preset8:{name:"Advanced Nutrients pH Perfect Programme",vegetative:[{week:1,products:[{name:"AN pH Perfect Grow",rate:2},{name:"AN pH Perfect Micro",rate:2},{name:"AN pH Perfect Bloom",rate:2},{name:"AN Voodoo Juice",rate:2}]},{week:2,products:[{name:"AN pH Perfect Grow",rate:3},{name:"AN pH Perfect Micro",rate:3},{name:"AN pH Perfect Bloom",rate:3},{name:"AN Voodoo Juice",rate:2},{name:"AN B-52",rate:2}]},{week:3,products:[{name:"AN pH Perfect Grow",rate:4},{name:"AN pH Perfect Micro",rate:4},{name:"AN pH Perfect Bloom",rate:4},{name:"AN B-52",rate:2}]},{week:4,products:[{name:"AN pH Perfect Grow",rate:4},{name:"AN pH Perfect Micro",rate:4},{name:"AN pH Perfect Bloom",rate:4},{name:"AN B-52",rate:2},{name:"AN Sensi Cal-Mag Xtra",rate:2}]}],flowering:[{week:1,products:[{name:"AN pH Perfect Grow",rate:2},{name:"AN pH Perfect Micro",rate:4},{name:"AN pH Perfect Bloom",rate:4},{name:"AN B-52",rate:2}]},{week:2,products:[{name:"AN pH Perfect Micro",rate:4},{name:"AN pH Perfect Bloom",rate:4},{name:"AN B-52",rate:2},{name:"AN Big Bud",rate:2}]},{week:3,products:[{name:"AN pH Perfect Micro",rate:4},{name:"AN pH Perfect Bloom",rate:4},{name:"AN Big Bud",rate:2}]},{week:4,products:[{name:"AN pH Perfect Micro",rate:4},{name:"AN pH Perfect Bloom",rate:4},{name:"AN Big Bud",rate:2}]},{week:5,products:[{name:"AN pH Perfect Micro",rate:4},{name:"AN pH Perfect Bloom",rate:4},{name:"AN Big Bud",rate:2},{name:"AN Overdrive",rate:2}]},{week:6,products:[{name:"AN pH Perfect Micro",rate:4},{name:"AN pH Perfect Bloom",rate:4},{name:"AN Overdrive",rate:2}]},{week:7,products:[{name:"AN pH Perfect Micro",rate:3},{name:"AN pH Perfect Bloom",rate:3},{name:"AN Overdrive",rate:2}]},{week:8,products:[{name:"AN pH Perfect Micro",rate:2},{name:"AN pH Perfect Bloom",rate:2},{name:"AN Flawless Finish",rate:2}]},{week:9,products:[{name:"AN Flawless Finish",rate:2}]}]}
+    };
+
+    let weekCounters = { vegetative: 0, flowering: 0 };
+    let calculationResults = null;
+
+    function addWeek(stage){
+      weekCounters[stage]++;
+      const n = weekCounters[stage];
+      const container = document.getElementById(stage+'Weeks');
+      const card = document.createElement('div');
+      card.className='week-card'; card.dataset.stage=stage; card.dataset.week=n;
+      card.innerHTML=`
+        <div class="week-header">
+          <h3 class="week-title">Week ${n}</h3>
+          <div class="week-controls">
+            <button class="toggle-btn" onclick="toggleWeek(this)">Hide</button>
+            <button class="remove-week-btn" onclick="removeWeek(this)">Remove</button>
+          </div>
+        </div>
+        <div class="week-body">
+          <div class="products-container"></div>
+          <button class="add-product-btn" onclick="addProduct(this)">+ Add Product</button>
+        </div>`;
+      container.appendChild(card);
+      addProduct(card.querySelector('.add-product-btn'));
+      markAsCustom();
+    }
+
+    function addProduct(btn){
+      const wrap = btn.closest('.week-card').querySelector('.products-container');
+      const row = document.createElement('div');
+      row.className='product-row';
+      row.innerHTML=`
+        <div class="product-fields">
+          <div class="field-group">
+            <label>Nutrient Name</label>
+            <input type="text" class="product-name" placeholder="Enter nutrient name" oninput="markAsCustom()">
+          </div>
+          <div class="field-group">
+            <label>Dilution Rate (ml/L)</label>
+            <input type="number" class="product-rate" placeholder="0.0" min="0" step="0.1" oninput="markAsCustom()">
+          </div>
+          <button class="remove-product-btn" onclick="removeProduct(this)">Remove</button>
+        </div>`;
+      wrap.appendChild(row);
+    }
+    function removeProduct(btn){ btn.closest('.product-row').remove(); markAsCustom(); }
+    function removeWeek(btn){
+      const card = btn.closest('.week-card'); const stage = card.dataset.stage;
+      card.remove(); renumberWeeks(stage); markAsCustom();
+    }
+    function renumberWeeks(stage){
+      const weeks = document.getElementById(stage+'Weeks').querySelectorAll('.week-card');
+      weeks.forEach((w,i)=>{ w.dataset.week=i+1; w.querySelector('.week-title').textContent=`Week ${i+1}`; });
+      weekCounters[stage]=weeks.length;
+    }
+    function toggleWeek(btn){
+      const body = btn.closest('.week-card').querySelector('.week-body');
+      const hidden = body.classList.toggle('hidden');
+      btn.textContent = hidden ? 'Show' : 'Hide';
+    }
+    function markAsCustom(){ const sel=document.getElementById('configSelect'); if(sel.value!=='custom') sel.value='custom'; }
+
+    function loadPreset(key){
+      if(key==='custom') return;
+      const p = presets[key]; if(!p) return;
+
+      // Mirror title/subtitle to elementSdk, UI text stays static
+      if (window.elementSdk) window.elementSdk.setConfig({ page_title: p.name, page_subtitle: config.page_subtitle });
+
+      ['vegetative','flowering'].forEach(s=>{ document.getElementById(s+'Weeks').innerHTML=''; });
+      weekCounters = { vegetative:0, flowering:0 };
+
+      ['vegetative','flowering'].forEach(stage=>{
+        p[stage].forEach(w=>{
+          weekCounters[stage]++;
+          const n = weekCounters[stage];
+          const container = document.getElementById(stage+'Weeks');
+          const card = document.createElement('div');
+          card.className='week-card'; card.dataset.stage=stage; card.dataset.week=n;
+          card.innerHTML=`
+            <div class="week-header">
+              <h3 class="week-title">Week ${n}</h3>
+              <div class="week-controls">
+                <button class="toggle-btn" onclick="toggleWeek(this)">Hide</button>
+                <button class="remove-week-btn" onclick="removeWeek(this)">Remove</button>
+              </div>
+            </div>
+            <div class="week-body">
+              <div class="products-container"></div>
+              <button class="add-product-btn" onclick="addProduct(this)">+ Add Product</button>
+            </div>`;
+          container.appendChild(card);
+
+          const wrap = card.querySelector('.products-container');
+          w.products.forEach(prod=>{
+            const row = document.createElement('div');
+            row.className='product-row';
+            row.innerHTML=`
+              <div class="product-fields">
+                <div class="field-group">
+                  <label>Nutrient Name</label>
+                  <input type="text" class="product-name" value="${prod.name}" oninput="markAsCustom()">
+                </div>
+                <div class="field-group">
+                  <label>Dilution Rate (ml/L)</label>
+                  <input type="number" class="product-rate" min="0" step="0.1" value="${prod.rate}" oninput="markAsCustom()">
+                </div>
+                <button class="remove-product-btn" onclick="removeProduct(this)">Remove</button>
+              </div>`;
+            wrap.appendChild(row);
+          });
+        });
+      });
+    }
+
+    function calculate(){
+      const err = document.getElementById('errorMessage');
+      const results = document.getElementById('resultsSection');
+      const dl = document.getElementById('downloadBtn');
+      err.style.display='none'; results.style.display='none'; dl.style.display='none';
+
+      const reservoirSize = parseFloat(document.getElementById('reservoirSize').value);
+      if(!reservoirSize || reservoirSize<=0){
+        err.textContent='Please enter a valid reservoir size.'; err.style.display='block'; return;
+      }
+
+      const data = { vegetative:[], flowering:[] };
+      let invalid=false;
+      ['vegetative','flowering'].forEach(stage=>{
+        document.querySelectorAll(`[data-stage="${stage}"].week-card`).forEach(week=>{
+          const w = parseInt(week.dataset.week);
+          const products = [];
+          week.querySelectorAll('.product-row').forEach(row=>{
+            const name=(row.querySelector('.product-name').value||'').trim();
+            const rate=parseFloat(row.querySelector('.product-rate').value);
+            if(!name || !rate || rate<=0){ invalid=true; return; }
+            products.push({name,rate});
+          });
+          if(products.length>0) data[stage].push({week:w,products});
+        });
+      });
+      if(invalid){ err.textContent='Please fill in all nutrient names and dilution rates with valid values.'; err.style.display='block'; return; }
+      if(data.vegetative.length===0 && data.flowering.length===0){
+        err.textContent='Please add at least one week with products.'; err.style.display='block'; return;
+      }
+
+      calculationResults = { reservoirSize, data };
+      displayResults(data,reservoirSize);
+      results.style.display='block'; dl.style.display='block';
+    }
+
+function formatValue(val) {
+  const num = parseFloat(val);
+  if (isNaN(num)) return '-';
+  return Number.isInteger(num) ? num.toString() : parseFloat(num.toFixed(2)).toString().replace(/\.0+$/, '');
+}
+
+function displayResults(data,reservoirSize){
+  const wrap = document.getElementById('resultsSection'); wrap.innerHTML='';
+
+  const allWeeks=[]; const allNutrients=new Set();
+  (data.vegetative||[]).forEach(week=>{
+    allWeeks.push({stage:'vegetative',week:week.week,label:`Veg ${week.week}`,products:week.products});
+    week.products.forEach(p=>{ const n=(p.name||'').trim(); if(n) allNutrients.add(n); });
+  });
+  (data.flowering||[]).forEach(week=>{
+    allWeeks.push({stage:'flowering',week:week.week,label:`Flower ${week.week}`,products:week.products});
+    week.products.forEach(p=>{ const n=(p.name||'').trim(); if(n) allNutrients.add(n); });
+  });
+
+  allWeeks.sort((a,b)=> a.stage!==b.stage ? (a.stage==='vegetative'?-1:1) : (a.week-b.week));
+
+  const nutrients = Array.from(allNutrients).map(name=>{
+    const rates={}; allWeeks.forEach(w=>{
+      const hit = w.products.find(p=>(p.name||'').trim()===name);
+      if(hit) rates[`${w.stage}_${w.week}`]=hit.rate;
+    });
+    return { name, rates };
+  });
+
+  const section=document.createElement('div'); section.className='stage-results';
+  section.innerHTML=`<h2>Complete Feed Chart (ml per reservoir)</h2>`;
+  const tableBox=document.createElement('div'); tableBox.className='feed-chart-matrix';
+
+  let html = `<table><thead><tr><th class="matrix-nutrient-header">Nutrient</th>${allWeeks.map(w=>`<th class="matrix-week-header">${w.label}</th>`).join('')}</tr></thead><tbody>`;
+  nutrients.forEach(n=>{
+    html+=`<tr><td class="matrix-nutrient-name">${n.name}</td>`;
+    allWeeks.forEach(w=>{
+      const r = n.rates[`${w.stage}_${w.week}`];
+      if(r){
+        const total = r * reservoirSize;
+        html+=`<td class="matrix-data-cell" title="Click to copy"><div class="matrix-rate-value">${formatValue(total)} ml</div></td>`;
+      } else {
+        html+=`<td class="matrix-empty-cell">-</td>`;
+      }
+    });
+    html+=`</tr>`;
+  });
+  html+=`</tbody></table>`;
+  tableBox.innerHTML=html;
+
+  tableBox.addEventListener('click',e=>{
+    const cell=e.target.closest('.matrix-data-cell'); if(!cell) return;
+    const txt=cell.innerText.replace(/\s+/g,' ').trim(); if(navigator.clipboard) navigator.clipboard.writeText(txt);
+  });
+
+  section.appendChild(tableBox); wrap.appendChild(section);
+  calculationResults.gridData = { allWeeks, nutrients };
+}
+
+function downloadPDF(){
+  if(!calculationResults || !window.jspdf) return;
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF('landscape');
+
+  const title = "Nutrient Program Calculator";
+  const subtitle = "Build a week-by-week feed chart with per-reservoir totals, then export to PDF.";
+
+  doc.setFontSize(20); doc.setFont(undefined,'bold');
+  doc.text(title,148,16,{align:'center'});
+  doc.setFontSize(11); doc.setFont(undefined,'normal');
+  doc.text(subtitle,148,24,{align:'center'});
+  doc.text(`Reservoir Size: ${calculationResults.reservoirSize} L`,148,32,{align:'center'});
+
+  let y=42;
+  if(calculationResults.gridData?.allWeeks?.length){
+    doc.setFontSize(16); doc.setFont(undefined,'bold');
+    doc.text('Complete Feed Chart (ml per reservoir)',14,y); y+=8;
+
+    const grid = calculationResults.gridData;
+    const head = ['Nutrient', ...grid.allWeeks.map(w=>w.label)];
+    const body = grid.nutrients.map(n=>[
+      n.name,
+      ...grid.allWeeks.map(w=>{
+        const r=n.rates[`${w.stage}_${w.week}`];
+        return r ? `${formatValue(r*calculationResults.reservoirSize)} ml` : '-';
+      })
+    ]);
+
+    doc.autoTable({
+      startY:y, head:[head], body,
+      theme:'grid',
+      headStyles:{ fillColor:[53,88,74], textColor:[255,255,255], fontStyle:'bold' },
+      styles:{ fontSize:8, cellPadding:3, halign:'center' },
+      columnStyles:{ 0:{ halign:'left', fontStyle:'bold' } },
+      margin:{ left:14, right:14 }
+    });
+  }
+
+  doc.save(`${title.replace(/[^a-z0-9]/gi,'_')}.pdf`);
+}
+
+    // Wire up preset change + seed initial weeks
+    document.getElementById('configSelect').addEventListener('change',e=>loadPreset(e.target.value));
+    addWeek('vegetative'); addWeek('flowering');
+  </script>
+</body>
+</html>
