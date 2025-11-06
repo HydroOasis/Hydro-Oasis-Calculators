@@ -6,9 +6,22 @@
   <title>Dehumidification Calculator</title>
   <link rel="stylesheet" href="../../assets/cea.css">
   <link rel="stylesheet" href="../../shared/hoa-calcs.css">
+  <!-- CDN fallbacks for GitHub preview / raw.githubusercontent -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/HydroOasis/Hydro-Oasis-Calculators@main/assets/cea.css" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/HydroOasis/Hydro-Oasis-Calculators@main/shared/hoa-calcs.css" media="print" onload="this.media='all'">
 </head>
 <body>
   <div class="hoa-calc" id="dehumcalc"></div>
   <script src="../../shared/js/hoa-calcs.js"></script>
+  <script>
+  (function ensureHOA(){
+    if (window.HOA) return;
+    var s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/gh/HydroOasis/Hydro-Oasis-Calculators@main/shared/js/hoa-calcs.js';
+    s.onload = function(){ if(!window.HOA){ console.error('HOA still not available'); } };
+    s.onerror = function(){ console.error('Failed to load HOA from CDN'); };
+    document.head.appendChild(s);
+  })();
+  </script>
 </body>
 </html>
