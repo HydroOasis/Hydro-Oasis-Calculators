@@ -5,15 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Water Cost Calculator</title>
 
-<!-- SDKs -->
+<!-- SDKs (safe if missing) -->
 <script src="/_sdk/element_sdk.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 
-<!-- Shared styles (controls the look across all calculators) -->
-<link rel="stylesheet" href="/assets/cea.css">
-<link rel="stylesheet" href="https://hydroasis.github.io/Hydro-Oasis-Calculators/shared/hoa-calcs.css">
-
+<!-- Shared styles (relative to /Calculators/Water/index.html) -->
+<link rel="stylesheet" href="../../assets/cea.css">
+<link rel="stylesheet" href="../../shared/hoa-calcs.css">
 </head>
 <body>
 
@@ -140,7 +139,7 @@
   function formatCurrency(v, round){ return '$' + formatNumber(v, round); }
 
   /* ========= Rates loading (JSON or CSV) ========= */
-  async function loadRates(url = '/data/water_providers.json'){
+  async function loadRates(url = '../../data/water_providers.json'){
     try{
       const res = await fetch(url, { cache:'no-store' });
       const txt = await res.text();
@@ -192,7 +191,7 @@
 
   async function populateProviders(){
     els.waterProvider.innerHTML = '<option value="">Select your water provider...</option><option value="loading">Loading providers...</option>';
-    providers = await loadRates('/data/water_providers.json'); // change path if needed
+    providers = await loadRates('../../data/water_providers.json');
     const grouped = {};
     providers.forEach(p=>{ (grouped[p.state]||(grouped[p.state]=[])).push(p); });
     els.waterProvider.innerHTML = '<option value="">Select your water provider...</option>';
@@ -206,7 +205,6 @@
       });
       els.waterProvider.appendChild(og);
     });
-    // “Custom” manual override
     const custom = document.createElement('option');
     custom.value = 'custom'; custom.textContent = 'Enter custom rate...';
     els.waterProvider.appendChild(custom);
