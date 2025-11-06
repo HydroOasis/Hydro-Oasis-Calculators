@@ -1469,8 +1469,49 @@
  <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99881531a63cf0c8',t:'MTc2MjEzMzE3OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
   <script src="../../shared/js/hoa-calcs.js"></script>
   <script>
+// Hardened HOA loader for preview + local
+(function ensureHOAAnyEnv(){
+  if (window.HOA) return;
+  var owner = 'HydroOasis';
+  var repo  = 'Hydro-Oasis-Calculators';
+  var branch = 'main';
+  var cdn = 'https://cdn.jsdelivr.net/gh/'+owner+'/'+repo+'@'+branch+'/';
+  var raw = 'https://raw.githubusercontent.com/'+owner+'/'+repo+'/'+branch+'/';
+
+  // Provide a minimal HOA with multiple data fallbacks
+  window.HOA = {
+    DATA: { elecTariffs: null },
+    fetchJSON: async function(url){
+      const res = await fetch(url, { cache: 'no-cache' });
+      if (!res.ok) throw new Error('Fetch failed '+res.status+' for '+url);
+      return res.json();
+    }
+  };
+
+  // Try three locations, in order
+  var candidates = [
+    '../../data/electricity_tariffs.json',           // same-origin
+    cdn + 'data/electricity_tariffs.json',           // jsDelivr
+    raw + 'data/electricity_tariffs.json'            // GitHub raw
+  ];
+
+  // Pick the first that fetches
+  (async function pick(){
+    for (const u of candidates) {
+      try {
+        await fetch(u, { method:'HEAD', cache:'no-cache' });
+        HOA.DATA.elecTariffs = u;
+        console.log('[Elec] Using tariffs URL:', u);
+        return;
+      } catch(e) {}
+    }
+    console.error('[Elec] Could not resolve a tariffs URL. Check that /data/electricity_tariffs.json exists on branch "'+branch+'".');
+  })();
+})();
+</script>
+  <script>
   (function ensureHOA(){
-    if (window.HOA) return;
+    if (window.HOA && typeof window.HOA.pushToHarvest === 'function') return;
     var s = document.createElement('script');
     s.src = 'https://cdn.jsdelivr.net/gh/HydroOasis/Hydro-Oasis-Calculators@main/shared/js/hoa-calcs.js';
     s.onload = function(){ if(!window.HOA){ console.error('HOA still not available'); } };
@@ -1495,25 +1536,6 @@ const CEA = (() => {
   function load(key, fallback=null) { try { const v = localStorage.getItem(key); return v? JSON.parse(v): fallback; } catch{ return fallback; } }
 
   return { on, emit, getRunId, save, load };
-})();
-</script>
-  <script>
-// --- Emergency shim so Electricity works in htmlpreview/raw.github ---
-(function ensureHOAForPreview(){
-  if (window.HOA) return; // real shared helper already loaded in normal environments
-  // Absolute paths that work in preview (public repo required)
-  var RAW_BASE = 'https://raw.githubusercontent.com/HydroOasis/Hydro-Oasis-Calculators/main/';
-  window.HOA = {
-    DATA: {
-      elecTariffs: RAW_BASE + 'data/electricity_tariffs.json'
-    },
-    fetchJSON: async function(path){
-      const res = await fetch(path, { cache: 'no-cache' });
-      if (!res.ok) throw new Error('Fetch failed: ' + path + ' ('+res.status+')');
-      return res.json();
-    }
-  };
-  console.log('[Shim] HOA provided for Electricity preview:', HOA.DATA.elecTariffs);
 })();
 </script>
   <script>

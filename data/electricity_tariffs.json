@@ -1,59 +1,234 @@
 [
-  { "retailer":"Aurora Energy", "region":"TAS", "distributor":null, "plan":"Tariff 31 (Flat)", "type":"flat",
-    "flat_c_per_kWh": 29.0535, "supply_c_per_day": null, "notes":"From Power Tariffs sheet" },
-  { "retailer":"Aurora Energy", "region":"TAS", "distributor":null, "plan":"Tariff 93 (TOU)", "type":"tou",
-    "on_c_per_kWh": 35.4782, "off_c_per_kWh": 16.6862, "shoulder_c_per_kWh": null,
+  {
+    "retailer": "Aurora Energy",
+    "region": "TAS",
+    "distributor": null,
+    "plan": "Tariff 31 (Flat)",
+    "type": "flat",
+    "flat_c_per_kWh": 29.0535,
     "supply_c_per_day": null,
-    "schedule": { "on":"07:00–10:00 & 16:00–21:00", "off":"10:00–16:00 & 21:00–07:00 (all day Sat/Sun)" },
-    "notes":"From Power Tariffs sheet" },
-  { "retailer":"Aurora Energy", "region":"TAS", "distributor":null, "plan":"Tariff 62 (Controlled Load)", "type":"flat",
-    "flat_c_per_kWh": 14.3078, "supply_c_per_day": null, "notes":"Night/off-peak CL" },
-
-  { "retailer":"AGL", "region":"National", "distributor":null, "plan":"Home Plan (Flat)", "type":"flat",
-    "flat_c_per_kWh": 40.183, "supply_c_per_day": null, "notes":"From Power Tariffs sheet" },
-  { "retailer":"AGL", "region":"National", "distributor":null, "plan":"Home Time of Use", "type":"tou",
-    "on_c_per_kWh": 59.301, "off_c_per_kWh": 27.071, "shoulder_c_per_kWh": 33.044,
+    "notes": "From Power Tariffs sheet"
+  },
+  {
+    "retailer": "Aurora Energy",
+    "region": "TAS",
+    "distributor": null,
+    "plan": "Tariff 93 (TOU)",
+    "type": "tou",
+    "on_c_per_kWh": 35.4782,
+    "off_c_per_kWh": 16.6862,
+    "shoulder_c_per_kWh": null,
     "supply_c_per_day": null,
-    "schedule": { "on":"16:00–21:00", "shoulder":"09:00–17:00 & 20:00–22:00", "off":"21:00–09:00" } },
-
-  { "retailer":"Ergon Energy", "region":"QLD", "distributor":"Ergon", "plan":"Tariff 11 (Flat)", "type":"flat",
-    "flat_c_per_kWh": 32.973, "supply_c_per_day": null, "notes":"From Power Tariffs sheet" },
-  { "retailer":"Ergon Energy", "region":"QLD", "distributor":"Ergon", "plan":"Tariff 12D (TOU)", "type":"tou",
-    "on_c_per_kWh": 45.712, "off_c_per_kWh": 22.680, "shoulder_c_per_kWh": 28.035,
-    "schedule": { "on":"16:00–21:00", "shoulder":"21:00–11:00", "off":"11:00–16:00" } },
-
-  { "retailer":"Synergy", "region":"WA", "distributor":"Western Power", "plan":"A1 (Flat)", "type":"flat",
-    "flat_c_per_kWh": 32.3719, "supply_c_per_day": null },
-  { "retailer":"Synergy", "region":"WA", "distributor":"Western Power", "plan":"Midday Saver (TOU)", "type":"tou",
-    "on_c_per_kWh": 53.8446, "off_c_per_kWh": 8.6151, "shoulder_c_per_kWh": 23.6916,
-    "schedule": { "on":"15:00–21:00", "shoulder":"21:00–09:00", "off":"09:00–15:00" } },
-
-  { "retailer":"Powershop", "region":"VIC", "distributor":"CitiPower", "plan":"Residential Single Rate", "type":"flat",
-    "flat_c_per_kWh": 28.71, "supply_c_per_day": 115.25, "notes":"VDO 2023–24" },
-  { "retailer":"Powershop", "region":"VIC", "distributor":"CitiPower", "plan":"Residential TOU (2-period)", "type":"tou",
-    "on_c_per_kWh": 37.19, "off_c_per_kWh": 24.41, "shoulder_c_per_kWh": null, "supply_c_per_day": 115.25,
-    "schedule": { "on":"15:00–21:00 (daily)", "off":"all other times" } },
-  { "retailer":"Powershop", "region":"VIC", "distributor":"AusNet", "plan":"Residential Single Rate", "type":"flat",
-    "flat_c_per_kWh": 38.51, "supply_c_per_day": 132.51 },
-  { "retailer":"Powershop", "region":"VIC", "distributor":"AusNet", "plan":"Residential TOU (2-period)", "type":"tou",
-    "on_c_per_kWh": 49.32, "off_c_per_kWh": 28.69, "supply_c_per_day": 132.51 },
-
-  { "retailer":"EnergyAustralia", "region":"VIC", "distributor":"CitiPower", "plan":"Residential Peak Anytime (Flat)", "type":"flat",
-    "flat_c_per_kWh": 28.71, "supply_c_per_day": 115.2492 },
-  { "retailer":"EnergyAustralia", "region":"VIC", "distributor":"CitiPower", "plan":"Residential 7-Day TOU", "type":"tou",
-    "on_c_per_kWh": 37.1899, "off_c_per_kWh": 24.4099, "supply_c_per_day": 115.2492 },
-
-  { "retailer":"Lumo Energy", "region":"VIC", "distributor":"CitiPower", "plan":"Residential Single Rate", "type":"flat",
-    "flat_c_per_kWh": 28.71, "supply_c_per_day": 115.25 },
-  { "retailer":"Lumo Energy", "region":"VIC", "distributor":"CitiPower", "plan":"Residential TOU (7-Day)", "type":"tou",
-    "on_c_per_kWh": 37.19, "off_c_per_kWh": 24.41, "supply_c_per_day": 115.25 },
-  { "retailer":"Lumo Energy", "region":"VIC", "distributor":"AusNet", "plan":"Residential Single Rate", "type":"flat",
-    "flat_c_per_kWh": 38.51, "supply_c_per_day": 132.51 },
-  { "retailer":"Lumo Energy", "region":"VIC", "distributor":"AusNet", "plan":"Residential TOU (7-Day)", "type":"tou",
-    "on_c_per_kWh": 49.32, "off_c_per_kWh": 28.69, "supply_c_per_day": 132.51 },
-
-  { "retailer":"Red Energy", "region":"VIC", "distributor":"CitiPower", "plan":"VDO Single Rate", "type":"flat",
-    "flat_c_per_kWh": 27.33, "supply_c_per_day": 124.07, "notes":"Effective 1 Jul 2025" },
-  { "retailer":"Red Energy", "region":"VIC", "distributor":"AusNet", "plan":"VDO 2-Period TOU (Res.)", "type":"tou",
-    "on_c_per_kWh": 46.82, "off_c_per_kWh": 23.99, "supply_c_per_day": 141.46 }
+    "schedule": {
+      "on": "07:00–10:00 & 16:00–21:00",
+      "off": "10:00–16:00 & 21:00–07:00 (all day Sat/Sun)"
+    },
+    "notes": "From Power Tariffs sheet"
+  },
+  {
+    "retailer": "Aurora Energy",
+    "region": "TAS",
+    "distributor": null,
+    "plan": "Tariff 62 (Controlled Load)",
+    "type": "flat",
+    "flat_c_per_kWh": 14.3078,
+    "supply_c_per_day": null,
+    "notes": "Night/off-peak CL"
+  },
+  {
+    "retailer": "AGL",
+    "region": "National",
+    "distributor": null,
+    "plan": "Home Plan (Flat)",
+    "type": "flat",
+    "flat_c_per_kWh": 40.183,
+    "supply_c_per_day": null,
+    "notes": "From Power Tariffs sheet"
+  },
+  {
+    "retailer": "AGL",
+    "region": "National",
+    "distributor": null,
+    "plan": "Home Time of Use",
+    "type": "tou",
+    "on_c_per_kWh": 59.301,
+    "off_c_per_kWh": 27.071,
+    "shoulder_c_per_kWh": 33.044,
+    "supply_c_per_day": null,
+    "schedule": {
+      "on": "16:00–21:00",
+      "shoulder": "09:00–17:00 & 20:00–22:00",
+      "off": "21:00–09:00"
+    }
+  },
+  {
+    "retailer": "Ergon Energy",
+    "region": "QLD",
+    "distributor": "Ergon",
+    "plan": "Tariff 11 (Flat)",
+    "type": "flat",
+    "flat_c_per_kWh": 32.973,
+    "supply_c_per_day": null,
+    "notes": "From Power Tariffs sheet"
+  },
+  {
+    "retailer": "Ergon Energy",
+    "region": "QLD",
+    "distributor": "Ergon",
+    "plan": "Tariff 12D (TOU)",
+    "type": "tou",
+    "on_c_per_kWh": 45.712,
+    "off_c_per_kWh": 22.68,
+    "shoulder_c_per_kWh": 28.035,
+    "schedule": {
+      "on": "16:00–21:00",
+      "shoulder": "21:00–11:00",
+      "off": "11:00–16:00"
+    }
+  },
+  {
+    "retailer": "Synergy",
+    "region": "WA",
+    "distributor": "Western Power",
+    "plan": "A1 (Flat)",
+    "type": "flat",
+    "flat_c_per_kWh": 32.3719,
+    "supply_c_per_day": null
+  },
+  {
+    "retailer": "Synergy",
+    "region": "WA",
+    "distributor": "Western Power",
+    "plan": "Midday Saver (TOU)",
+    "type": "tou",
+    "on_c_per_kWh": 53.8446,
+    "off_c_per_kWh": 8.6151,
+    "shoulder_c_per_kWh": 23.6916,
+    "schedule": {
+      "on": "15:00–21:00",
+      "shoulder": "21:00–09:00",
+      "off": "09:00–15:00"
+    }
+  },
+  {
+    "retailer": "Powershop",
+    "region": "VIC",
+    "distributor": "CitiPower",
+    "plan": "Residential Single Rate",
+    "type": "flat",
+    "flat_c_per_kWh": 28.71,
+    "supply_c_per_day": 115.25,
+    "notes": "VDO 2023–24"
+  },
+  {
+    "retailer": "Powershop",
+    "region": "VIC",
+    "distributor": "CitiPower",
+    "plan": "Residential TOU (2-period)",
+    "type": "tou",
+    "on_c_per_kWh": 37.19,
+    "off_c_per_kWh": 24.41,
+    "shoulder_c_per_kWh": null,
+    "supply_c_per_day": 115.25,
+    "schedule": {
+      "on": "15:00–21:00 (daily)",
+      "off": "all other times"
+    }
+  },
+  {
+    "retailer": "Powershop",
+    "region": "VIC",
+    "distributor": "AusNet",
+    "plan": "Residential Single Rate",
+    "type": "flat",
+    "flat_c_per_kWh": 38.51,
+    "supply_c_per_day": 132.51
+  },
+  {
+    "retailer": "Powershop",
+    "region": "VIC",
+    "distributor": "AusNet",
+    "plan": "Residential TOU (2-period)",
+    "type": "tou",
+    "on_c_per_kWh": 49.32,
+    "off_c_per_kWh": 28.69,
+    "supply_c_per_day": 132.51
+  },
+  {
+    "retailer": "EnergyAustralia",
+    "region": "VIC",
+    "distributor": "CitiPower",
+    "plan": "Residential Peak Anytime (Flat)",
+    "type": "flat",
+    "flat_c_per_kWh": 28.71,
+    "supply_c_per_day": 115.2492
+  },
+  {
+    "retailer": "EnergyAustralia",
+    "region": "VIC",
+    "distributor": "CitiPower",
+    "plan": "Residential 7-Day TOU",
+    "type": "tou",
+    "on_c_per_kWh": 37.1899,
+    "off_c_per_kWh": 24.4099,
+    "supply_c_per_day": 115.2492
+  },
+  {
+    "retailer": "Lumo Energy",
+    "region": "VIC",
+    "distributor": "CitiPower",
+    "plan": "Residential Single Rate",
+    "type": "flat",
+    "flat_c_per_kWh": 28.71,
+    "supply_c_per_day": 115.25
+  },
+  {
+    "retailer": "Lumo Energy",
+    "region": "VIC",
+    "distributor": "CitiPower",
+    "plan": "Residential TOU (7-Day)",
+    "type": "tou",
+    "on_c_per_kWh": 37.19,
+    "off_c_per_kWh": 24.41,
+    "supply_c_per_day": 115.25
+  },
+  {
+    "retailer": "Lumo Energy",
+    "region": "VIC",
+    "distributor": "AusNet",
+    "plan": "Residential Single Rate",
+    "type": "flat",
+    "flat_c_per_kWh": 38.51,
+    "supply_c_per_day": 132.51
+  },
+  {
+    "retailer": "Lumo Energy",
+    "region": "VIC",
+    "distributor": "AusNet",
+    "plan": "Residential TOU (7-Day)",
+    "type": "tou",
+    "on_c_per_kWh": 49.32,
+    "off_c_per_kWh": 28.69,
+    "supply_c_per_day": 132.51
+  },
+  {
+    "retailer": "Red Energy",
+    "region": "VIC",
+    "distributor": "CitiPower",
+    "plan": "VDO Single Rate",
+    "type": "flat",
+    "flat_c_per_kWh": 27.33,
+    "supply_c_per_day": 124.07,
+    "notes": "Effective 1 Jul 2025"
+  },
+  {
+    "retailer": "Red Energy",
+    "region": "VIC",
+    "distributor": "AusNet",
+    "plan": "VDO 2-Period TOU (Res.)",
+    "type": "tou",
+    "on_c_per_kWh": 46.82,
+    "off_c_per_kWh": 23.99,
+    "supply_c_per_day": 141.46
+  }
 ]
