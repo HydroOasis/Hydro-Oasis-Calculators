@@ -580,4 +580,27 @@ function downloadPDF(){
   </script>
 
 
+  <script>
+/* ===== CEA calc core (drop-in) ===== */
+const CEA = (() => {
+  const BUS = document.createElement('div');
+  const on  = (evt, fn) => BUS.addEventListener(evt, fn);
+  const emit = (evt, detail) => BUS.dispatchEvent(new CustomEvent(evt,{detail}));
+
+  function getRunId() {
+    const k = 'cea.runId';
+    let id = localStorage.getItem(k);
+    if (!id) { id = 'RUN-' + Math.random().toString(36).slice(2,8).toUpperCase(); localStorage.setItem(k, id); }
+    return id;
+  }
+  function save(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch{} }
+  function load(key, fallback=null) { try { const v = localStorage.getItem(key); return v? JSON.parse(v): fallback; } catch{ return fallback; } }
+
+  return { on, emit, getRunId, save, load };
+})();
+</script>
+
+
 </body>
+
+
