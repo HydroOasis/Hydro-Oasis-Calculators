@@ -600,7 +600,29 @@ const CEA = (() => {
 })();
 </script>
 
-
+<script>
+// ===== Feed chart fetch (brand/line aware) =====
+async function fetchFeedChart({ brand, line }) {
+  // Expected to return an object like:
+  // { weeks: [1..n], products: [{name, ml_per_L_by_week: []}, ...] }
+  try {
+    const res = await fetch(`./feedcharts/${brand}-${line}.json`, {cache:'no-store'});
+    if (!res.ok) throw new Error('no chart');
+    return await res.json();
+  } catch(e) {
+    // Fallback example
+    return {
+      weeks: [1,2,3,4,5,6,7,8],
+      products: [
+        { name:'Base A', ml_per_L_by_week: [2,2,2.5,2.5,3,3,3,0] },
+        { name:'Base B', ml_per_L_by_week: [2,2,2.5,2.5,3,3,3,0] },
+        { name:'PK',     ml_per_L_by_week: [0,0,0,0,1,1,0,0] }
+      ]
+    };
+  }
+}
+</script>
+  
 </body>
 
 
