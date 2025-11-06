@@ -1,23 +1,19 @@
-<body id="npcalc">
-
+<!doctype html>
+<html lang="en">
+<head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Nutrient Program Calculator</title>
-
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&amp;family=Inter:wght@500;600;700;800&amp;display=swap" rel="stylesheet">
-
-  <!-- SDKs -->
-  <script src="/_sdk/element_sdk.js"></script>
-  <script src="/_sdk/data_sdk.js"></script>
-
-  <!-- jsPDF + autotable -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
-
-  <style>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&amp;family=Inter:wght@500;600;700;800&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/cea.css">
+<link rel="stylesheet" href="../../shared/hoa-calcs.css">
+<script src="/_sdk/element_sdk.js"></script>
+<script src="/_sdk/data_sdk.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+<style>
     /* ========= Hydro Oasis scoped theme ========= */
-    #npcalc {
+    #nutriprog {
       --bg:#FDFBF4; --text:#333; --heading:#2D5C4E;
       --btn:#2D5C4E; --btn-hover:#A76DAB; --btn-text:#fff;
       --card:#fff; --card-border:#E7E5DC; --icon:#2D5C4E; --err:#BE5C5C;
@@ -25,7 +21,7 @@
       font-family:'Nunito',sans-serif; line-height:1.6;
       box-sizing:border-box; padding:40px 20px;
     }
-    #npcalc * { box-sizing:border-box; }
+    #nutriprog * { box-sizing:border-box; }
 
     .container { max-width:1400px; margin:0 auto; }
 
@@ -172,9 +168,9 @@
     @view-transition{ navigation:auto; }
 
 /* ====== HARD SCOPE / THEME-CONFLICT PATCH (paste after existing styles) ====== */
-#npcalc .container{ max-width:1400px; margin:0 auto; }
+#nutriprog .container{ max-width:1400px; margin:0 auto; }
 
-#npcalc .calc-shell{
+#nutriprog .calc-shell{
   background:var(--card) !important;
   border:1px solid var(--card-border) !important;
   border-radius:14px !important;
@@ -182,61 +178,62 @@
 }
 
 /* Panels / cards */
-#npcalc .stage,
-#npcalc .reservoir-section,
-#npcalc .stage-results{ background:#f7f5eb !important; }
+#nutriprog .stage,
+#nutriprog .reservoir-section,
+#nutriprog .stage-results{ background:#f7f5eb !important; }
 
-#npcalc .week-card{ background:#fcfaf3 !important; }
-#npcalc .product-row{ background:#fff !important; }
+#nutriprog .week-card{ background:#fcfaf3 !important; }
+#nutriprog .product-row{ background:#fff !important; }
 
 /* Matrix + table */
-#npcalc .feed-chart-matrix{ background:#fff !important; border:1px solid #c4c8b8 !important; }
-#npcalc .feed-chart-matrix thead th{
+#nutriprog .feed-chart-matrix{ background:#fff !important; border:1px solid #c4c8b8 !important; }
+#nutriprog .feed-chart-matrix thead th{
   background:var(--heading) !important;
   color:#fff !important;
 }
 
 /* Buttons */
-#npcalc .add-week-btn,
-#npcalc .calculate-btn,
-#npcalc .download-btn{
+#nutriprog .add-week-btn,
+#nutriprog .calculate-btn,
+#nutriprog .download-btn{
   background:var(--btn) !important; color:var(--btn-text) !important;
 }
-#npcalc .toggle-btn{ background:#e3e2d7 !important; color:var(--heading) !important; }
-#npcalc .remove-week-btn{ background:#b54848 !important; color:#fff !important; }
+#nutriprog .toggle-btn{ background:#e3e2d7 !important; color:var(--heading) !important; }
+#nutriprog .remove-week-btn{ background:#b54848 !important; color:#fff !important; }
 
 /* Fonts — prevent global heading font from bleeding in */
-#npcalc,
-#npcalc input,
-#npcalc button{ font-family:'Nunito', sans-serif !important; }
-#npcalc .calc-title,
-#npcalc .calc-subtitle,
-#npcalc .stage-title,
-#npcalc .week-title,
-#npcalc .config-section label,
-#npcalc .field-group label{ font-family:'Inter', system-ui, sans-serif !important; }
+#nutriprog,
+#nutriprog input,
+#nutriprog button{ font-family:'Nunito', sans-serif !important; }
+#nutriprog .calc-title,
+#nutriprog .calc-subtitle,
+#nutriprog .stage-title,
+#nutriprog .week-title,
+#nutriprog .config-section label,
+#nutriprog .field-group label{ font-family:'Inter', system-ui, sans-serif !important; }
 
 /* Text + palette guards */
-#npcalc .calc-title,
-#npcalc .stage-title,
-#npcalc .week-title,
-#npcalc .matrix-rate-value{ color:var(--heading) !important; }
-#npcalc{ color:var(--text) !important; background:var(--bg) !important; }
+#nutriprog .calc-title,
+#nutriprog .stage-title,
+#nutriprog .week-title,
+#nutriprog .matrix-rate-value{ color:var(--heading) !important; }
+#nutriprog{ color:var(--text) !important; background:var(--bg) !important; }
 
 /* Make sure sticky headers stay above any theme z-index tricks */
-#npcalc .feed-chart-matrix thead th{ z-index:8 !important; }
-#npcalc .matrix-nutrient-header,
-#npcalc .matrix-nutrient-name{ position:sticky !important; left:0 !important; z-index:12 !important; }
+#nutriprog .feed-chart-matrix thead th{ z-index:8 !important; }
+#nutriprog .matrix-nutrient-header,
+#nutriprog .matrix-nutrient-name{ position:sticky !important; left:0 !important; z-index:12 !important; }
 
     /* Strong hover overrides */
-#npcalc .add-week-btn:hover,
-#npcalc .calculate-btn:hover,
-#npcalc .download-btn:hover{
+#nutriprog .add-week-btn:hover,
+#nutriprog .calculate-btn:hover,
+#nutriprog .download-btn:hover{
   background: var(--btn-hover) !important;
 }
   </style>
-
-
+</head>
+<body>
+<div class="hoa-calc" id="nutriprog">
   <div class="container">
     <div class="calc-shell">
       <!-- Title + small subtitle -->
@@ -623,6 +620,7 @@ async function fetchFeedChart({ brand, line }) {
 }
 </script>
   
+</div>
+  <script src="../../shared/js/hoa-calcs.js"></script>
 </body>
-
-
+</html>
