@@ -550,9 +550,9 @@
       </div>
      </div>
      <div class="form-grid">
-      <div class="form-group"><label for="on-peak-rate">On-Peak Rate (c/kWh)</label> <input type="number" id="on-peak-rate" min="0" step="0.01" value="25.5" placeholder="25.5">
+      <div class="form-group"><label for="on-peak-rate">On-Peak Rate (c/kWh)</label> <input type="number" id="on-peak-rate" min="0" step="0.01" placeholder="25.5">
       </div>
-      <div class="form-group"><label for="off-peak-rate">Off-Peak Rate (c/kWh)</label> <input type="number" id="off-peak-rate" min="0" step="0.01" value="15.2" placeholder="15.2">
+      <div class="form-group"><label for="off-peak-rate">Off-Peak Rate (c/kWh)</label> <input type="number" id="off-peak-rate" min="0" step="0.01" placeholder="15.2">
       </div>
      </div>
      <div class="toggle-container"><span>Round to 2 decimals</span>
@@ -1039,8 +1039,14 @@
                 
                 if (tariffData) {
                     // Update rates
-                    document.getElementById('on-peak-rate').value = tariffData.onPeakRate;
-                    document.getElementById('off-peak-rate').value = tariffData.offPeakRate;
+                    const $onInput = document.getElementById('on-peak-rate');
+                    if ($onInput && !$onInput.dataset.userEdited && ($onInput.value === '' || $onInput.value == null)) {
+                        $onInput.value = tariffData.onPeakRate;
+                    }
+                    const $offInput = document.getElementById('off-peak-rate');
+                    if ($offInput && !$offInput.dataset.userEdited && ($offInput.value === '' || $offInput.value == null)) {
+                        $offInput.value = tariffData.offPeakRate;
+                    }
                     
                     // Clear existing time ranges
                     document.getElementById('on-peak-ranges').innerHTML = '';
@@ -1172,8 +1178,14 @@
                 return;
             }
             
-            const onPeakRate = parseFloat(document.getElementById('on-peak-rate').value) / 100; // Convert c/kWh to $/kWh
-            const offPeakRate = parseFloat(document.getElementById('off-peak-rate').value) / 100;
+            const flat = Number((document.getElementById('ratePerKwh') || document.getElementById('rate-per-kwh'))?.value || 0);
+            const on   = Number(document.getElementById('on-peak-rate')?.value || 0);
+            const off  = Number(document.getElementById('off-peak-rate')?.value || 0);
+            const sh   = Number(document.getElementById('shoulder-rate')?.value || 0);
+
+            const onPeakRate = (on || flat) / 100; // Convert c/kWh to $/kWh
+            const offPeakRate = (off || flat) / 100;
+            const shoulderRate = sh / 100;
             
             // Get tariff schedules
             const onPeakSchedule = getTariffSchedule('on-peak');
@@ -1189,7 +1201,8 @@
                 monthlyCost: 0,
                 yearlyCost: 0,
                 onPeakHours: 0,
-                offPeakHours: 0
+                offPeakHours: 0,
+                ratesSnapshot: { flat, on, off, sh, shoulderRate }
             };
             
             // Calculate for each equipment
@@ -1687,7 +1700,10 @@
  <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99881531a63cf0c8',t:'MTc2MjEzMzE3OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
   <script src="../../shared/js/hoa-calcs.js"></script>
   <script>
-(async function initElecTariffs(){
+async function initElecTariffs(){
+  if (initElecTariffs.initialized) return;
+  initElecTariffs.initialized = true;
+
   const $region   = document.getElementById('elecRegion');
   const $retailer = document.getElementById('elecRetailer');
   const $plan     = document.getElementById('elecPlan');
@@ -1697,6 +1713,13 @@
   const $flat = document.getElementById('ratePerKwh') || document.getElementById('rate-per-kwh') || document.querySelector('[data-rate="flat"]');
   const $on   = document.getElementById('on-peak-rate')  || document.querySelector('[data-rate="on"]');
   const $off  = document.getElementById('off-peak-rate') || document.querySelector('[data-rate="off"]');
+  const $sh   = document.getElementById('shoulder-rate') || document.querySelector('[data-rate="shoulder"]');
+
+  [$flat, $on, $off, $sh].filter(Boolean).forEach(el => {
+    el.addEventListener('input', () => {
+      el.dataset.userEdited = '1';
+    }, { once: false });
+  });
 
   let tariffs = [];
   try {
@@ -1704,7 +1727,6 @@
   } catch(e) { console.warn('Tariffs fetch failed', e); return; }
   if (!Array.isArray(tariffs)) return;
 
-  // REGION options
   const regions = [...new Set(tariffs.map(t=>t.region))].sort();
   $region.innerHTML = '<option value="">Select region…</option>' + regions.map(r=>`<option>${r}</option>`).join('');
 
@@ -1717,29 +1739,64 @@
     const retailers = [...new Set(subset.map(t=>t.retailer))].sort();
     $retailer.innerHTML = '<option value="">Select retailer…</option>' + retailers.map(r=>`<option>${r}</option>`).join('');
     $retailer.disabled = retailers.length===0;
-    $plan.innerHTML = '<option value="">Select plan…</option>'; $plan.disabled = true;
+    if (retailers.length === 1) { $retailer.value = retailers[0]; }
+    $plan.innerHTML = '<option value="">Select plan…</option>';
+    $plan.disabled = true;
+    syncPlans();
   }
 
   function syncPlans(){
     const subset = tariffs.filter(t=>(!$region.value || t.region===$region.value) && t.retailer===$retailer.value);
-    const plans = subset.map(t=>t.plan);
+    const plans = [...new Set(subset.map(t=>t.plan))];
     $plan.innerHTML = '<option value="">Select plan…</option>' + plans.map(p=>`<option>${p}</option>`).join('');
     $plan.disabled = plans.length===0;
+    if (plans.length === 1) {
+      $plan.value = plans[0];
+      applyTariffToInputs();
+    }
+    if (plans.includes($plan.value)) {
+      applyTariffToInputs();
+    }
   }
 
   function applyTariffToInputs(){
     const t = tariffs.find(x => (!$region.value || x.region===$region.value) && x.retailer===$retailer.value && x.plan===$plan.value);
     if (!t) return;
-    if (t.type === 'flat' && $flat) {
-      $flat.value = Number(t.flat_c_per_kWh);
-    } else if (t.type === 'tou') {
-      if ($on)  $on.value  = Number(t.on_c_per_kWh);
-      if ($off) $off.value = Number(t.off_c_per_kWh);
+
+    const setRate = (el, value) => {
+      if (!el || el.dataset.userEdited) return;
+      if (value === undefined || value === null || value === '') return;
+      const num = Number(value);
+      if (!Number.isFinite(num)) return;
+      el.value = num;
+    };
+
+    if (t.type === 'flat') {
+      const flatVal = t.flat_c_per_kWh ?? t.on_c_per_kWh ?? t.onPeakRate ?? t.on ?? null;
+      setRate($flat, flatVal);
+      setRate($on, t.on_c_per_kWh ?? flatVal);
+      setRate($off, t.off_c_per_kWh ?? flatVal);
+      setRate($sh, t.shoulder_c_per_kWh);
+    } else {
+      setRate($flat, t.flat_c_per_kWh);
+      setRate($on, t.on_c_per_kWh ?? t.onPeakRate ?? t.on);
+      setRate($off, t.off_c_per_kWh ?? t.offPeakRate ?? t.off);
+      setRate($sh, t.shoulder_c_per_kWh ?? t.shoulder);
     }
   }
-})();
-</script>
- </body>
+
+  syncRetailers();
+  try { applyTariffToInputs(); } catch(_) {}
+}
+
+const startElecTariffs = () => initElecTariffs().catch(err => console.warn('initElecTariffs failed', err));
+if (document.readyState === 'complete') {
+  startElecTariffs();
+} else {
+  window.addEventListener('load', startElecTariffs);
+}
+  </script>
+</body>
 <script>
 /* ===== CEA calc core (drop-in) ===== */
 const CEA = (() => {
