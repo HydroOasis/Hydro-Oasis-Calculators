@@ -1,13 +1,15 @@
-<body>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nutrient Cost Calculator</title>
-
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nutrient Cost Calculator</title>
 <script src="/_sdk/element_sdk.js"></script>
 <script src="/_sdk/data_sdk.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-
+<link rel="stylesheet" href="../../assets/cea.css">
+<link rel="stylesheet" href="../../shared/hoa-calcs.css">
 <style>
   /* ========= Scoped Hydro Oasis theme (NO global bleed) ========= */
   :root{
@@ -25,61 +27,61 @@
     --tile-value:#2D5C4E;        /* bold value */
   }
 
-  #nutri-calc, #nutri-calc * { box-sizing:border-box; font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial; }
-  #nutri-calc { background:var(--bg); color:var(--text); padding:16px; }
-  #nutri-calc .wrap{ max-width:1100px; margin:0 auto; }
+  #ncalc, #ncalc * { box-sizing:border-box; font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial; }
+  #ncalc { background:var(--bg); color:var(--text); padding:16px; }
+  #ncalc .wrap{ max-width:1100px; margin:0 auto; }
 
   /* Base card (with watermark) */
-  #nutri-calc .card{
+  #ncalc .card{
     background:var(--card); border:1px solid var(--card-border); border-radius:16px;
     padding:20px; box-shadow:0 6px 20px rgba(0,0,0,.06); position:relative; overflow:hidden;
   }
-  #nutri-calc .wm-img{
+  #ncalc .wm-img{
     position:absolute; right:-28px; bottom:-28px; width:260px; opacity:.06;
     pointer-events:none; user-select:none; z-index:0;
   }
-  @media (min-width:768px){ #nutri-calc .wm-img{ width:320px; } }
+  @media (min-width:768px){ #ncalc .wm-img{ width:320px; } }
 
   /* Title */
-  #nutri-calc .title-block{ text-align:center; margin:6px 0 10px; position:relative; z-index:1; }
-  #nutri-calc .title-block h1{ color:var(--heading); font-weight:800; font-size:clamp(26px,3.2vw,36px); margin:0; letter-spacing:.3px; }
-  #nutri-calc .subtitle{ color:#456E62; font-size:14px; }
+  #ncalc .title-block{ text-align:center; margin:6px 0 10px; position:relative; z-index:1; }
+  #ncalc .title-block h1{ color:var(--heading); font-weight:800; font-size:clamp(26px,3.2vw,36px); margin:0; letter-spacing:.3px; }
+  #ncalc .subtitle{ color:#456E62; font-size:14px; }
 
   /* Section titles (input areas) */
-  #nutri-calc .sec-title{ color:var(--heading); font-weight:800; font-size:18px; display:flex; align-items:center; gap:8px; margin:16px 0 12px; position:relative; z-index:1; }
-  #nutri-calc .dot{ width:18px; height:18px; border-radius:4px; background:var(--icon); display:inline-block; }
+  #ncalc .sec-title{ color:var(--heading); font-weight:800; font-size:18px; display:flex; align-items:center; gap:8px; margin:16px 0 12px; position:relative; z-index:1; }
+  #ncalc .dot{ width:18px; height:18px; border-radius:4px; background:var(--icon); display:inline-block; }
 
   /* Inputs */
-  #nutri-calc .grid{ display:grid; gap:14px; position:relative; z-index:1; }
-  #nutri-calc .g-3{ grid-template-columns: repeat(3,1fr); }
-  @media (max-width:820px){ #nutri-calc .g-3{ grid-template-columns:1fr; } }
-  #nutri-calc label{ display:block; font-size:13px; color:#516A64; margin:2px 0 6px; }
-  #nutri-calc .input{ width:100%; padding:12px 12px; border-radius:10px; border:1px solid #D1D1D1; background:#fff; font-size:16px; }
-  #nutri-calc .help{ font-size:12px; color:#6B7C77; margin-top:6px; }
-  #nutri-calc .error{ border-color:var(--err)!important; }
-  #nutri-calc .error-msg{ color:var(--err); font-size:12px; margin:8px 0; display:none; }
-  #nutri-calc .error-msg.show{ display:block; }
+  #ncalc .grid{ display:grid; gap:14px; position:relative; z-index:1; }
+  #ncalc .g-3{ grid-template-columns: repeat(3,1fr); }
+  @media (max-width:820px){ #ncalc .g-3{ grid-template-columns:1fr; } }
+  #ncalc label{ display:block; font-size:13px; color:#516A64; margin:2px 0 6px; }
+  #ncalc .input{ width:100%; padding:12px 12px; border-radius:10px; border:1px solid #D1D1D1; background:#fff; font-size:16px; }
+  #ncalc .help{ font-size:12px; color:#6B7C77; margin-top:6px; }
+  #ncalc .error{ border-color:var(--err)!important; }
+  #ncalc .error-msg{ color:var(--err); font-size:12px; margin:8px 0; display:none; }
+  #ncalc .error-msg.show{ display:block; }
 
   /* Buttons */
-  #nutri-calc .btn{
+  #ncalc .btn{
     background:var(--btn); color:var(--btn-text); border:1px solid var(--btn);
     border-radius:12px; padding:12px 18px; font-weight:700; cursor:pointer; transition:.15s; position:relative; z-index:1;
   }
-  #nutri-calc .btn:hover{ background:var(--btn-hover); border-color:var(--btn-hover); }
-  #nutri-calc .btn-ghost{ background:#f3f5f1; color:#1f3b33; border-color:#d9e2de; }
-  #nutri-calc .btn-ghost:hover{ background:#e8eee9; }
-  #nutri-calc .center{ text-align:center; }
+  #ncalc .btn:hover{ background:var(--btn-hover); border-color:var(--btn-hover); }
+  #ncalc .btn-ghost{ background:#f3f5f1; color:#1f3b33; border-color:#d9e2de; }
+  #ncalc .btn-ghost:hover{ background:#e8eee9; }
+  #ncalc .center{ text-align:center; }
 
   /* Nutrient mini-cards (input) */
-  #nutri-calc .nutr-card{ background:#f8faf8; border:1px solid #e2e7e4; border-radius:12px; padding:16px; }
-  #nutri-calc .nutr-head{ display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:10px; }
-  #nutri-calc .nutr-title{ font-weight:700; color:#1f3b33; }
-  #nutri-calc .remove{ background:#ef4444; border-color:#ef4444; }
-  #nutri-calc .remove:hover{ background:#dc2626; border-color:#dc2626; }
+  #ncalc .nutr-card{ background:#f8faf8; border:1px solid #e2e7e4; border-radius:12px; padding:16px; }
+  #ncalc .nutr-head{ display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:10px; }
+  #ncalc .nutr-title{ font-weight:700; color:#1f3b33; }
+  #ncalc .remove{ background:#ef4444; border-color:#ef4444; }
+  #ncalc .remove:hover{ background:#dc2626; border-color:#dc2626; }
 
   /* =================== RESULTS UI (matches screenshots) =================== */
   /* Outer section card (each nutrient & totals) */
-  #nutri-calc .sec-card{
+  #ncalc .sec-card{
     border:1px solid var(--sec-border);
     border-radius:12px;
     padding:12px;
@@ -87,7 +89,7 @@
     margin-top:14px;
   }
   /* Section header strip */
-  #nutri-calc .sec-head{
+  #ncalc .sec-head{
     display:flex; align-items:center; gap:8px;
     background:var(--sec-head-bg);
     color:var(--sec-head-text);
@@ -96,24 +98,24 @@
     font-weight:800;
     font-size:14px;
   }
-  #nutri-calc .sec-head .icon{ font-size:16px; line-height:1; }
+  #ncalc .sec-head .icon{ font-size:16px; line-height:1; }
 
   /* Stats grid inside each section */
-  #nutri-calc .stats{
+  #ncalc .stats{
     display:grid;
     grid-template-columns: repeat(5, minmax(120px,1fr));
     gap:10px;
     padding:10px 6px 6px;
   }
   @media (max-width:980px){
-    #nutri-calc .stats{ grid-template-columns: repeat(2, minmax(140px,1fr)); }
+    #ncalc .stats{ grid-template-columns: repeat(2, minmax(140px,1fr)); }
   }
   @media (max-width:560px){
-    #nutri-calc .stats{ grid-template-columns: 1fr; }
+    #ncalc .stats{ grid-template-columns: 1fr; }
   }
 
   /* Individual stat tile */
-  #nutri-calc .stat{
+  #ncalc .stat{
     background:var(--tile-bg);
     border:1px solid var(--tile-border);
     border-radius:10px;
@@ -121,16 +123,16 @@
     text-align:center;
     box-shadow:0 2px 6px rgba(0,0,0,.03);
   }
-  #nutri-calc .stat .label{
+  #ncalc .stat .label{
     font-size:12px; color:var(--tile-label); font-weight:700; letter-spacing:.2px;
   }
-  #nutri-calc .stat .value{
+  #ncalc .stat .value{
     margin-top:4px; font-size:18px; font-weight:800; color:var(--tile-value);
   }
 </style>
-
-
-<div id="nutri-calc">
+</head>
+<body>
+<div class="hoa-calc" id="ncalc">
   <div class="wrap">
     <div class="card">
       <img class="wm-img" src="https://cdn.shopify.com/s/files/1/0709/5261/6094/files/Cactus_Mascot.png?v=1750645317" alt="" aria-hidden="true">
@@ -269,7 +271,7 @@
     if(!(w>0)) return setErr("Water per plant must be greater than zero.", ['waterPerPlant']);
     if(!(f>0 && f<=7)) return setErr("Watering frequency must be between 1 and 7 days per week.", ['wateringFreq']);
 
-    const cards = document.querySelectorAll('#nutri-calc .nutr-card');
+    const cards = document.querySelectorAll('#ncalc .nutr-card');
     if(cards.length===0) return setErr("Please add at least one nutrient.");
     for(const card of cards){
       const name = card.querySelector('.nutrient-name').value.trim();
@@ -319,7 +321,7 @@
     const waterPerPlant = parseFloat($('waterPerPlant').value);
     const wateringFreq = parseFloat($('wateringFreq').value);
 
-    const cards = document.querySelectorAll('#nutri-calc .nutr-card');
+    const cards = document.querySelectorAll('#ncalc .nutr-card');
     const nutrients = [];
     let totalPerLitre = 0, totalDay = 0, totalWeek = 0, totalMonth = 0, totalYear = 0;
 
@@ -378,7 +380,7 @@
 
     // store results for PDF
     calculationResults = {
-      title: (document.querySelector('#nutri-calc .title-block h1')?.textContent || defaultConfig.calculator_title),
+      title: (document.querySelector('#ncalc .title-block h1')?.textContent || defaultConfig.calculator_title),
       numPlants, waterPerPlant, wateringFreq, nutrients,
       totals:{ costPerLitre:totalPerLitre, dailyCost:totalDay, weeklyCost:totalWeek, monthlyCost:totalMonth, yearlyCost:totalYear },
       roundResults: round
@@ -437,7 +439,7 @@
         window.elementSdk.init({
           defaultConfig,
           onConfigChange: (cfg) => {
-            const titleEl = document.querySelector('#nutri-calc .title-block h1');
+            const titleEl = document.querySelector('#ncalc .title-block h1');
             const add = document.getElementById('addNutrientBtn');
             const calc = document.getElementById('calculateBtn');
             if (titleEl) titleEl.textContent = cfg.calculator_title || defaultConfig.calculator_title;
@@ -450,7 +452,7 @@
       console.warn('Element SDK init skipped:', e);
     }
 
-    const titleEl = document.querySelector('#nutri-calc .title-block h1');
+    const titleEl = document.querySelector('#ncalc .title-block h1');
     if (titleEl) titleEl.textContent = defaultConfig.calculator_title;
 
     const addBtn = document.getElementById('addNutrientBtn');
@@ -481,4 +483,6 @@ const CEA = (() => {
   return { on, emit, getRunId, save, load };
 })();
 </script>
+  <script src="../../shared/js/hoa-calcs.js"></script>
 </body>
+</html>
