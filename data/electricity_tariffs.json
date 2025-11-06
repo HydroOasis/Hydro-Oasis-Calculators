@@ -1,0 +1,5 @@
+[
+  { "retailer":"Aurora Energy","region":"TAS","plan":"Flat","type":"flat","flat_c_per_kWh":31.2 },
+  { "retailer":"Aurora Energy","region":"TAS","plan":"Time of Use","type":"tou","on_c_per_kWh":38.5,"off_c_per_kWh":19.3 },
+  { "retailer":"AGL","region":"VIC","plan":"Flat Saver","type":"flat","flat_c_per_kWh":27.9 }
+]
