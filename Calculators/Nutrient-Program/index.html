@@ -1,12 +1,11 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<body id="npcalc">
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Nutrient Program Calculator</title>
 
   <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&amp;family=Inter:wght@500;600;700;800&amp;display=swap" rel="stylesheet">
 
   <!-- SDKs -->
   <script src="/_sdk/element_sdk.js"></script>
@@ -229,9 +228,15 @@
 #npcalc .matrix-nutrient-header,
 #npcalc .matrix-nutrient-name{ position:sticky !important; left:0 !important; z-index:12 !important; }
 
+    /* Strong hover overrides */
+#npcalc .add-week-btn:hover,
+#npcalc .calculate-btn:hover,
+#npcalc .download-btn:hover{
+  background: var(--btn-hover) !important;
+}
   </style>
-</head>
-<body id="npcalc">
+
+
   <div class="container">
     <div class="calc-shell">
       <!-- Title + small subtitle -->
@@ -283,14 +288,7 @@
       <button id="downloadBtn" class="download-btn" style="display:none;" onclick="downloadPDF()">Download PDF</button>
 
       <!-- Mascot watermark (swap src to your hosted asset path) -->
-      <img
-        class="mascot-watermark"
-        src="https://cdn.shopify.com/s/files/1/0709/5261/6094/files/Cactus_Mascot.png?v=1750645317"
-        alt=""
-        aria-hidden="true"
-        decoding="async"
-        loading="lazy"
-      />
+      <img class="mascot-watermark" src="https://cdn.shopify.com/s/files/1/0709/5261/6094/files/Cactus_Mascot.png?v=1750645317" alt="" aria-hidden="true" decoding="async" loading="lazy">
     </div>
   </div>
 
@@ -577,10 +575,9 @@ function downloadPDF(){
 
   doc.save(`${title.replace(/[^a-z0-9]/gi,'_')}.pdf`);
 }
-
-    // Wire up preset change + seed initial weeks
     document.getElementById('configSelect').addEventListener('change',e=>loadPreset(e.target.value));
     addWeek('vegetative'); addWeek('flowering');
   </script>
+
+
 </body>
-</html>
