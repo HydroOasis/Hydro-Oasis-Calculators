@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta http-equiv="Expires" content="0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Water Cost Calculator</title>
 
@@ -10,9 +13,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 
-<!-- Use absolute raw URLs so htmlpreview/github raw works -->
-<link rel="stylesheet" href="https://raw.githubusercontent.com/HydroOasis/Hydro-Oasis-Calculators/refs/heads/main/assets/cea.css">
-<link rel="stylesheet" href="https://raw.githubusercontent.com/HydroOasis/Hydro-Oasis-Calculators/refs/heads/main/shared/hoa-calcs.css">
+<!-- Shared styles (absolute RAW URLs + cache buster) -->
+<link rel="stylesheet" href="https://raw.githubusercontent.com/HydroOasis/Hydro-Oasis-Calculators/main/assets/cea.css?v=20250303">
+<link rel="stylesheet" href="https://raw.githubusercontent.com/HydroOasis/Hydro-Oasis-Calculators/main/shared/hoa-calcs.css?v=20250303">
 </head>
 <body>
 
@@ -135,8 +138,8 @@
   }
   function formatCurrency(v, round){ return '$' + formatNumber(v, round); }
 
-  // ABSOLUTE RAW URL so it works in htmlpreview
-  const RATES_URL = "https://raw.githubusercontent.com/HydroOasis/Hydro-Oasis-Calculators/refs/heads/main/data/water_providers.json";
+  // Correct RAW URL (main branch) + cache buster
+  const RATES_URL = "https://raw.githubusercontent.com/HydroOasis/Hydro-Oasis-Calculators/main/data/water_providers.json?v=20250303";
 
   async function loadRates(url = RATES_URL){
     try{
