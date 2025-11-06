@@ -64,15 +64,15 @@
   position: absolute;
   right: -28px;
   bottom: -28px;
-  width: 320px;
+  width: 260px;
   opacity: .06;
   pointer-events: none;
   user-select: none;
   z-index: 0;
   filter: saturate(.95) contrast(.95);
 }
-@media (max-width: 768px) {
-  .hoa-calc .wm-img, #water-calc .wm-img { width: 240px; }
+@media (min-width: 768px) {
+  .hoa-calc .wm-img, #water-calc .wm-img { width: 320px; }
 }
 
 /* Titles */
