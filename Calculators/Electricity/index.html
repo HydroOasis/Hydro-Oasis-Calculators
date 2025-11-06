@@ -1650,4 +1650,23 @@
         addEquipment();
     </script>
  <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99881531a63cf0c8',t:'MTc2MjEzMzE3OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>
+/* ===== CEA calc core (drop-in) ===== */
+const CEA = (() => {
+  const BUS = document.createElement('div');
+  const on  = (evt, fn) => BUS.addEventListener(evt, fn);
+  const emit = (evt, detail) => BUS.dispatchEvent(new CustomEvent(evt,{detail}));
+
+  function getRunId() {
+    const k = 'cea.runId';
+    let id = localStorage.getItem(k);
+    if (!id) { id = 'RUN-' + Math.random().toString(36).slice(2,8).toUpperCase(); localStorage.setItem(k, id); }
+    return id;
+  }
+  function save(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch{} }
+  function load(key, fallback=null) { try { const v = localStorage.getItem(key); return v? JSON.parse(v): fallback; } catch{ return fallback; } }
+
+  return { on, emit, getRunId, save, load };
+})();
+</script>
 </html>
