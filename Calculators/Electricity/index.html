@@ -113,19 +113,23 @@
             margin-bottom: 20px;
         }
 
-        #ecalc .form-group {
+        #ecalc .form-group,
+        #ecalc .input {
             display: flex;
             flex-direction: column;
         }
 
-        #ecalc .form-group label {
+        #ecalc .form-group label,
+        #ecalc .input label {
             font-weight: 500;
             margin-bottom: 8px;
             color: var(--text);
         }
 
-        #ecalc .form-group input, 
-        #ecalc .form-group select {
+        #ecalc .form-group input,
+        #ecalc .form-group select,
+        #ecalc .input input,
+        #ecalc .input select {
             padding: 12px;
             border: 2px solid var(--card-border);
             border-radius: 8px;
@@ -135,8 +139,10 @@
             color: var(--text);
         }
 
-        #ecalc .form-group input:focus, 
-        #ecalc .form-group select:focus {
+        #ecalc .form-group input:focus,
+        #ecalc .form-group select:focus,
+        #ecalc .input input:focus,
+        #ecalc .input select:focus {
             outline: none;
             border-color: var(--heading);
             box-shadow: 0 0 0 3px rgba(45, 92, 78, 0.1);
@@ -529,6 +535,20 @@
     </div><!-- Rate Configuration -->
     <div class="section">
      <h2 class="section-title">⚡ Rate Configuration</h2>
+     <div class="form-grid">
+      <div class="input">
+       <label for="elecRegion">Region/State</label>
+       <select id="elecRegion"><option value="">Select region…</option></select>
+      </div>
+      <div class="input">
+       <label for="elecRetailer">Retailer</label>
+       <select id="elecRetailer" disabled><option value="">Select retailer…</option></select>
+      </div>
+      <div class="input">
+       <label for="elecPlan">Plan</label>
+       <select id="elecPlan" disabled><option value="">Select plan…</option></select>
+      </div>
+     </div>
      <div class="form-grid">
       <div class="form-group"><label for="on-peak-rate">On-Peak Rate (c/kWh)</label> <input type="number" id="on-peak-rate" min="0" step="0.01" value="25.5" placeholder="25.5">
       </div>
@@ -1286,6 +1306,19 @@
             
             // Display results
             displayTotalResults(totalResults);
+
+            try {
+                HOA.pushToHarvest({
+                    source: 'electricity',
+                    ts: Date.now(),
+                    summary: {
+                        dailyKwh: totalResults?.dailyKwh ?? null,
+                        monthlyCost: totalResults?.monthlyCost ?? null,
+                        yearlyCost: totalResults?.yearlyCost ?? null
+                    },
+                    raw: totalResults || {}
+                });
+            } catch(e) { console.warn('Harvest export (electricity) failed', e); }
         }
 
         function getTariffSchedule(type) {
@@ -1653,6 +1686,59 @@
     </script>
  <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99881531a63cf0c8',t:'MTc2MjEzMzE3OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
   <script src="../../shared/js/hoa-calcs.js"></script>
+  <script>
+(async function initElecTariffs(){
+  const $region   = document.getElementById('elecRegion');
+  const $retailer = document.getElementById('elecRetailer');
+  const $plan     = document.getElementById('elecPlan');
+  if (!$region || !$retailer || !$plan) return;
+
+  // Try to find existing rate inputs used by your calculator:
+  const $flat = document.getElementById('ratePerKwh') || document.getElementById('rate-per-kwh') || document.querySelector('[data-rate="flat"]');
+  const $on   = document.getElementById('on-peak-rate')  || document.querySelector('[data-rate="on"]');
+  const $off  = document.getElementById('off-peak-rate') || document.querySelector('[data-rate="off"]');
+
+  let tariffs = [];
+  try {
+    tariffs = await HOA.fetchJSON(HOA.DATA.elecTariffs);
+  } catch(e) { console.warn('Tariffs fetch failed', e); return; }
+  if (!Array.isArray(tariffs)) return;
+
+  // REGION options
+  const regions = [...new Set(tariffs.map(t=>t.region))].sort();
+  $region.innerHTML = '<option value="">Select region…</option>' + regions.map(r=>`<option>${r}</option>`).join('');
+
+  $region.addEventListener('change', syncRetailers);
+  $retailer.addEventListener('change', syncPlans);
+  $plan.addEventListener('change', applyTariffToInputs);
+
+  function syncRetailers(){
+    const subset = tariffs.filter(t=>!$region.value || t.region===$region.value);
+    const retailers = [...new Set(subset.map(t=>t.retailer))].sort();
+    $retailer.innerHTML = '<option value="">Select retailer…</option>' + retailers.map(r=>`<option>${r}</option>`).join('');
+    $retailer.disabled = retailers.length===0;
+    $plan.innerHTML = '<option value="">Select plan…</option>'; $plan.disabled = true;
+  }
+
+  function syncPlans(){
+    const subset = tariffs.filter(t=>(!$region.value || t.region===$region.value) && t.retailer===$retailer.value);
+    const plans = subset.map(t=>t.plan);
+    $plan.innerHTML = '<option value="">Select plan…</option>' + plans.map(p=>`<option>${p}</option>`).join('');
+    $plan.disabled = plans.length===0;
+  }
+
+  function applyTariffToInputs(){
+    const t = tariffs.find(x => (!$region.value || x.region===$region.value) && x.retailer===$retailer.value && x.plan===$plan.value);
+    if (!t) return;
+    if (t.type === 'flat' && $flat) {
+      $flat.value = Number(t.flat_c_per_kWh);
+    } else if (t.type === 'tou') {
+      if ($on)  $on.value  = Number(t.on_c_per_kWh);
+      if ($off) $off.value = Number(t.off_c_per_kWh);
+    }
+  }
+})();
+</script>
  </body>
 <script>
 /* ===== CEA calc core (drop-in) ===== */
