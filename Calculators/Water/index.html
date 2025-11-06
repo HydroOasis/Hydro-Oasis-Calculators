@@ -43,19 +43,40 @@
       </div>
 
       <div class="grid g-2" style="margin-top:6px;">
-        <div>
-          <label for="waterProvider">Water Provider</label>
-          <select class="input" id="waterProvider">
-            <option value="">Select your water provider...</option>
-            <option value="loading">Loading providers...</option>
+        <!-- State -->
+        <div class="input">
+          <label for="waterState">State</label>
+          <select id="waterState">
+            <option value="">All states…</option>
           </select>
-          <div id="rateInfo" class="help"></div>
         </div>
+
+        <!-- Provider -->
+        <div class="input">
+          <label for="providerSelect">Water Provider</label>
+          <select id="providerSelect" disabled>
+            <option value="">Select provider…</option>
+          </select>
+          <small class="help-text">Choose a provider or leave blank to use a custom rate.</small>
+        </div>
+
+        <!-- Tier -->
+        <div class="input">
+          <label for="providerTier">Tariff Tier</label>
+          <select id="providerTier" disabled>
+            <option value="">Select tier…</option>
+          </select>
+          <small class="help-text">If your provider has multiple tiers, pick the one that applies.</small>
+        </div>
+
+        <!-- Custom rate stays as-is -->
         <div>
-          <label for="waterCost">Water Cost ($/kL)</label>
-          <input class="input" type="number" id="waterCost" min="0" step="0.01" placeholder="e.g., 2.50">
+          <label for="ratePerKL">Water Cost ($/kL)</label>
+          <input class="input" type="number" id="ratePerKL" min="0" step="0.01" placeholder="e.g., 2.50">
         </div>
       </div>
+
+      <div id="waterErrors" class="error-message" style="display:none"></div>
 
       <div class="center" style="margin-top:14px;">
         <label class="inline" style="font-size:14px;">
@@ -96,9 +117,7 @@
     numPlants: $('numPlants'),
     waterPerPlant: $('waterPerPlant'),
     waterFrequency: $('waterFrequency'),
-    waterProvider: $('waterProvider'),
-    waterCost: $('waterCost'),
-    rateInfo: $('rateInfo'),
+    ratePerKL: $('ratePerKL'),
     roundResults: $('roundResults'),
     errorMessage: $('errorMessage'),
     calculateBtn: $('calculateBtn'),
@@ -109,7 +128,6 @@
   };
 
   let calculationResults = null;
-  let providers = [];
 
   /* ========= UI helpers ========= */
   function makeSection(title, icon){
@@ -137,106 +155,21 @@
   }
   function formatCurrency(v, round){ return '$' + formatNumber(v, round); }
 
-  /* ========= Rates loading (JSON or CSV) ========= */
-  async function loadRates(url = '../../data/water_providers.json'){
-    try{
-      const res = await fetch(url, { cache:'no-store' });
-      const txt = await res.text();
-      try{
-        const json = JSON.parse(txt);
-        return normalizeJson(json);
-      }catch{
-        return parseCsv(txt);
-      }
-    }catch(e){
-      console.warn('Failed to fetch rates file:', e);
-      return [];
-    }
-  }
-  function normalizeJson(arr){
-    if(!Array.isArray(arr)) return [];
-    return arr.map(r => ({
-      state: r.state || r.State || '',
-      provider: r.provider || r.Provider || '',
-      tier: r.tier || r.Tier || 'Standard',
-      rate: +((r.rate_per_kL ?? r.rate_per_kl ?? r.rate) || 0)
-    })).filter(x => x.state && x.provider && x.rate > 0);
-  }
-  function parseCsv(csv){
-    const lines = csv.split(/\r?\n/).filter(Boolean);
-    if(lines.length < 2) return [];
-    const head = lines[0].split(',').map(h=>h.trim().toLowerCase());
-    const IDX = n => head.indexOf(n);
-    const S = IDX('state'), P = IDX('provider'), T = IDX('tier'), R = IDX('rate_per_kl')>=0?IDX('rate_per_kl'):IDX('rate');
-    const out = [];
-    for(let i=1;i<lines.length;i++){
-      const cols = lines[i].split(',').map(c=>c.trim());
-      out.push({
-        state: S>=0? cols[S] : '',
-        provider: P>=0? cols[P] : '',
-        tier: T>=0? cols[T] : 'Standard',
-        rate: R>=0? +cols[R] : 0
-      });
-    }
-    return out.filter(x => x.state && x.provider && x.rate>0);
-  }
-  function getStateName(abbrev){
-    return ({
-      NSW:'New South Wales', VIC:'Victoria', QLD:'Queensland', SA:'South Australia',
-      WA:'Western Australia', TAS:'Tasmania', NT:'Northern Territory', ACT:'Australian Capital Territory'
-    })[abbrev] || abbrev;
-  }
-
-  async function populateProviders(){
-    els.waterProvider.innerHTML = '<option value="">Select your water provider...</option><option value="loading">Loading providers...</option>';
-    providers = await loadRates('../../data/water_providers.json');
-    const grouped = {};
-    providers.forEach(p=>{ (grouped[p.state]||(grouped[p.state]=[])).push(p); });
-    els.waterProvider.innerHTML = '<option value="">Select your water provider...</option>';
-    Object.keys(grouped).sort().forEach(state=>{
-      const og = document.createElement('optgroup'); og.label = getStateName(state);
-      grouped[state].forEach(p=>{
-        const opt = document.createElement('option');
-        opt.value = JSON.stringify(p);
-        opt.textContent = `${p.provider} - $${p.rate}/kL (${p.tier})`;
-        og.appendChild(opt);
-      });
-      els.waterProvider.appendChild(og);
-    });
-    const custom = document.createElement('option');
-    custom.value = 'custom'; custom.textContent = 'Enter custom rate...';
-    els.waterProvider.appendChild(custom);
-  }
-
-  function handleProviderSelection(){
-    const v = els.waterProvider.value;
-    if(!v){ els.waterCost.value=''; els.rateInfo.textContent=''; els.waterCost.disabled=false; return; }
-    if(v==='custom'){
-      els.waterCost.value=''; els.waterCost.disabled=false; els.rateInfo.textContent='Enter your custom water rate per kilolitre'; els.waterCost.focus(); return;
-    }
-    try{
-      const provider = JSON.parse(v);
-      els.waterCost.value = provider.rate;
-      els.waterCost.disabled = true;
-      els.rateInfo.textContent = `Rate: $${provider.rate}/kL (${provider.tier}) – ${provider.provider}`;
-    }catch(e){ els.waterCost.disabled=false; }
-  }
-
   /* ========= Validation & Calc ========= */
   function validate(){
     const np = parseFloat(els.numPlants.value);
     const wpp = parseFloat(els.waterPerPlant.value);
     const wf = parseFloat(els.waterFrequency.value);
-    const wc = parseFloat(els.waterCost.value);
+    const rate = parseFloat(els.ratePerKL.value);
 
     els.errorMessage.classList.remove('show');
 
-    if(!Number.isFinite(np) || !Number.isFinite(wpp) || !Number.isFinite(wf) || !Number.isFinite(wc))
+    if(!Number.isFinite(np) || !Number.isFinite(wpp) || !Number.isFinite(wf) || !Number.isFinite(rate))
       return "Please fill in all fields with valid numbers.";
     if(!(np>0)) return "Number of plants must be greater than zero.";
     if(!(wpp>0)) return "Litres per plant must be greater than zero.";
     if(!(wf>=0 && wf<=7)) return "Watering frequency must be between 0 and 7.";
-    if(!(wc>0)) return "Water cost must be greater than zero.";
+    if(!(rate>0)) return "Water cost must be greater than zero.";
     return null;
   }
 
@@ -254,10 +187,12 @@
     const np = parseFloat(els.numPlants.value);
     const wpp = parseFloat(els.waterPerPlant.value);
     const wf = parseFloat(els.waterFrequency.value);
-    const wc = parseFloat(els.waterCost.value);
+    const rate = parseFloat(els.ratePerKL.value);
     const round = els.roundResults.checked;
 
-    const costPerLitre = wc / 1000;
+    const costPerLitre = rate / 1000;
+    const totalLitres = np * wpp * wf;
+    const totalCost = totalLitres * costPerLitre;
     const perPlantDaily = wpp * costPerLitre;
     const perPlantWeekly = perPlantDaily * wf;
     const perPlantMonthly = perPlantWeekly * 4;
@@ -269,12 +204,26 @@
     const totalYearly = perPlantYearly * np;
 
     calculationResults = {
-      inputs: { numPlants:np, waterPerPlant:wpp, waterFrequency:wf, waterCost:wc },
+      inputs: { numPlants:np, waterPerPlant:wpp, waterFrequency:wf, waterCost:rate },
       costPerLitre,
       perPlant: { daily:perPlantDaily, weekly:perPlantWeekly, monthly:perPlantMonthly, yearly:perPlantYearly },
       totals:   { daily:totalDaily, weekly:totalWeekly, monthly:totalMonthly, yearly:totalYearly },
+      harvestSummary: {
+        // costPerL: number, totalLitres: number, costTotal: number
+        costPerL: costPerLitre,
+        totalLitres,
+        costTotal: totalCost
+      },
       round
     };
+
+    if (window.HOA && typeof HOA.pushToHarvest === 'function') {
+      HOA.pushToHarvest({
+        type: 'water',
+        createdAt: new Date().toISOString(),
+        summary: calculationResults.harvestSummary
+      });
+    }
 
     renderResults();
     els.resultsCard.style.display = 'block';
@@ -377,15 +326,82 @@
       }
     }catch(e){ console.warn('Element SDK init skipped:', e); }
 
-    populateProviders();
-    els.waterProvider.addEventListener('change', handleProviderSelection);
     els.calculateBtn.addEventListener('click', calculate);
     els.downloadBtn.addEventListener('click', generatePDF);
-    ['numPlants','waterPerPlant','waterFrequency','waterCost'].forEach(id=>{
+    ['numPlants','waterPerPlant','waterFrequency','ratePerKL'].forEach(id=>{
       $(id).addEventListener('keypress', e=>{ if(e.key==='Enter') calculate(); });
     });
   });
 </script>
   <script src="../../shared/js/hoa-calcs.js"></script>
+  <script>
+(async function initWaterCalc(){
+  const $state = document.getElementById('waterState');
+  const $prov  = document.getElementById('providerSelect');
+  const $tier  = document.getElementById('providerTier');
+  const $rate  = document.getElementById('ratePerKL');
+  const $err   = document.getElementById('waterErrors');
+  if (!$state || !$prov || !$tier || !$rate) return;
+
+  let providers = [];
+  try {
+    const data = await HOA.fetchJSON(HOA.DATA.waterProviders);
+    providers = Array.isArray(data.providers) ? data.providers : [];
+    // Populate states (unique, sorted)
+    const states = [...new Set(providers.map(p => p.state))].sort();
+    $state.innerHTML = '<option value="">All states…</option>' + states.map(s => `<option value="${s}">${s}</option>`).join('');
+    // Seed provider list
+    syncProviders();
+  } catch (e) {
+    if ($err) { $err.textContent = 'Unable to load water provider data.'; $err.style.display = 'block'; }
+    console.warn(e);
+  }
+
+  function syncProviders(){
+    const chosenState = $state.value;
+    const list = chosenState ? providers.filter(p => p.state === chosenState) : providers;
+    $prov.innerHTML = '<option value="">Select provider…</option>' + list.map((p, idx) => {
+      // store index to look back up quickly
+      return `<option value="${idx}" data-name="${p.name}" data-state="${p.state}">${p.name} (${p.state})</option>`;
+    }).join('');
+    $prov.disabled = list.length === 0;
+    $tier.innerHTML = '<option value="">Select tier…</option>';
+    $tier.disabled = true;
+    // Clear rate unless user overrides
+    if (!$rate.dataset.userEdited) $rate.value = '';
+  }
+
+  function syncTiers(){
+    const chosenState = $state.value;
+    const list = chosenState ? providers.filter(p => p.state === chosenState) : providers;
+    const idx = Number($prov.value);
+    const prov = Number.isFinite(idx) ? list[idx] : null;
+    if (!prov || !Array.isArray(prov.tariffs) || prov.tariffs.length === 0){
+      $tier.innerHTML = '<option value="">Select tier…</option>';
+      $tier.disabled = true;
+      return;
+    }
+    $tier.innerHTML = '<option value="">Select tier…</option>' + prov.tariffs.map((t,i) =>
+      `<option value="${i}" data-rate="${t.price_per_kL}">Tier ${t.tier} — $${t.price_per_kL}/kL</option>`
+    ).join('');
+    $tier.disabled = false;
+    // If only one tier, preselect and apply rate
+    if (prov.tariffs.length === 1){
+      $tier.value = '0';
+      const r = prov.tariffs[0].price_per_kL;
+      if (r != null && !$rate.dataset.userEdited) $rate.value = Number(r);
+    }
+  }
+
+  $state.addEventListener('change', syncProviders);
+  $prov.addEventListener('change', syncTiers);
+  $tier.addEventListener('change', () => {
+    const opt = $tier.options[$tier.selectedIndex];
+    const r = opt?.dataset?.rate;
+    if (r != null && !$rate.dataset.userEdited) $rate.value = Number(r);
+  });
+  $rate.addEventListener('input', () => { $rate.dataset.userEdited = '1'; }); // remember manual override
+})();
+</script>
 </body>
 </html>
