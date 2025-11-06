@@ -5,14 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Water Cost Calculator</title>
 
-<!-- SDKs (safe if missing) -->
+<!-- SDKs -->
 <script src="/_sdk/element_sdk.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 
-<!-- Shared styles (relative to /Calculators/Water/index.html) -->
-<link rel="stylesheet" href="../../assets/cea.css">
-<link rel="stylesheet" href="../../shared/hoa-calcs.css">
+<!-- Use absolute raw URLs so htmlpreview/github raw works -->
+<link rel="stylesheet" href="https://raw.githubusercontent.com/HydroOasis/Hydro-Oasis-Calculators/refs/heads/main/assets/cea.css">
+<link rel="stylesheet" href="https://raw.githubusercontent.com/HydroOasis/Hydro-Oasis-Calculators/refs/heads/main/shared/hoa-calcs.css">
 </head>
 <body>
 
@@ -84,14 +84,12 @@
 </div>
 
 <script>
-  /* ========= Config (Element SDK) ========= */
   const defaultConfig = {
     main_heading: "Water Cost Calculator",
     calculate_button_text: "Calculate",
     download_button_text: "Download Results (PDF)"
   };
 
-  /* ========= DOM ========= */
   const $ = (id)=>document.getElementById(id);
   const els = {
     numPlants: $('numPlants'),
@@ -112,7 +110,6 @@
   let calculationResults = null;
   let providers = [];
 
-  /* ========= UI Helpers ========= */
   function makeSection(title, icon){
     const sec = document.createElement('div');
     sec.className = 'sec-card';
@@ -138,8 +135,10 @@
   }
   function formatCurrency(v, round){ return '$' + formatNumber(v, round); }
 
-  /* ========= Rates loading (JSON or CSV) ========= */
-  async function loadRates(url = '../../data/water_providers.json'){
+  // ABSOLUTE RAW URL so it works in htmlpreview
+  const RATES_URL = "https://raw.githubusercontent.com/HydroOasis/Hydro-Oasis-Calculators/refs/heads/main/data/water_providers.json";
+
+  async function loadRates(url = RATES_URL){
     try{
       const res = await fetch(url, { cache:'no-store' });
       const txt = await res.text();
@@ -191,7 +190,7 @@
 
   async function populateProviders(){
     els.waterProvider.innerHTML = '<option value="">Select your water provider...</option><option value="loading">Loading providers...</option>';
-    providers = await loadRates('../../data/water_providers.json');
+    providers = await loadRates(RATES_URL);
     const grouped = {};
     providers.forEach(p=>{ (grouped[p.state]||(grouped[p.state]=[])).push(p); });
     els.waterProvider.innerHTML = '<option value="">Select your water provider...</option>';
@@ -224,7 +223,6 @@
     }catch(e){ els.waterCost.disabled=false; }
   }
 
-  /* ========= Validation & Calc ========= */
   function validate(){
     const np = parseFloat(els.numPlants.value);
     const wpp = parseFloat(els.waterPerPlant.value);
@@ -357,7 +355,6 @@
     doc.save('WaterCostCalculatorResults.pdf');
   }
 
-  /* ========= Wiring ========= */
   function onConfigChange(cfg){
     els.heading.textContent = cfg.main_heading || defaultConfig.main_heading;
     els.calculateBtn.textContent = cfg.calculate_button_text || defaultConfig.calculate_button_text;
@@ -377,7 +374,7 @@
           ])
         });
       }
-    }catch(e){ console.warn('Element SDK init skipped:', e); }
+    }catch(e){}
 
     populateProviders();
     els.waterProvider.addEventListener('change', handleProviderSelection);
