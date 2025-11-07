@@ -247,14 +247,77 @@
   (function(){
     var isPreview = /github\.io|raw\.githubusercontent\.com|htmlpreview/i.test(location.href);
     if (!isPreview) return;
-    var base = 'https://rawcdn.githack.com/HydroOasis/Hydro-Oasis-Calculators/main/';
+
+    var defaults = { owner: 'HydroOasis', repo: 'Hydro-Oasis-Calculators', branch: 'main' };
+
+    function parsePreviewContext(){
+      try {
+        var href = String(location.href);
+        var queryMatch = href.match(/\?(https?:\/\/[^\s]+)$/);
+        if (queryMatch) {
+          href = queryMatch[1];
+        }
+        href = decodeURIComponent(href);
+        var match = href.match(/https?:\/\/[^/]*github(?:usercontent)?\.com\/([^/]+)\/([^/]+)\/(.+)$/i);
+        if (!match) return defaults;
+        var owner = match[1];
+        var repo = match[2];
+        var remainder = match[3].split(/[?#]/)[0];
+        var segments = remainder.split('/').filter(Boolean);
+
+        if (segments[0] === 'blob' || segments[0] === 'raw' || segments[0] === 'tree') {
+          segments = segments.slice(1);
+        }
+        if (segments[0] === 'refs' && segments[1] === 'heads') {
+          segments = segments.slice(2);
+        }
+
+        var markers = ['Calculators','assets','shared','data','Recommendations','build','dist','public','src','docs','.github'];
+        var branchEnd = segments.length;
+        for (var i = 0; i < segments.length; i++) {
+          if (markers.indexOf(segments[i]) !== -1) {
+            branchEnd = i;
+            break;
+          }
+        }
+        var branchParts = segments.slice(0, branchEnd);
+        if (!branchParts.length && segments.length) {
+          branchParts = [segments[0]];
+        }
+        var branch = branchParts.join('/') || defaults.branch;
+        return { owner: owner, repo: repo, branch: branch };
+      } catch(err) {
+        console.warn('Failed to detect preview context', err);
+        return defaults;
+      }
+    }
+
+    function computeBases(ctx){
+      var bases = [
+        'https://raw.githubusercontent.com/' + ctx.owner + '/' + ctx.repo + '/' + ctx.branch + '/'
+      ];
+      if (ctx.branch.indexOf('/') === -1) {
+        bases.push('https://cdn.jsdelivr.net/gh/' + ctx.owner + '/' + ctx.repo + '@' + ctx.branch + '/');
+      }
+      bases.push('https://rawcdn.githack.com/' + ctx.owner + '/' + ctx.repo + '/' + ctx.branch + '/');
+      return Array.from(new Set(bases));
+    }
+
+    var context = window.__HOA_PREVIEW_CTX__ = parsePreviewContext();
+    var bases = window.__HOA_PREVIEW_BASES__ = computeBases(context);
+    var primaryBase = bases[0];
+
+    function join(base, target){
+      return base.replace(/\/+$/, '/') + target.replace(/^\/+/, '');
+    }
+
     document.querySelectorAll('link[data-preview-href]').forEach(function(link){
       var target = link.getAttribute('data-preview-href');
-      if (target) link.href = base + target.replace(/^\/+/, '');
+      if (target) link.href = join(primaryBase, target);
     });
     document.querySelectorAll('script[data-preview-src]').forEach(function(scr){
       var target = scr.getAttribute('data-preview-src');
-      if (target) scr.src = base + target.replace(/^\/+/, '');
+      if (target) scr.src = join(primaryBase, target);
     });
   })();
   </script>
@@ -1733,22 +1796,60 @@
   <script>
   (function ensureHOA(){
     if (window.HOA && typeof window.HOA.pushToHarvest === 'function') return;
-    var s = document.createElement('script');
-    var cdn = 'https://cdn.jsdelivr.net/gh/HydroOasis/Hydro-Oasis-Calculators@main/shared/js/hoa-calcs.js';
-    var githack = 'https://rawcdn.githack.com/HydroOasis/Hydro-Oasis-Calculators/main/shared/js/hoa-calcs.js';
-    s.src = cdn;
-    s.onload = function(){
-      if(!window.HOA){ console.error('HOA still not available after CDN load'); }
-    };
-    s.onerror = function(){
-      console.error('Failed to load HOA from CDN');
-      var alt = document.createElement('script');
-      alt.src = githack;
-      alt.onload = function(){ if(!window.HOA){ console.error('HOA still not available after githack load'); } };
-      alt.onerror = function(){ console.error('Failed to load HOA from githack fallback'); };
-      document.head.appendChild(alt);
-    };
-    document.head.appendChild(s);
+    var defaults = [
+      'https://raw.githubusercontent.com/HydroOasis/Hydro-Oasis-Calculators/main/',
+      'https://cdn.jsdelivr.net/gh/HydroOasis/Hydro-Oasis-Calculators@main/',
+      'https://rawcdn.githack.com/HydroOasis/Hydro-Oasis-Calculators/main/'
+    ];
+
+    function gatherBases(){
+      if (Array.isArray(window.__HOA_PREVIEW_BASES__) && window.__HOA_PREVIEW_BASES__.length) {
+        return window.__HOA_PREVIEW_BASES__;
+      }
+      return defaults;
+    }
+
+    function toSrc(base){
+      return base.replace(/\/+$/, '/') + 'shared/js/hoa-calcs.js';
+    }
+
+    var seen = {};
+    var sources = gatherBases().map(toSrc).filter(function(src){
+      if (seen[src]) return false;
+      seen[src] = true;
+      return true;
+    });
+
+    defaults.map(toSrc).forEach(function(src){
+      if (!seen[src]) {
+        seen[src] = true;
+        sources.push(src);
+      }
+    });
+
+    function loadNext(){
+      if (window.HOA && typeof window.HOA.pushToHarvest === 'function') return;
+      if (!sources.length) {
+        console.error('Failed to load HOA shared utilities from all preview sources.');
+        return;
+      }
+      var src = sources.shift();
+      var script = document.createElement('script');
+      script.src = src;
+      script.onload = function(){
+        if (!window.HOA || typeof window.HOA.pushToHarvest !== 'function') {
+          console.error('HOA still not available after loading', src);
+          loadNext();
+        }
+      };
+      script.onerror = function(){
+        console.error('Failed to load HOA from', src);
+        loadNext();
+      };
+      document.head.appendChild(script);
+    }
+
+    loadNext();
   })();
   </script>
   <script>
@@ -1757,11 +1858,26 @@
     console.warn('[Electricity] Falling back to inline HOA utilities for preview.');
     window.HOA = (() => {
       const isPreview = /github\.io|raw\.githubusercontent\.com|htmlpreview/i.test(location.href);
-      const PREVIEW_BASES = [
-        'https://raw.githubusercontent.com/HydroOasis/Hydro-Oasis-Calculators/main/',
-        'https://cdn.jsdelivr.net/gh/HydroOasis/Hydro-Oasis-Calculators@main/',
-        'https://rawcdn.githack.com/HydroOasis/Hydro-Oasis-Calculators/main/'
-      ];
+      const DEFAULT_CONTEXT = { owner: 'HydroOasis', repo: 'Hydro-Oasis-Calculators', branch: 'main' };
+
+      function computeBases(){
+        if (!isPreview) return [];
+        if (Array.isArray(window.__HOA_PREVIEW_BASES__) && window.__HOA_PREVIEW_BASES__.length) {
+          return window.__HOA_PREVIEW_BASES__;
+        }
+        const ctx = window.__HOA_PREVIEW_CTX__ || DEFAULT_CONTEXT;
+        const bases = [
+          'https://raw.githubusercontent.com/' + ctx.owner + '/' + ctx.repo + '/' + ctx.branch + '/'
+        ];
+        if (ctx.branch.indexOf('/') === -1) {
+          bases.push('https://cdn.jsdelivr.net/gh/' + ctx.owner + '/' + ctx.repo + '@' + ctx.branch + '/');
+        }
+        bases.push('https://rawcdn.githack.com/' + ctx.owner + '/' + ctx.repo + '/' + ctx.branch + '/');
+        window.__HOA_PREVIEW_BASES__ = Array.from(new Set(bases));
+        return window.__HOA_PREVIEW_BASES__;
+      }
+
+      const PREVIEW_BASES = computeBases();
 
       const DATA = {
         waterProviders: '../../data/water_providers.json',
@@ -1801,22 +1917,24 @@
         throw lastErr || new Error('Unable to fetch text');
       }
 
-      async function fetchJSON(path){
+      function buildFetchTargets(path){
+        const targets = [];
         if (!isPreview) {
-          return tryFetchJSON([path]);
+          targets.push(path);
+          return targets;
         }
         const repoPath = toRepoPath(path);
-        const targets = PREVIEW_BASES.map(base => base + repoPath);
-        return tryFetchJSON(targets);
+        PREVIEW_BASES.forEach(function(base){ targets.push(base + repoPath); });
+        targets.push(path);
+        return targets;
+      }
+
+      async function fetchJSON(path){
+        return tryFetchJSON(buildFetchTargets(path));
       }
 
       async function fetchText(path){
-        if (!isPreview) {
-          return tryFetchText([path]);
-        }
-        const repoPath = toRepoPath(path);
-        const targets = PREVIEW_BASES.map(base => base + repoPath);
-        return tryFetchText(targets);
+        return tryFetchText(buildFetchTargets(path));
       }
 
       const HARVEST_KEY = 'hoa.harvest.payloads.v1';
@@ -1840,7 +1958,9 @@
         fetchJSON,
         fetchText,
         pushToHarvest,
-        getHarvestPayloads
+        getHarvestPayloads,
+        buildFetchTargets,
+        previewBases: PREVIEW_BASES.slice ? PREVIEW_BASES.slice() : []
       };
     })();
   })();
@@ -1873,9 +1993,42 @@ async function initElecTariffs(){
 
   // Resolve a deterministic tariffs URL right now (no async race)
   const isPreview = /github\.io|raw\.githubusercontent\.com|htmlpreview/i.test(location.href);
-  const RAW = 'https://raw.githubusercontent.com/HydroOasis/Hydro-Oasis-Calculators/main/data/electricity_tariffs.json';
-  const CDN = 'https://cdn.jsdelivr.net/gh/HydroOasis/Hydro-Oasis-Calculators@main/data/electricity_tariffs.json';
-  const GITHACK = 'https://rawcdn.githack.com/HydroOasis/Hydro-Oasis-Calculators/main/data/electricity_tariffs.json';
+  const previewBases = (window.HOA && Array.isArray(HOA.previewBases) && HOA.previewBases.length)
+    ? HOA.previewBases
+    : (Array.isArray(window.__HOA_PREVIEW_BASES__) ? window.__HOA_PREVIEW_BASES__ : []);
+  const previewCtx = (window.HOA && HOA.previewContext) || window.__HOA_PREVIEW_CTX__ || { owner: 'HydroOasis', repo: 'Hydro-Oasis-Calculators', branch: 'main' };
+
+  function buildBase(ctx, kind){
+    if (!ctx) return null;
+    if (kind === 'raw') {
+      return 'https://raw.githubusercontent.com/' + ctx.owner + '/' + ctx.repo + '/' + ctx.branch + '/';
+    }
+    if (kind === 'cdn') {
+      if (ctx.branch.indexOf('/') !== -1) return null;
+      return 'https://cdn.jsdelivr.net/gh/' + ctx.owner + '/' + ctx.repo + '@' + ctx.branch + '/';
+    }
+    if (kind === 'githack') {
+      return 'https://rawcdn.githack.com/' + ctx.owner + '/' + ctx.repo + '/' + ctx.branch + '/';
+    }
+    return null;
+  }
+
+  function findBase(pattern, fallbackKind){
+    const match = previewBases.find(function(base){ return pattern.test(base); });
+    if (match) return match;
+    return buildBase(previewCtx, fallbackKind);
+  }
+
+  function join(base, path){
+    if (!base) return null;
+    return base.replace(/\/+$/, '/') + path.replace(/^\/+/, '');
+  }
+
+  const RAW = join(findBase(/raw\.githubusercontent\.com/, 'raw'), 'data/electricity_tariffs.json');
+  const CDN_BASE = findBase(/cdn\.jsdelivr\.net/, 'cdn');
+  const CDN = CDN_BASE ? join(CDN_BASE, 'data/electricity_tariffs.json') : null;
+  const GITHACK_BASE = findBase(/rawcdn\.githack\.com/, 'githack');
+  const GITHACK = GITHACK_BASE ? join(GITHACK_BASE, 'data/electricity_tariffs.json') : null;
   const LOCAL = '../../data/electricity_tariffs.json';
   const url = (window.HOA && HOA.DATA && HOA.DATA.elecTariffs) ||
               (isPreview ? RAW : LOCAL);
@@ -1907,21 +2060,37 @@ async function initElecTariffs(){
   } catch(e1){
     lastError = e1;
     if (isPreview) {
-      try {
-        console.warn('[Elec] RAW failed, trying CDN once…');
-        const r2 = await fetch(CDN, { cache: 'no-cache' });
-        if (!r2.ok) throw new Error('CDN fetch failed '+r2.status);
-        tariffs = await r2.json();
-      } catch(e2){
-        lastError = e2;
+      if (CDN) {
         try {
-          console.warn('[Elec] CDN failed, trying githack…');
+          console.warn('[Elec] RAW failed, trying CDN once…');
+          const r2 = await fetch(CDN, { cache: 'no-cache' });
+          if (!r2.ok) throw new Error('CDN fetch failed '+r2.status);
+          tariffs = await r2.json();
+        } catch(e2){
+          lastError = e2;
+          if (GITHACK) {
+            try {
+              console.warn('[Elec] CDN failed, trying githack…');
+              const r3 = await fetch(GITHACK, { cache: 'no-cache' });
+              if (!r3.ok) throw new Error('githack fetch failed '+r3.status);
+              tariffs = await r3.json();
+            } catch(e3){
+              lastError = e3;
+              console.error('Tariffs fetch failed (preview RAW/CDN/githack).', e1, e2, e3);
+            }
+          } else {
+            console.error('Tariffs fetch failed (preview RAW/CDN).', e1, e2);
+          }
+        }
+      } else if (GITHACK) {
+        try {
+          console.warn('[Elec] RAW failed, trying githack…');
           const r3 = await fetch(GITHACK, { cache: 'no-cache' });
           if (!r3.ok) throw new Error('githack fetch failed '+r3.status);
           tariffs = await r3.json();
         } catch(e3){
           lastError = e3;
-          console.error('Tariffs fetch failed (preview RAW/CDN/githack).', e1, e2, e3);
+          console.error('Tariffs fetch failed (preview RAW/githack).', e1, e3);
         }
       }
     } else {
