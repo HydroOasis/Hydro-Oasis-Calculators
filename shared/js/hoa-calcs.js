@@ -2,11 +2,75 @@
 // Shared utilities for all Hydro Oasis calculators
 const HOA = (() => {
   const isPreview = /github\.io|raw\.githubusercontent\.com|htmlpreview/i.test(location.href);
-  const PREVIEW_BASES = [
-    'https://raw.githubusercontent.com/HydroOasis/Hydro-Oasis-Calculators/main/',
-    'https://cdn.jsdelivr.net/gh/HydroOasis/Hydro-Oasis-Calculators@main/',
-    'https://rawcdn.githack.com/HydroOasis/Hydro-Oasis-Calculators/main/'
-  ];
+
+  const DEFAULT_CONTEXT = Object.freeze({
+    owner: 'HydroOasis',
+    repo: 'Hydro-Oasis-Calculators',
+    branch: 'main'
+  });
+
+  function parsePreviewContext(){
+    if (!isPreview) return DEFAULT_CONTEXT;
+    if (window.__HOA_PREVIEW_CTX__) return window.__HOA_PREVIEW_CTX__;
+    try {
+      let href = String(location.href);
+      const queryMatch = href.match(/\?(https?:\/\/[^\s]+)$/);
+      if (queryMatch) {
+        href = queryMatch[1];
+      }
+      href = decodeURIComponent(href);
+      const match = href.match(/https?:\/\/[^/]*github(?:usercontent)?\.com\/([^/]+)\/([^/]+)\/(.+)$/i);
+      if (!match) return DEFAULT_CONTEXT;
+      const owner = match[1];
+      const repo = match[2];
+      let remainder = match[3].split(/[?#]/)[0];
+      let segments = remainder.split('/').filter(Boolean);
+
+      if (segments[0] === 'blob' || segments[0] === 'raw' || segments[0] === 'tree') {
+        segments = segments.slice(1);
+      }
+      if (segments[0] === 'refs' && segments[1] === 'heads') {
+        segments = segments.slice(2);
+      }
+
+      const markers = ['Calculators','assets','shared','data','Recommendations','build','dist','public','src','docs','.github'];
+      let branchEnd = segments.length;
+      for (let i = 0; i < segments.length; i++) {
+        if (markers.indexOf(segments[i]) !== -1) {
+          branchEnd = i;
+          break;
+        }
+      }
+      let branchParts = segments.slice(0, branchEnd);
+      if (!branchParts.length && segments.length) {
+        branchParts = [segments[0]];
+      }
+      const branch = branchParts.join('/') || DEFAULT_CONTEXT.branch;
+      return window.__HOA_PREVIEW_CTX__ = { owner, repo, branch };
+    } catch(err) {
+      console.warn('HOA preview context detection failed', err);
+      return DEFAULT_CONTEXT;
+    }
+  }
+
+  function computePreviewBases(context){
+    const ctx = context || parsePreviewContext();
+    if (window.__HOA_PREVIEW_BASES__ && Array.isArray(window.__HOA_PREVIEW_BASES__) && window.__HOA_PREVIEW_BASES__.length) {
+      return window.__HOA_PREVIEW_BASES__;
+    }
+    const bases = [
+      `https://raw.githubusercontent.com/${ctx.owner}/${ctx.repo}/${ctx.branch}/`
+    ];
+    if (ctx.branch.indexOf('/') === -1) {
+      bases.push(`https://cdn.jsdelivr.net/gh/${ctx.owner}/${ctx.repo}@${ctx.branch}/`);
+    }
+    bases.push(`https://rawcdn.githack.com/${ctx.owner}/${ctx.repo}/${ctx.branch}/`);
+    const unique = Array.from(new Set(bases));
+    return window.__HOA_PREVIEW_BASES__ = unique;
+  }
+
+  const PREVIEW_CONTEXT = parsePreviewContext();
+  const PREVIEW_BASES = isPreview ? computePreviewBases(PREVIEW_CONTEXT) : [];
 
   const DATA = {
     waterProviders: '../../data/water_providers.json',
@@ -48,22 +112,26 @@ const HOA = (() => {
     throw lastErr || new Error('Unable to fetch text');
   }
 
-  async function fetchJSON(path){
+  function buildFetchTargets(path){
+    const targets = [];
     if (!isPreview) {
-      return tryFetchJSON([path]);
+      targets.push(path);
+      return targets;
     }
     const repoPath = toRepoPath(path);
-    const targets = PREVIEW_BASES.map(base => base + repoPath);
-    return tryFetchJSON(targets);
+    PREVIEW_BASES.forEach(base => {
+      targets.push(base + repoPath);
+    });
+    targets.push(path);
+    return targets;
+  }
+
+  async function fetchJSON(path){
+    return tryFetchJSON(buildFetchTargets(path));
   }
 
   async function fetchText(path){
-    if (!isPreview) {
-      return tryFetchText([path]);
-    }
-    const repoPath = toRepoPath(path);
-    const targets = PREVIEW_BASES.map(base => base + repoPath);
-    return tryFetchText(targets);
+    return tryFetchText(buildFetchTargets(path));
   }
 
   // Tiny markdown → HTML (headings, bullets, links)
@@ -97,7 +165,14 @@ const HOA = (() => {
   }
 
   return {
-    DATA, fetchJSON, fetchText, mdToHtml,
-    pushToHarvest, getHarvestPayloads
+    DATA,
+    fetchJSON,
+    fetchText,
+    mdToHtml,
+    pushToHarvest,
+    getHarvestPayloads,
+    buildFetchTargets,
+    previewContext: PREVIEW_CONTEXT,
+    previewBases: PREVIEW_BASES.slice ? PREVIEW_BASES.slice() : []
   };
 })();
