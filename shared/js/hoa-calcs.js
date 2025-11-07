@@ -1,6 +1,13 @@
 // /shared/js/hoa-calcs.js
 // Shared utilities for all Hydro Oasis calculators
 const HOA = (() => {
+  const isPreview = /github\.io|raw\.githubusercontent\.com|htmlpreview/i.test(location.href);
+  const PREVIEW_BASES = [
+    'https://raw.githubusercontent.com/HydroOasis/Hydro-Oasis-Calculators/main/',
+    'https://cdn.jsdelivr.net/gh/HydroOasis/Hydro-Oasis-Calculators@main/',
+    'https://rawcdn.githack.com/HydroOasis/Hydro-Oasis-Calculators/main/'
+  ];
+
   const DATA = {
     waterProviders: '../../data/water_providers.json',
     elecTariffs:    '../../data/electricity_tariffs.json',
@@ -9,16 +16,54 @@ const HOA = (() => {
     recDehum:       '../../Recommendations/dehumidification.md'
   };
 
+  function toRepoPath(path){
+    return path.replace(/^\/+/, '').replace(/^(\.\.\/)+/, '');
+  }
+
+  async function tryFetchJSON(targets){
+    let lastErr;
+    for (const target of targets){
+      try {
+        const res = await fetch(target, { cache: 'no-cache' });
+        if (!res.ok) throw new Error(`Fetch failed ${res.status} for ${target}`);
+        return await res.json();
+      } catch(err){
+        lastErr = err;
+      }
+    }
+    throw lastErr || new Error('Unable to fetch JSON');
+  }
+
+  async function tryFetchText(targets){
+    let lastErr;
+    for (const target of targets){
+      try {
+        const res = await fetch(target, { cache: 'no-cache' });
+        if (!res.ok) throw new Error(`Fetch failed ${res.status} for ${target}`);
+        return await res.text();
+      } catch(err){
+        lastErr = err;
+      }
+    }
+    throw lastErr || new Error('Unable to fetch text');
+  }
+
   async function fetchJSON(path){
-    const res = await fetch(path, { cache: 'no-cache' });
-    if (!res.ok) throw new Error(`Fetch failed: ${path}`);
-    return res.json();
+    if (!isPreview) {
+      return tryFetchJSON([path]);
+    }
+    const repoPath = toRepoPath(path);
+    const targets = PREVIEW_BASES.map(base => base + repoPath);
+    return tryFetchJSON(targets);
   }
 
   async function fetchText(path){
-    const res = await fetch(path, { cache: 'no-cache' });
-    if (!res.ok) throw new Error(`Fetch failed: ${path}`);
-    return res.text();
+    if (!isPreview) {
+      return tryFetchText([path]);
+    }
+    const repoPath = toRepoPath(path);
+    const targets = PREVIEW_BASES.map(base => base + repoPath);
+    return tryFetchText(targets);
   }
 
   // Tiny markdown → HTML (headings, bullets, links)

@@ -4,11 +4,26 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Electricity Cost Calculator</title>
-  <link rel="stylesheet" href="../../assets/cea.css">
-  <link rel="stylesheet" href="../../shared/hoa-calcs.css">
+  <link rel="stylesheet" href="../../assets/cea.css" data-preview-href="assets/cea.css">
+  <link rel="stylesheet" href="../../shared/hoa-calcs.css" data-preview-href="shared/hoa-calcs.css">
   <!-- CDN fallbacks for GitHub preview / raw.githubusercontent -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/HydroOasis/Hydro-Oasis-Calculators@main/assets/cea.css" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/HydroOasis/Hydro-Oasis-Calculators@main/shared/hoa-calcs.css" media="print" onload="this.media='all'">
+  <script>
+  (function(){
+    var isPreview = /github\.io|raw\.githubusercontent\.com|htmlpreview/i.test(location.href);
+    if (!isPreview) return;
+    var base = 'https://rawcdn.githack.com/HydroOasis/Hydro-Oasis-Calculators/main/';
+    document.querySelectorAll('link[data-preview-href]').forEach(function(link){
+      var target = link.getAttribute('data-preview-href');
+      if (target) link.href = base + target.replace(/^\/+/, '');
+    });
+    document.querySelectorAll('script[data-preview-src]').forEach(function(scr){
+      var target = scr.getAttribute('data-preview-src');
+      if (target) scr.src = base + target.replace(/^\/+/, '');
+    });
+  })();
+  </script>
   <script>
   // Only try to load Shopify/theme SDK in production storefronts, not in GitHub preview
   (function(){
@@ -1467,14 +1482,25 @@
         addEquipment();
     </script>
  <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99881531a63cf0c8',t:'MTc2MjEzMzE3OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
-  <script src="../../shared/js/hoa-calcs.js"></script>
+  <script src="../../shared/js/hoa-calcs.js" data-preview-src="shared/js/hoa-calcs.js"></script>
   <script>
   (function ensureHOA(){
     if (window.HOA && typeof window.HOA.pushToHarvest === 'function') return;
     var s = document.createElement('script');
-    s.src = 'https://cdn.jsdelivr.net/gh/HydroOasis/Hydro-Oasis-Calculators@main/shared/js/hoa-calcs.js';
-    s.onload = function(){ if(!window.HOA){ console.error('HOA still not available'); } };
-    s.onerror = function(){ console.error('Failed to load HOA from CDN'); };
+    var cdn = 'https://cdn.jsdelivr.net/gh/HydroOasis/Hydro-Oasis-Calculators@main/shared/js/hoa-calcs.js';
+    var githack = 'https://rawcdn.githack.com/HydroOasis/Hydro-Oasis-Calculators/main/shared/js/hoa-calcs.js';
+    s.src = cdn;
+    s.onload = function(){
+      if(!window.HOA){ console.error('HOA still not available after CDN load'); }
+    };
+    s.onerror = function(){
+      console.error('Failed to load HOA from CDN');
+      var alt = document.createElement('script');
+      alt.src = githack;
+      alt.onload = function(){ if(!window.HOA){ console.error('HOA still not available after githack load'); } };
+      alt.onerror = function(){ console.error('Failed to load HOA from githack fallback'); };
+      document.head.appendChild(alt);
+    };
     document.head.appendChild(s);
   })();
   </script>
@@ -1508,6 +1534,7 @@ async function initElecTariffs(){
   const isPreview = /github\.io|raw\.githubusercontent\.com|htmlpreview/i.test(location.href);
   const RAW = 'https://raw.githubusercontent.com/HydroOasis/Hydro-Oasis-Calculators/main/data/electricity_tariffs.json';
   const CDN = 'https://cdn.jsdelivr.net/gh/HydroOasis/Hydro-Oasis-Calculators@main/data/electricity_tariffs.json';
+  const GITHACK = 'https://rawcdn.githack.com/HydroOasis/Hydro-Oasis-Calculators/main/data/electricity_tariffs.json';
   const LOCAL = '../../data/electricity_tariffs.json';
   const url = (window.HOA && HOA.DATA && HOA.DATA.elecTariffs) ||
               (isPreview ? RAW : LOCAL);
@@ -1531,10 +1558,17 @@ async function initElecTariffs(){
         if (!r2.ok) throw new Error('CDN fetch failed '+r2.status);
         tariffs = await r2.json();
       } catch(e2){
-        console.error('Tariffs fetch failed (preview RAW/CDN).', e1, e2);
-        const $err = document.getElementById('elecFetchError');
-        if ($err) { $err.textContent = 'Could not load electricity tariffs data.'; $err.style.display = 'block'; }
-        return;
+        try {
+          console.warn('[Elec] CDN failed, trying githack…');
+          const r3 = await fetch(GITHACK, { cache: 'no-cache' });
+          if (!r3.ok) throw new Error('githack fetch failed '+r3.status);
+          tariffs = await r3.json();
+        } catch(e3){
+          console.error('Tariffs fetch failed (preview RAW/CDN/githack).', e1, e2, e3);
+          const $err = document.getElementById('elecFetchError');
+          if ($err) { $err.textContent = 'Could not load electricity tariffs data.'; $err.style.display = 'block'; }
+          return;
+        }
       }
     } else {
       console.error('Tariffs fetch failed (LOCAL).', e1);
