@@ -250,6 +250,14 @@
 
     var defaults = { owner: 'HydroOasis', repo: 'Hydro-Oasis-Calculators', branch: 'main' };
 
+    function normalizeBranch(branch){
+      if (!branch) return branch;
+      return String(branch)
+        .replace(/^refs\/?heads\//i, '')
+        .replace(/^heads\//i, '')
+        .replace(/^origin\//i, '');
+    }
+
     function parsePreviewContext(){
       try {
         var href = String(location.href);
@@ -284,7 +292,8 @@
         if (!branchParts.length && segments.length) {
           branchParts = [segments[0]];
         }
-        var branch = branchParts.join('/') || defaults.branch;
+        var rawBranch = branchParts.join('/') || defaults.branch;
+        var branch = normalizeBranch(rawBranch) || defaults.branch;
         return { owner: owner, repo: repo, branch: branch };
       } catch(err) {
         console.warn('Failed to detect preview context', err);
@@ -293,13 +302,14 @@
     }
 
     function computeBases(ctx){
+      var branch = normalizeBranch(ctx.branch) || defaults.branch;
       var bases = [
-        'https://raw.githubusercontent.com/' + ctx.owner + '/' + ctx.repo + '/' + ctx.branch + '/'
+        'https://raw.githubusercontent.com/' + ctx.owner + '/' + ctx.repo + '/' + branch + '/'
       ];
-      if (ctx.branch.indexOf('/') === -1) {
-        bases.push('https://cdn.jsdelivr.net/gh/' + ctx.owner + '/' + ctx.repo + '@' + ctx.branch + '/');
+      if (branch.indexOf('/') === -1) {
+        bases.push('https://cdn.jsdelivr.net/gh/' + ctx.owner + '/' + ctx.repo + '@' + branch + '/');
       }
-      bases.push('https://rawcdn.githack.com/' + ctx.owner + '/' + ctx.repo + '/' + ctx.branch + '/');
+      bases.push('https://rawcdn.githack.com/' + ctx.owner + '/' + ctx.repo + '/' + branch + '/');
       return Array.from(new Set(bases));
     }
 
@@ -1860,19 +1870,27 @@
       const isPreview = /github\.io|raw\.githubusercontent\.com|htmlpreview/i.test(location.href);
       const DEFAULT_CONTEXT = { owner: 'HydroOasis', repo: 'Hydro-Oasis-Calculators', branch: 'main' };
 
+      const normalizeBranch = branch => branch
+        ? String(branch)
+            .replace(/^refs\/?heads\//i, '')
+            .replace(/^heads\//i, '')
+            .replace(/^origin\//i, '')
+        : branch;
+
       function computeBases(){
         if (!isPreview) return [];
         if (Array.isArray(window.__HOA_PREVIEW_BASES__) && window.__HOA_PREVIEW_BASES__.length) {
           return window.__HOA_PREVIEW_BASES__;
         }
         const ctx = window.__HOA_PREVIEW_CTX__ || DEFAULT_CONTEXT;
+        const branch = normalizeBranch(ctx.branch) || DEFAULT_CONTEXT.branch;
         const bases = [
-          'https://raw.githubusercontent.com/' + ctx.owner + '/' + ctx.repo + '/' + ctx.branch + '/'
+          'https://raw.githubusercontent.com/' + ctx.owner + '/' + ctx.repo + '/' + branch + '/'
         ];
-        if (ctx.branch.indexOf('/') === -1) {
-          bases.push('https://cdn.jsdelivr.net/gh/' + ctx.owner + '/' + ctx.repo + '@' + ctx.branch + '/');
+        if (branch.indexOf('/') === -1) {
+          bases.push('https://cdn.jsdelivr.net/gh/' + ctx.owner + '/' + ctx.repo + '@' + branch + '/');
         }
-        bases.push('https://rawcdn.githack.com/' + ctx.owner + '/' + ctx.repo + '/' + ctx.branch + '/');
+        bases.push('https://rawcdn.githack.com/' + ctx.owner + '/' + ctx.repo + '/' + branch + '/');
         window.__HOA_PREVIEW_BASES__ = Array.from(new Set(bases));
         return window.__HOA_PREVIEW_BASES__;
       }
@@ -1998,17 +2016,26 @@ async function initElecTariffs(){
     : (Array.isArray(window.__HOA_PREVIEW_BASES__) ? window.__HOA_PREVIEW_BASES__ : []);
   const previewCtx = (window.HOA && HOA.previewContext) || window.__HOA_PREVIEW_CTX__ || { owner: 'HydroOasis', repo: 'Hydro-Oasis-Calculators', branch: 'main' };
 
+  function normalizeBranch(branch){
+    if (!branch) return branch;
+    return String(branch)
+      .replace(/^refs\/?heads\//i, '')
+      .replace(/^heads\//i, '')
+      .replace(/^origin\//i, '');
+  }
+
   function buildBase(ctx, kind){
     if (!ctx) return null;
+    var branch = normalizeBranch(ctx.branch || previewCtx.branch) || 'main';
     if (kind === 'raw') {
-      return 'https://raw.githubusercontent.com/' + ctx.owner + '/' + ctx.repo + '/' + ctx.branch + '/';
+      return 'https://raw.githubusercontent.com/' + ctx.owner + '/' + ctx.repo + '/' + branch + '/';
     }
     if (kind === 'cdn') {
-      if (ctx.branch.indexOf('/') !== -1) return null;
-      return 'https://cdn.jsdelivr.net/gh/' + ctx.owner + '/' + ctx.repo + '@' + ctx.branch + '/';
+      if (branch.indexOf('/') !== -1) return null;
+      return 'https://cdn.jsdelivr.net/gh/' + ctx.owner + '/' + ctx.repo + '@' + branch + '/';
     }
     if (kind === 'githack') {
-      return 'https://rawcdn.githack.com/' + ctx.owner + '/' + ctx.repo + '/' + ctx.branch + '/';
+      return 'https://rawcdn.githack.com/' + ctx.owner + '/' + ctx.repo + '/' + branch + '/';
     }
     return null;
   }
