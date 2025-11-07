@@ -786,7 +786,20 @@
         }
     </style>
   <style>@view-transition { navigation: auto; }</style>
-  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script>
+  (function(){
+    var href = window.location && window.location.href || '';
+    var isPreview = /github\.io|raw\.githubusercontent\.com|htmlpreview/i.test(href);
+    if (isPreview) return;
+    var doc = document;
+    if (doc.querySelector('script[src="/_sdk/data_sdk.js"]')) return;
+    var s = doc.createElement('script');
+    s.src = '/_sdk/data_sdk.js';
+    s.type = 'text/javascript';
+    s.defer = true;
+    doc.head.appendChild(s);
+  })();
+  </script>
  </head>
  <body>
   <div id="elecFetchError" class="error-message" style="display:none"></div>
