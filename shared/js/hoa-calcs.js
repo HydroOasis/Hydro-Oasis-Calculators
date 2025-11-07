@@ -9,6 +9,14 @@ const HOA = (() => {
     branch: 'main'
   });
 
+  function normalizeBranch(branch){
+    if (!branch) return branch;
+    return String(branch)
+      .replace(/^refs\/?heads\//i, '')
+      .replace(/^heads\//i, '')
+      .replace(/^origin\//i, '');
+  }
+
   function parsePreviewContext(){
     if (!isPreview) return DEFAULT_CONTEXT;
     if (window.__HOA_PREVIEW_CTX__) return window.__HOA_PREVIEW_CTX__;
@@ -45,7 +53,8 @@ const HOA = (() => {
       if (!branchParts.length && segments.length) {
         branchParts = [segments[0]];
       }
-      const branch = branchParts.join('/') || DEFAULT_CONTEXT.branch;
+      const rawBranch = branchParts.join('/') || DEFAULT_CONTEXT.branch;
+      const branch = normalizeBranch(rawBranch) || DEFAULT_CONTEXT.branch;
       return window.__HOA_PREVIEW_CTX__ = { owner, repo, branch };
     } catch(err) {
       console.warn('HOA preview context detection failed', err);
@@ -58,13 +67,14 @@ const HOA = (() => {
     if (window.__HOA_PREVIEW_BASES__ && Array.isArray(window.__HOA_PREVIEW_BASES__) && window.__HOA_PREVIEW_BASES__.length) {
       return window.__HOA_PREVIEW_BASES__;
     }
+    const branch = normalizeBranch(ctx.branch) || DEFAULT_CONTEXT.branch;
     const bases = [
-      `https://raw.githubusercontent.com/${ctx.owner}/${ctx.repo}/${ctx.branch}/`
+      `https://raw.githubusercontent.com/${ctx.owner}/${ctx.repo}/${branch}/`
     ];
-    if (ctx.branch.indexOf('/') === -1) {
-      bases.push(`https://cdn.jsdelivr.net/gh/${ctx.owner}/${ctx.repo}@${ctx.branch}/`);
+    if (branch.indexOf('/') === -1) {
+      bases.push(`https://cdn.jsdelivr.net/gh/${ctx.owner}/${ctx.repo}@${branch}/`);
     }
-    bases.push(`https://rawcdn.githack.com/${ctx.owner}/${ctx.repo}/${ctx.branch}/`);
+    bases.push(`https://rawcdn.githack.com/${ctx.owner}/${ctx.repo}/${branch}/`);
     const unique = Array.from(new Set(bases));
     return window.__HOA_PREVIEW_BASES__ = unique;
   }
