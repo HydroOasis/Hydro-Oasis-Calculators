@@ -969,6 +969,7 @@
 
         let equipmentCounter = 0;
         let roundingEnabled = true;
+        let elecTariffsLoaded = false;
 
         // Initialize SDKs
         async function initializeSDKs() {
@@ -1199,11 +1200,23 @@
             }
 
             const statusEl = document.getElementById('fetch-status');
+
+            if (elecTariffsLoaded) {
+                statusEl.innerHTML =
+                    '<div style="color: #10b981;">Tariff data already loaded. Use the selectors above to choose your plan.</div>';
+                setTimeout(() => {
+                    closeTariffModal();
+                    statusEl.innerHTML = '';
+                }, 1500);
+                return;
+            }
+
             statusEl.innerHTML =
                 '<div style="color: #4f46e5;">Loading shared tariff data…</div>';
 
             try {
-                await initElecTariffs();
+                await startElecTariffs();
+                elecTariffsLoaded = true;
                 statusEl.innerHTML =
                     '<div style="color: #10b981;">Tariffs loaded. Use the selectors above to choose your plan.</div>';
                 setTimeout(() => {
@@ -1214,6 +1227,7 @@
                 console.warn('Tariff modal fetch failed', error);
                 statusEl.innerHTML =
                     '<div class="error-message">Unable to load tariffs from the shared dataset.</div>';
+                elecTariffsLoaded = false;
             }
         }
 
@@ -2223,11 +2237,21 @@ async function initElecTariffs(){
   try { applyTariffToInputs(); } catch(_) {}
 }
 
-const startElecTariffs = () => initElecTariffs().catch(err => console.warn('initElecTariffs failed', err));
-if (document.readyState === 'complete') {
-  startElecTariffs();
-} else {
-  window.addEventListener('load', startElecTariffs);
+let elecTariffsPromise = null;
+
+async function startElecTariffs() {
+  if (elecTariffsPromise) {
+    return elecTariffsPromise;
+  }
+
+  elecTariffsPromise = initElecTariffs()
+    .catch(err => {
+      console.warn('initElecTariffs failed', err);
+      elecTariffsPromise = null;
+      throw err;
+    });
+
+  return elecTariffsPromise;
 }
   </script>
 </body>
