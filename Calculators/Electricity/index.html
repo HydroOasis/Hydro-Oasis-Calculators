@@ -934,11 +934,11 @@
      <div class="modal-header">
       <h3 class="modal-title">Fetch Tariff Data</h3><button class="close-btn" onclick="closeTariffModal()">×</button>
      </div>
-     <div class="form-group"><label for="retailer-select">Retailer</label> <select id="retailer-select"> <option value="">Select Retailer</option> <option value="actew">ActewAGL (ACT)</option> <option value="agl">AGL</option> <option value="alinta">Alinta Energy</option> <option value="amber">Amber Electric</option> <option value="aurora">Aurora Energy (TAS)</option> <option value="energyaustralia">Energy Australia</option> <option value="ergon">Ergon Energy (QLD)</option> <option value="energex">Energex (QLD)</option> <option value="horizon">Horizon Power (WA)</option> <option value="lumo">Lumo Energy</option> <option value="momentum">Momentum Energy</option> <option value="origin">Origin Energy</option> <option value="powershop">Powershop</option> <option value="red">Red Energy</option> <option value="sapowernetworks">SA Power Networks (SA)</option> <option value="simply">Simply Energy</option> <option value="synergy">Synergy (WA)</option> </select>
+     <div class="form-group"><label for="retailer-select">Retailer</label> <select id="retailer-select" disabled> <option value="">Select Retailer</option> </select>
      </div>
-     <div class="form-group"><label for="plan-select">Plan</label> <select id="plan-select"> <option value="">Select Plan</option> </select>
+     <div class="form-group"><label for="plan-select">Plan</label> <select id="plan-select" disabled> <option value="">Select Plan</option> </select>
      </div>
-     <div class="form-group"><label for="region-select">State/Network</label> <select id="region-select"> <option value="">Select Region</option> <option value="nsw">NSW</option> <option value="vic">VIC</option> <option value="qld">QLD</option> <option value="sa">SA</option> <option value="wa">WA</option> <option value="tas">TAS</option> <option value="act">ACT</option> </select>
+     <div class="form-group"><label for="region-select">State/Network</label> <select id="region-select" disabled> <option value="">Select Region</option> </select>
      </div>
      <div style="display: flex; gap: 12px; margin-top: 24px;"><button class="btn btn-primary" onclick="fetchTariffData()">Fetch Data</button> <button class="btn btn-secondary" onclick="closeTariffModal()">Cancel</button>
      </div>
@@ -1721,86 +1721,6 @@
             });
         });
 
-        // Retailer selection handler
-        document.getElementById('retailer-select').addEventListener('change', function() {
-            const planSelect = document.getElementById('plan-select');
-            const regionSelect = document.getElementById('region-select');
-            
-            planSelect.innerHTML = '<option value="">Select Plan</option>';
-            regionSelect.innerHTML = '<option value="">Select Region</option>';
-            
-            const plans = {
-                actew: ['standard-tariff', 'time-of-use'],
-                agl: ['basic-plan', 'time-of-use'],
-                alinta: ['home-deal'],
-                amber: ['wholesale-plan'],
-                aurora: ['residential-tariff', 'time-of-use'],
-                energyaustralia: ['basic-plan', 'time-of-use'],
-                ergon: ['tariff-11', 'tariff-12'],
-                energex: ['tariff-11'],
-                horizon: ['standard-tariff'],
-                lumo: ['basic-plan', 'time-of-use'],
-                momentum: ['classic-plan'],
-                origin: ['basic-plan', 'time-of-use'],
-                powershop: ['standard-plan'],
-                red: ['living-energy'],
-                sapowernetworks: ['single-rate', 'flexible-tariff'],
-                simply: ['simply-save'],
-                synergy: ['a1-tariff', 'a2-tariff']
-            };
-            
-            // Define which states each retailer operates in
-            const retailerStates = {
-                actew: ['act'],
-                agl: ['nsw', 'vic', 'qld', 'sa'],
-                alinta: ['nsw', 'vic', 'qld', 'sa', 'wa'],
-                amber: ['nsw', 'vic', 'qld', 'sa'],
-                aurora: ['tas'],
-                energyaustralia: ['nsw', 'vic', 'qld', 'sa'],
-                ergon: ['qld'],
-                energex: ['qld'],
-                horizon: ['wa'],
-                lumo: ['nsw', 'vic', 'qld', 'sa'],
-                momentum: ['nsw', 'vic', 'qld', 'sa'],
-                origin: ['nsw', 'vic', 'qld', 'sa'],
-                powershop: ['nsw', 'vic', 'qld', 'sa'],
-                red: ['nsw', 'vic', 'qld', 'sa'],
-                sapowernetworks: ['sa'],
-                simply: ['nsw', 'vic', 'qld', 'sa'],
-                synergy: ['wa']
-            };
-            
-            const stateNames = {
-                nsw: 'NSW',
-                vic: 'VIC',
-                qld: 'QLD',
-                sa: 'SA',
-                wa: 'WA',
-                tas: 'TAS',
-                act: 'ACT'
-            };
-            
-            // Populate plans
-            if (plans[this.value]) {
-                plans[this.value].forEach(plan => {
-                    const option = document.createElement('option');
-                    option.value = plan;
-                    option.textContent = plan.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
-                    planSelect.appendChild(option);
-                });
-            }
-            
-            // Populate states based on retailer coverage
-            if (retailerStates[this.value]) {
-                retailerStates[this.value].forEach(state => {
-                    const option = document.createElement('option');
-                    option.value = state;
-                    option.textContent = stateNames[state];
-                    regionSelect.appendChild(option);
-                });
-            }
-        });
-
         // Initialize with one equipment
         addEquipment();
     </script>
@@ -2167,8 +2087,21 @@ async function initElecTariffs(){
 
   const previousRegion = $region.value;
 
-  const regions = [...new Set(tariffs.map(t=>t.region))].sort();
-  $region.innerHTML = '<option value="">Select region…</option>' + regions.map(r=>`<option>${r}</option>`).join('');
+  function escapeHtml(str) {
+    if (str === null || str === undefined) {
+      return '';
+    }
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  const regions = [...new Set(tariffs.map(t=>t.region).filter(Boolean))].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+  $region.innerHTML = '<option value="">Select region…</option>' + regions.map(r=>`<option value="${escapeHtml(r)}">${escapeHtml(r)}</option>`).join('');
+  $region.disabled = regions.length === 0;
   if (regions.includes(previousRegion)) {
     $region.value = previousRegion;
   }
@@ -2177,11 +2110,26 @@ async function initElecTariffs(){
   $retailer.addEventListener('change', syncPlans);
   $plan.addEventListener('change', applyTariffToInputs);
 
+  function getTariffKey(t) {
+    const region = t.region || '';
+    const retailer = t.retailer || '';
+    const distributor = t.distributor || '';
+    const plan = t.plan || '';
+    return [region, retailer, distributor, plan].join('||');
+  }
+
+  function formatPlanLabel(t) {
+    if (t.distributor) {
+      return `${t.plan} — ${t.distributor}`;
+    }
+    return t.plan;
+  }
+
   function syncRetailers(){
     const subset = tariffs.filter(t=>!$region.value || t.region===$region.value);
-    const retailers = [...new Set(subset.map(t=>t.retailer))].sort();
+    const retailers = [...new Set(subset.map(t=>t.retailer).filter(Boolean))].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
     const currentRetailer = $retailer.value;
-    $retailer.innerHTML = '<option value="">Select retailer…</option>' + retailers.map(r=>`<option>${r}</option>`).join('');
+    $retailer.innerHTML = '<option value="">Select retailer…</option>' + retailers.map(r=>`<option value="${escapeHtml(r)}">${escapeHtml(r)}</option>`).join('');
     $retailer.disabled = retailers.length===0;
     if (retailers.includes(currentRetailer)) {
       $retailer.value = currentRetailer;
@@ -2193,22 +2141,42 @@ async function initElecTariffs(){
 
   function syncPlans(){
     const subset = tariffs.filter(t=>(!$region.value || t.region===$region.value) && t.retailer===$retailer.value);
-    const plans = [...new Set(subset.map(t=>t.plan))];
-    const currentPlan = $plan.value;
-    $plan.innerHTML = '<option value="">Select plan…</option>' + plans.map(p=>`<option>${p}</option>`).join('');
-    $plan.disabled = plans.length===0;
-    if (plans.length === 1) {
-      $plan.value = plans[0];
+    const seen = new Set();
+    const planOptions = [];
+
+    subset.forEach(t => {
+      if (!t.plan) return;
+      const key = getTariffKey(t);
+      if (seen.has(key)) return;
+      seen.add(key);
+      planOptions.push({ key, label: formatPlanLabel(t) });
+    });
+
+    planOptions.sort((a, b) => a.label.localeCompare(b.label, undefined, { numeric: true, sensitivity: 'base' }));
+
+    const currentPlanKey = $plan.value;
+    $plan.innerHTML = '<option value="">Select plan…</option>' + planOptions.map(opt=>`<option value="${escapeHtml(opt.key)}">${escapeHtml(opt.label)}</option>`).join('');
+    $plan.disabled = planOptions.length===0;
+
+    if (planOptions.length === 1) {
+      $plan.value = planOptions[0].key;
       applyTariffToInputs();
+      return;
     }
-    if (plans.includes(currentPlan)) {
-      $plan.value = currentPlan;
+
+    if (planOptions.some(opt => opt.key === currentPlanKey)) {
+      $plan.value = currentPlanKey;
       applyTariffToInputs();
     }
   }
 
   function applyTariffToInputs(){
-    const t = tariffs.find(x => (!$region.value || x.region===$region.value) && x.retailer===$retailer.value && x.plan===$plan.value);
+    const planKey = $plan.value;
+    if (!planKey) {
+      return false;
+    }
+
+    const t = tariffs.find(x => getTariffKey(x) === planKey);
     console.log('[Elec] Applying tariff from JSON', t);
     if (!t) return false;
 
