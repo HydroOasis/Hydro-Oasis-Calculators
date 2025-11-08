@@ -885,20 +885,6 @@
     <div class="section">
      <h2 class="section-title">⚡ Rate Configuration</h2>
      <div class="form-grid">
-      <div class="input">
-       <label for="elecRegion">Region/State</label>
-       <select id="elecRegion"><option value="">Select region…</option></select>
-      </div>
-      <div class="input">
-       <label for="elecRetailer">Retailer</label>
-       <select id="elecRetailer" disabled><option value="">Select retailer…</option></select>
-      </div>
-      <div class="input">
-       <label for="elecPlan">Plan</label>
-       <select id="elecPlan" disabled><option value="">Select plan…</option></select>
-      </div>
-     </div>
-     <div class="form-grid">
       <div class="form-group"><label for="on-peak-rate">On-Peak Rate (c/kWh)</label> <input type="number" id="on-peak-rate" min="0" step="0.01" placeholder="25.5">
       </div>
       <div class="form-group"><label for="off-peak-rate">Off-Peak Rate (c/kWh)</label> <input type="number" id="off-peak-rate" min="0" step="0.01" placeholder="15.2">
@@ -969,7 +955,7 @@
 
         let equipmentCounter = 0;
         let roundingEnabled = true;
-        let elecTariffsLoaded = false;
+        let applySelectedTariffFromModal = null;
 
         // Initialize SDKs
         async function initializeSDKs() {
@@ -1181,6 +1167,9 @@
         function openTariffModal() {
             const modal = document.getElementById('tariff-modal');
             modal.classList.add('show');
+            startElecTariffs().catch(err => {
+                console.warn('Tariff modal prefetch failed', err);
+            });
         }
 
         function closeTariffModal() {
@@ -1200,25 +1189,26 @@
             }
 
             const statusEl = document.getElementById('fetch-status');
-
-            if (elecTariffsLoaded) {
-                statusEl.innerHTML =
-                    '<div style="color: #10b981;">Tariff data already loaded. Use the selectors above to choose your plan.</div>';
-                setTimeout(() => {
-                    closeTariffModal();
-                    statusEl.innerHTML = '';
-                }, 1500);
-                return;
-            }
-
             statusEl.innerHTML =
-                '<div style="color: #4f46e5;">Loading shared tariff data…</div>';
+                '<div style="color: #4f46e5;">Applying tariff selection…</div>';
 
             try {
                 await startElecTariffs();
-                elecTariffsLoaded = true;
+
+                if (typeof applySelectedTariffFromModal !== 'function') {
+                    throw new Error('Tariff helpers not ready');
+                }
+
+                const applied = applySelectedTariffFromModal();
+
+                if (!applied) {
+                    statusEl.innerHTML =
+                        '<div class="error-message">Unable to locate the selected tariff.</div>';
+                    return;
+                }
+
                 statusEl.innerHTML =
-                    '<div style="color: #10b981;">Tariffs loaded. Use the selectors above to choose your plan.</div>';
+                    '<div style="color: #10b981;">Tariff applied to rate inputs.</div>';
                 setTimeout(() => {
                     closeTariffModal();
                     statusEl.innerHTML = '';
@@ -1227,7 +1217,6 @@
                 console.warn('Tariff modal fetch failed', error);
                 statusEl.innerHTML =
                     '<div class="error-message">Unable to load tariffs from the shared dataset.</div>';
-                elecTariffsLoaded = false;
             }
         }
 
@@ -2018,10 +2007,14 @@ const CEA = (() => {
 </script>
   <script>
 async function initElecTariffs(){
-  const $region   = document.getElementById('elecRegion');
-  const $retailer = document.getElementById('elecRetailer');
-  const $plan     = document.getElementById('elecPlan');
-  if (!$region || !$retailer || !$plan) return;
+  const $region   = document.getElementById('region-select');
+  const $retailer = document.getElementById('retailer-select');
+  const $plan     = document.getElementById('plan-select');
+
+  if (!$region || !$retailer || !$plan) {
+    console.warn('[Elec] Tariff selectors not found in modal.');
+    return;
+  }
 
   // Resolve a deterministic tariffs URL right now (no async race)
   const isPreview = /github\.io|raw\.githubusercontent\.com|htmlpreview/i.test(location.href);
@@ -2172,8 +2165,13 @@ async function initElecTariffs(){
   const $errBanner = document.getElementById('elecFetchError');
   if ($errBanner) { $errBanner.style.display = 'none'; }
 
+  const previousRegion = $region.value;
+
   const regions = [...new Set(tariffs.map(t=>t.region))].sort();
   $region.innerHTML = '<option value="">Select region…</option>' + regions.map(r=>`<option>${r}</option>`).join('');
+  if (regions.includes(previousRegion)) {
+    $region.value = previousRegion;
+  }
 
   $region.addEventListener('change', syncRetailers);
   $retailer.addEventListener('change', syncPlans);
@@ -2182,24 +2180,29 @@ async function initElecTariffs(){
   function syncRetailers(){
     const subset = tariffs.filter(t=>!$region.value || t.region===$region.value);
     const retailers = [...new Set(subset.map(t=>t.retailer))].sort();
+    const currentRetailer = $retailer.value;
     $retailer.innerHTML = '<option value="">Select retailer…</option>' + retailers.map(r=>`<option>${r}</option>`).join('');
     $retailer.disabled = retailers.length===0;
-    if (retailers.length === 1) { $retailer.value = retailers[0]; }
-    $plan.innerHTML = '<option value="">Select plan…</option>';
-    $plan.disabled = true;
+    if (retailers.includes(currentRetailer)) {
+      $retailer.value = currentRetailer;
+    } else if (retailers.length === 1) {
+      $retailer.value = retailers[0];
+    }
     syncPlans();
   }
 
   function syncPlans(){
     const subset = tariffs.filter(t=>(!$region.value || t.region===$region.value) && t.retailer===$retailer.value);
     const plans = [...new Set(subset.map(t=>t.plan))];
+    const currentPlan = $plan.value;
     $plan.innerHTML = '<option value="">Select plan…</option>' + plans.map(p=>`<option>${p}</option>`).join('');
     $plan.disabled = plans.length===0;
     if (plans.length === 1) {
       $plan.value = plans[0];
       applyTariffToInputs();
     }
-    if (plans.includes($plan.value)) {
+    if (plans.includes(currentPlan)) {
+      $plan.value = currentPlan;
       applyTariffToInputs();
     }
   }
@@ -2207,7 +2210,7 @@ async function initElecTariffs(){
   function applyTariffToInputs(){
     const t = tariffs.find(x => (!$region.value || x.region===$region.value) && x.retailer===$retailer.value && x.plan===$plan.value);
     console.log('[Elec] Applying tariff from JSON', t);
-    if (!t) return;
+    if (!t) return false;
 
     const setRate = (el, value) => {
       if (!el || el.dataset.userEdited) return;
@@ -2231,8 +2234,10 @@ async function initElecTariffs(){
     }
 
     console.log('[Elec] Set rates → flat:', $flat?.value, 'on:', $on?.value, 'off:', $off?.value, 'shoulder:', $sh?.value);
+    return true;
   }
 
+  applySelectedTariffFromModal = applyTariffToInputs;
   syncRetailers();
   try { applyTariffToInputs(); } catch(_) {}
 }
