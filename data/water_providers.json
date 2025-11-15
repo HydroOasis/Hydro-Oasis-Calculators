@@ -1,122 +1,35 @@
-{
-  "schema_version": "1.0",
-  "currency": "AUD",
-  "unit": "$/kL",
-  "providers": [
-    {
-      "name": "Icon Water",
-      "state": "ACT",
-      "tariffs": [
-        { "tier": 1, "price_per_kL": 2.78 },
-        { "tier": 2, "price_per_kL": 5.58 }
-      ]
-    },
-    {
-      "name": "Sydney Water",
-      "state": "NSW",
-      "tariffs": [
-        { "tier": 1, "price_per_kL": 3.17 }
-      ]
-    },
-    {
-      "name": "Hunter Water",
-      "state": "NSW",
-      "tariffs": [
-        { "tier": 1, "price_per_kL": 2.89 }
-      ]
-    },
-    {
-      "name": "Central Coast Council",
-      "state": "NSW",
-      "tariffs": [
-        { "tier": 1, "price_per_kL": 2.62 }
-      ]
-    },
-    {
-      "name": "Power and Water Corporation",
-      "state": "NT",
-      "tariffs": [
-        { "tier": 1, "price_per_kL": 2.26 }
-      ]
-    },
-    {
-      "name": "Urban Utilities",
-      "state": "QLD",
-      "tariffs": [
-        { "tier": 1, "price_per_kL": 0.98 },
-        { "tier": 2, "price_per_kL": 2.03 }
-      ]
-    },
-    {
-      "name": "Unitywater",
-      "state": "QLD",
-      "tariffs": [
-        { "tier": 1, "price_per_kL": 0.787 },
-        { "tier": 2, "price_per_kL": 1.57 }
-      ]
-    },
-    {
-      "name": "Gold Coast Water",
-      "state": "QLD",
-      "tariffs": [
-        { "tier": 1, "price_per_kL": 4.824 }
-      ]
-    },
-    {
-      "name": "Townsville Water",
-      "state": "QLD",
-      "tariffs": [
-        { "tier": 1, "price_per_kL": 4.13 }
-      ]
-    },
-    {
-      "name": "SA Water",
-      "state": "SA",
-      "tariffs": [
-        { "tier": 1, "price_per_kL": 2.37 },
-        { "tier": 2, "price_per_kL": 3.36 },
-        { "tier": 3, "price_per_kL": 3.64 }
-      ]
-    },
-    {
-      "name": "TasWater",
-      "state": "TAS",
-      "tariffs": [
-        { "tier": 1, "price_per_kL": 1.26 }
-      ]
-    },
-    {
-      "name": "Yarra Valley Water",
-      "state": "VIC",
-      "tariffs": [
-        { "tier": 1, "price_per_kL": 3.43 },
-        { "tier": 2, "price_per_kL": 4.5 }
-      ]
-    },
-    {
-      "name": "South East Water",
-      "state": "VIC",
-      "tariffs": [
-        { "tier": 1, "price_per_kL": 3.76 },
-        { "tier": 2, "price_per_kL": 4.8 }
-      ]
-    },
-    {
-      "name": "City West Water",
-      "state": "VIC",
-      "tariffs": [
-        { "tier": 1, "price_per_kL": 3.64 },
-        { "tier": 2, "price_per_kL": 4.16 }
-      ]
-    },
-    {
-      "name": "Water Corporation",
-      "state": "WA",
-      "tariffs": [
-        { "tier": 1, "price_per_kL": 2.052 },
-        { "tier": 2, "price_per_kL": 2.73 },
-        { "tier": 3, "price_per_kL": 5.11 }
-      ]
-    }
-  ]
-}
+[
+  { "name": "Icon Water", "state": "ACT", "rate": 2.78, "tier": "Tier 1" },
+  { "name": "Icon Water", "state": "ACT", "rate": 5.58, "tier": "Tier 2" },
+
+  { "name": "Sydney Water", "state": "NSW", "rate": 3.17, "tier": "Standard Rate" },
+  { "name": "Hunter Water", "state": "NSW", "rate": 2.89, "tier": "Standard Rate" },
+  { "name": "Central Coast Council", "state": "NSW", "rate": 2.62, "tier": "Standard Rate" },
+
+  { "name": "Power and Water Corporation", "state": "NT", "rate": 2.26, "tier": "Standard Rate" },
+
+  { "name": "Urban Utilities", "state": "QLD", "rate": 0.98, "tier": "Tier 1" },
+  { "name": "Urban Utilities", "state": "QLD", "rate": 2.03, "tier": "Tier 2" },
+  { "name": "Unity Water", "state": "QLD", "rate": 0.787, "tier": "Tier 1" },
+  { "name": "Unity Water", "state": "QLD", "rate": 1.57, "tier": "Tier 2" },
+  { "name": "Gold Coast Water", "state": "QLD", "rate": 4.824, "tier": "Standard Rate" },
+  { "name": "Townsville Water – Standard Plan (excess over 772 kL)", "state": "QLD", "rate": 4.13, "tier": "Excess Usage" },
+  { "name": "Townsville Water – Water Watchers Plan", "state": "QLD", "rate": 1.73, "tier": "Usage Charge" },
+
+  { "name": "SA Water", "state": "SA", "rate": 2.37, "tier": "Tier 1" },
+  { "name": "SA Water", "state": "SA", "rate": 3.36, "tier": "Tier 2" },
+  { "name": "SA Water", "state": "SA", "rate": 3.64, "tier": "Tier 3" },
+
+  { "name": "TasWater", "state": "TAS", "rate": 1.26, "tier": "Standard Rate" },
+
+  { "name": "Yarra Valley Water", "state": "VIC", "rate": 3.43, "tier": "Tier 1" },
+  { "name": "Yarra Valley Water", "state": "VIC", "rate": 4.5,  "tier": "Tier 2" },
+  { "name": "South East Water", "state": "VIC", "rate": 3.76, "tier": "Tier 1" },
+  { "name": "South East Water", "state": "VIC", "rate": 4.8,  "tier": "Tier 2" },
+  { "name": "City West Water", "state": "VIC", "rate": 3.64, "tier": "Tier 1" },
+  { "name": "City West Water", "state": "VIC", "rate": 4.16, "tier": "Tier 2" },
+
+  { "name": "Water Corporation", "state": "WA", "rate": 2.052, "tier": "Tier 1" },
+  { "name": "Water Corporation", "state": "WA", "rate": 2.73,  "tier": "Tier 2" },
+  { "name": "Water Corporation", "state": "WA", "rate": 5.11,  "tier": "Tier 3" }
+]
