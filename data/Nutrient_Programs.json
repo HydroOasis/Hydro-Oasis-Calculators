@@ -1,1 +1,2213 @@
+{
+  "canna_aqua_au": {
+    "name": "Canna Aqua",
+    "vegetative": [
+      { "week": 1, "products": [
+        { "name": "Canna Aqua Vega A", "rate": 2.5 },
+        { "name": "Canna Aqua Vega B", "rate": 2.5 },
+        { "name": "Canna Rhizotonic", "rate": 4 }
+      ]},
+      { "week": 2, "products": [
+        { "name": "Canna Aqua Vega A", "rate": 3.5 },
+        { "name": "Canna Aqua Vega B", "rate": 3.5 },
+        { "name": "Canna Rhizotonic", "rate": 4 }
+      ]},
+      { "week": 3, "products": [
+        { "name": "Canna Aqua Vega A", "rate": 4 },
+        { "name": "Canna Aqua Vega B", "rate": 4 },
+        { "name": "Canna Rhizotonic", "rate": 4 },
+        { "name": "Canna Cannazym", "rate": 2.5 }
+      ]},
+      { "week": 4, "products": [
+        { "name": "Canna Aqua Vega A", "rate": 4 },
+        { "name": "Canna Aqua Vega B", "rate": 4 },
+        { "name": "Canna Cannazym", "rate": 2.5 }
+      ]}
+    ],
+    "flowering": [
+      { "week": 1, "products": [
+        { "name": "Canna Aqua Flores A", "rate": 4 },
+        { "name": "Canna Aqua Flores B", "rate": 4 },
+        { "name": "Canna Cannazym", "rate": 2.5 }
+      ]},
+      { "week": 2, "products": [
+        { "name": "Canna Aqua Flores A", "rate": 4.5 },
+        { "name": "Canna Aqua Flores B", "rate": 4.5 },
+        { "name": "Canna Cannazym", "rate": 2.5 }
+      ]},
+      { "week": 3, "products": [
+        { "name": "Canna Aqua Flores A", "rate": 5 },
+        { "name": "Canna Aqua Flores B", "rate": 5 },
+        { "name": "Canna PK 13/14", "rate": 1.5 }
+      ]},
+      { "week": 4, "products": [
+        { "name": "Canna Aqua Flores A", "rate": 5 },
+        { "name": "Canna Aqua Flores B", "rate": 5 },
+        { "name": "Canna PK 13/14", "rate": 1.5 }
+      ]},
+      { "week": 5, "products": [
+        { "name": "Canna Aqua Flores A", "rate": 5 },
+        { "name": "Canna Aqua Flores B", "rate": 5 },
+        { "name": "Canna PK 13/14", "rate": 1.5 }
+      ]},
+      { "week": 6, "products": [
+        { "name": "Canna Aqua Flores A", "rate": 4.5 },
+        { "name": "Canna Aqua Flores B", "rate": 4.5 },
+        { "name": "Canna Cannazym", "rate": 2.5 }
+      ]},
+      { "week": 7, "products": [
+        { "name": "Canna Aqua Flores A", "rate": 4 },
+        { "name": "Canna Aqua Flores B", "rate": 4 },
+        { "name": "Canna Cannazym", "rate": 2.5 }
+      ]},
+      { "week": 8, "products": [
+        { "name": "Canna Aqua Flores A", "rate": 3 },
+        { "name": "Canna Aqua Flores B", "rate": 3 }
+      ]},
+      { "week": 9, "products": [
+        { "name": "Canna Cannazym", "rate": 2.5 }
+      ]}
+    ]
+  },
 
+  "floramax_veg1": {
+    "name": "FloraMax VEG-1 Program",
+    "vegetative": [
+      { "week": 1, "products": [
+        { "name": "VEG-1", "rate": 5.2 },
+        { "name": "ROOT-XS", "rate": 2 },
+        { "name": "ORGANABUD", "rate": 1 },
+        { "name": "SYSTEM MAINTENANCE", "rate": 1 },
+        { "name": "SILICA", "rate": 0.1 }
+      ]},
+      { "week": 2, "products": [
+        { "name": "VEG-1", "rate": 5.8 },
+        { "name": "ROOT-XS", "rate": 2 },
+        { "name": "ORGANABUD", "rate": 1 },
+        { "name": "SYSTEM MAINTENANCE", "rate": 1 },
+        { "name": "SILICA", "rate": 0.1 }
+      ]},
+      { "week": 3, "products": [
+        { "name": "VEG-1", "rate": 6.4 },
+        { "name": "ROOT-XS", "rate": 2 },
+        { "name": "ORGANABUD", "rate": 2 },
+        { "name": "SYSTEM MAINTENANCE", "rate": 1 },
+        { "name": "SILICA", "rate": 0.1 }
+      ]},
+      { "week": 4, "products": [
+        { "name": "VEG-1", "rate": 6.4 },
+        { "name": "ROOT-XS", "rate": 2 },
+        { "name": "ORGANABUD", "rate": 2 },
+        { "name": "SYSTEM MAINTENANCE", "rate": 1 },
+        { "name": "SILICA", "rate": 0.1 }
+      ]}
+    ],
+    "flowering": [
+      { "week": 1, "products": [
+        { "name": "VEG-1", "rate": 5.8 },
+        { "name": "ROOT-XS", "rate": 2 },
+        { "name": "FLOWERING ENHANCER", "rate": 2 },
+        { "name": "ORGANABUD", "rate": 2 },
+        { "name": "SYSTEM MAINTENANCE", "rate": 1 },
+        { "name": "SILICA", "rate": 0.1 }
+      ]},
+      { "week": 2, "products": [
+        { "name": "VEG-1", "rate": 5.8 },
+        { "name": "ROOT-XS", "rate": 2 },
+        { "name": "FLOWERING ENHANCER", "rate": 2 },
+        { "name": "ORGANABUD", "rate": 2 },
+        { "name": "SYSTEM MAINTENANCE", "rate": 1 },
+        { "name": "SILICA", "rate": 0.1 }
+      ]},
+      { "week": 3, "products": [
+        { "name": "VEG-1", "rate": 5.8 },
+        { "name": "ROOT-XS", "rate": 2 },
+        { "name": "FLOWERING ENHANCER", "rate": 2 },
+        { "name": "ORGANABUD", "rate": 2 },
+        { "name": "SYSTEM MAINTENANCE", "rate": 1 },
+        { "name": "SILICA", "rate": 0.1 }
+      ]},
+      { "week": 4, "products": [
+        { "name": "VEG-1", "rate": 5.2 },
+        { "name": "FLOWERING ENHANCER", "rate": 2 },
+        { "name": "ORGANABUD", "rate": 2 },
+        { "name": "RESIN-XS", "rate": 2 },
+        { "name": "SYSTEM MAINTENANCE", "rate": 1 },
+        { "name": "SILICA", "rate": 0.1 }
+      ]},
+      { "week": 5, "products": [
+        { "name": "VEG-1", "rate": 5.2 },
+        { "name": "FLOWERING ENHANCER", "rate": 2 },
+        { "name": "ORGANABUD", "rate": 2 },
+        { "name": "RESIN-XS", "rate": 2 },
+        { "name": "SYSTEM MAINTENANCE", "rate": 1 },
+        { "name": "SILICA", "rate": 0.1 }
+      ]},
+      { "week": 6, "products": [
+        { "name": "VEG-1", "rate": 5.2 },
+        { "name": "FLOWERING ENHANCER", "rate": 2 },
+        { "name": "ORGANABUD", "rate": 2 },
+        { "name": "RESIN-XS", "rate": 2 },
+        { "name": "SYSTEM MAINTENANCE", "rate": 1 },
+        { "name": "SILICA", "rate": 0.1 }
+      ]},
+      { "week": 7, "products": [
+        { "name": "VEG-1", "rate": 5.2 },
+        { "name": "FLOWERING ENHANCER", "rate": 2 },
+        { "name": "ORGANABUD", "rate": 2 },
+        { "name": "RESIN-XS", "rate": 2 },
+        { "name": "SYSTEM MAINTENANCE", "rate": 1 },
+        { "name": "SILICA", "rate": 0.1 }
+      ]},
+      { "week": 8, "products": [
+        { "name": "VEG-1", "rate": 5.2 },
+        { "name": "FLOWERING ENHANCER", "rate": 2 },
+        { "name": "ORGANABUD", "rate": 2 },
+        { "name": "RESIN-XS", "rate": 2 },
+        { "name": "SYSTEM MAINTENANCE", "rate": 1 },
+        { "name": "SILICA", "rate": 0.1 }
+      ]}
+    ]
+  },
+
+  "floramax_vegaflora": {
+    "name": "FloraMax VegaFlora A+B Program",
+    "vegetative": [
+      { "week": 1, "products": [
+        { "name": "VEGAFLORA A+B", "rate": 2.7 },
+        { "name": "ROOT-XS", "rate": 2 },
+        { "name": "ORGANABUD", "rate": 1 },
+        { "name": "SYSTEM MAINTENANCE", "rate": 1 },
+        { "name": "SILICA", "rate": 0.1 }
+      ]},
+      { "week": 2, "products": [
+        { "name": "VEGAFLORA A+B", "rate": 3 },
+        { "name": "ROOT-XS", "rate": 2 },
+        { "name": "ORGANABUD", "rate": 2 },
+        { "name": "SYSTEM MAINTENANCE", "rate": 1 },
+        { "name": "SILICA", "rate": 0.1 }
+      ]},
+      { "week": 3, "products": [
+        { "name": "VEGAFLORA A+B", "rate": 3 },
+        { "name": "ROOT-XS", "rate": 2 },
+        { "name": "ORGANABUD", "rate": 1 },
+        { "name": "SYSTEM MAINTENANCE", "rate": 1 },
+        { "name": "SILICA", "rate": 0.1 }
+      ]},
+      { "week": 4, "products": [
+        { "name": "VEGAFLORA A+B", "rate": 3 },
+        { "name": "ROOT-XS", "rate": 2 },
+        { "name": "ORGANABUD", "rate": 2 },
+        { "name": "SYSTEM MAINTENANCE", "rate": 1 },
+        { "name": "SILICA", "rate": 0.1 }
+      ]}
+    ],
+    "flowering": [
+      { "week": 1, "products": [
+        { "name": "VEGAFLORA A+B", "rate": 3 },
+        { "name": "ROOT-XS", "rate": 0.5 },
+        { "name": "FLOWERING ENHANCER", "rate": 2 },
+        { "name": "ORGANABUD", "rate": 2 },
+        { "name": "SYSTEM MAINTENANCE", "rate": 1 },
+        { "name": "SILICA", "rate": 0.1 }
+      ]},
+      { "week": 2, "products": [
+        { "name": "VEGAFLORA A+B", "rate": 3 },
+        { "name": "ROOT-XS", "rate": 0.5 },
+        { "name": "FLOWERING ENHANCER", "rate": 2 },
+        { "name": "ORGANABUD", "rate": 2 },
+        { "name": "SYSTEM MAINTENANCE", "rate": 1 },
+        { "name": "SILICA", "rate": 0.1 }
+      ]},
+      { "week": 3, "products": [
+        { "name": "VEGAFLORA A+B", "rate": 2.7 },
+        { "name": "ROOT-XS", "rate": 0.5 },
+        { "name": "FLOWERING ENHANCER", "rate": 2 },
+        { "name": "ORGANABUD", "rate": 2 },
+        { "name": "RESIN-XS", "rate": 1 },
+        { "name": "SYSTEM MAINTENANCE", "rate": 1 },
+        { "name": "SILICA", "rate": 0.1 }
+      ]},
+      { "week": 4, "products": [
+        { "name": "VEGAFLORA A+B", "rate": 2.5 },
+        { "name": "ROOT-XS", "rate": 0.5 },
+        { "name": "FLOWERING ENHANCER", "rate": 2 },
+        { "name": "ORGANABUD", "rate": 2 },
+        { "name": "RESIN-XS", "rate": 2 },
+        { "name": "SYSTEM MAINTENANCE", "rate": 1 },
+        { "name": "SILICA", "rate": 0.1 }
+      ]},
+      { "week": 5, "products": [
+        { "name": "VEGAFLORA A+B", "rate": 2.5 },
+        { "name": "ROOT-XS", "rate": 0.5 },
+        { "name": "FLOWERING ENHANCER", "rate": 2 },
+        { "name": "ORGANABUD", "rate": 2 },
+        { "name": "RESIN-XS", "rate": 3 },
+        { "name": "SYSTEM MAINTENANCE", "rate": 1 },
+        { "name": "SILICA", "rate": 0.1 }
+      ]},
+      { "week": 6, "products": [
+        { "name": "VEGAFLORA A+B", "rate": 2.5 },
+        { "name": "ROOT-XS", "rate": 0.5 },
+        { "name": "FLOWERING ENHANCER", "rate": 2 },
+        { "name": "ORGANABUD", "rate": 2 },
+        { "name": "RESIN-XS", "rate": 3 },
+        { "name": "SYSTEM MAINTENANCE", "rate": 1 },
+        { "name": "SILICA", "rate": 0.1 }
+      ]},
+      { "week": 7, "products": [
+        { "name": "VEGAFLORA A+B", "rate": 2.5 },
+        { "name": "ROOT-XS", "rate": 0.5 },
+        { "name": "FLOWERING ENHANCER", "rate": 2 },
+        { "name": "ORGANABUD", "rate": 2 },
+        { "name": "RESIN-XS", "rate": 3 },
+        { "name": "SYSTEM MAINTENANCE", "rate": 1 },
+        { "name": "SILICA", "rate": 0.1 }
+      ]},
+      { "week": 8, "products": [
+        { "name": "VEGAFLORA A+B", "rate": 2.5 },
+        { "name": "FLOWERING ENHANCER", "rate": 2 },
+        { "name": "ORGANABUD", "rate": 2 },
+        { "name": "RESIN-XS", "rate": 3 },
+        { "name": "SYSTEM MAINTENANCE", "rate": 1 },
+        { "name": "SILICA", "rate": 0.1 }
+      ]}
+    ]
+  },
+  "house_garden_classic_coco": {
+    "name": "House & Garden Classic Program - Coco",
+    "vegetative": [
+      { "week": 1, "products": [
+        { "name": "Coco A+B", "rate": 1.5 },
+        { "name": "Roots Excelurator", "rate": 0.3 },
+        { "name": "Amino Treatment", "rate": 0.2 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Magic Green", "rate": 0.5 },
+        { "name": "Drip Clean", "rate": 0.1 }
+      ]},
+      { "week": 2, "products": [
+        { "name": "Coco A+B", "rate": 2 },
+        { "name": "Roots Excelurator", "rate": 0.3 },
+        { "name": "Amino Treatment", "rate": 0.25 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Magic Green", "rate": 1 },
+        { "name": "Drip Clean", "rate": 0.1 }
+      ]},
+      { "week": 3, "products": [
+        { "name": "Coco A+B", "rate": 2.5 },
+        { "name": "Roots Excelurator", "rate": 0.3 },
+        { "name": "Amino Treatment", "rate": 0.35 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Magic Green", "rate": 1.5 },
+        { "name": "Drip Clean", "rate": 0.1 }
+      ]},
+      { "week": 4, "products": [
+        { "name": "Coco A+B", "rate": 2.75 },
+        { "name": "Roots Excelurator", "rate": 0.3 },
+        { "name": "Amino Treatment", "rate": 0.5 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Magic Green", "rate": 2 },
+        { "name": "Drip Clean", "rate": 0.1 }
+      ]}
+    ],
+    "flowering": [
+      { "week": 1, "products": [
+        { "name": "Coco A+B", "rate": 2.75 },
+        { "name": "Roots Excelurator", "rate": 0.3 },
+        { "name": "Amino Treatment", "rate": 1 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Drip Clean", "rate": 0.1 }
+      ]},
+      { "week": 2, "products": [
+        { "name": "Coco A+B", "rate": 3 },
+        { "name": "Roots Excelurator", "rate": 0.3 },
+        { "name": "Amino Treatment", "rate": 1 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Drip Clean", "rate": 0.1 }
+      ]},
+      { "week": 3, "products": [
+        { "name": "Coco A+B", "rate": 3 },
+        { "name": "Amino Treatment", "rate": 1 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Drip Clean", "rate": 0.1 }
+      ]},
+      { "week": 4, "products": [
+        { "name": "Coco A+B", "rate": 3 },
+        { "name": "Amino Treatment", "rate": 1 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Drip Clean", "rate": 0.1 }
+      ]},
+      { "week": 5, "products": [
+        { "name": "Coco A+B", "rate": 3 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Drip Clean", "rate": 0.1 },
+        { "name": "Bud XL", "rate": 1 },
+        { "name": "Top Booster", "rate": 1.5 }
+      ]},
+      { "week": 6, "products": [
+        { "name": "Coco A+B", "rate": 1.5 },
+        { "name": "Roots Excelurator", "rate": 0.3 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Drip Clean", "rate": 0.1 },
+        { "name": "Bud XL", "rate": 1 },
+        { "name": "Top Shooter", "rate": 0.5 }
+      ]},
+      { "week": 7, "products": [
+        { "name": "Coco A+B", "rate": 1.5 },
+        { "name": "Roots Excelurator", "rate": 0.3 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Drip Clean", "rate": 0.1 },
+        { "name": "Bud XL", "rate": 1 },
+        { "name": "Top Shooter", "rate": 1 }
+      ]},
+      { "week": 8, "products": [
+        { "name": "Coco A+B", "rate": 1.5 },
+        { "name": "Roots Excelurator", "rate": 0.3 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Drip Clean", "rate": 0.1 },
+        { "name": "Bud XL", "rate": 1 },
+        { "name": "Top Shooter", "rate": 1 }
+      ]}
+    ]
+  },
+
+  "house_garden_pro_coco": {
+    "name": "House & Garden Pro Program - Coco",
+    "vegetative": [
+      { "week": 1, "products": [
+        { "name": "Coco A+B", "rate": 1.5 },
+        { "name": "Roots Excelurator", "rate": 0.3 },
+        { "name": "Amino Treatment", "rate": 0.2 },
+        { "name": "Algen Extract", "rate": 1 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Nitrogen", "rate": 0.25 },
+        { "name": "Magnesium Mg0 8%", "rate": 0.5 },
+        { "name": "Magic Green", "rate": 0.5 },
+        { "name": "Drip Clean", "rate": 0.1 }
+      ]},
+      { "week": 2, "products": [
+        { "name": "Coco A+B", "rate": 2 },
+        { "name": "Roots Excelurator", "rate": 0.3 },
+        { "name": "Amino Treatment", "rate": 0.25 },
+        { "name": "Algen Extract", "rate": 1 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Nitrogen", "rate": 0.5 },
+        { "name": "Magnesium Mg0 8%", "rate": 0.5 },
+        { "name": "Magic Green", "rate": 1 },
+        { "name": "Drip Clean", "rate": 0.1 }
+      ]},
+      { "week": 3, "products": [
+        { "name": "Coco A+B", "rate": 2.5 },
+        { "name": "Roots Excelurator", "rate": 0.3 },
+        { "name": "Amino Treatment", "rate": 0.35 },
+        { "name": "Algen Extract", "rate": 1 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Nitrogen", "rate": 1 },
+        { "name": "Magnesium Mg0 8%", "rate": 0.5 },
+        { "name": "Magic Green", "rate": 1.5 },
+        { "name": "Drip Clean", "rate": 0.1 }
+      ]},
+      { "week": 4, "products": [
+        { "name": "Coco A+B", "rate": 2.75 },
+        { "name": "Roots Excelurator", "rate": 0.3 },
+        { "name": "Amino Treatment", "rate": 0.5 },
+        { "name": "Algen Extract", "rate": 1 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Nitrogen", "rate": 1 },
+        { "name": "Magnesium Mg0 8%", "rate": 0.5 },
+        { "name": "Magic Green", "rate": 2 },
+        { "name": "Drip Clean", "rate": 0.1 }
+      ]}
+    ],
+    "flowering": [
+      { "week": 1, "products": [
+        { "name": "Coco A+B", "rate": 2.75 },
+        { "name": "Roots Excelurator", "rate": 0.3 },
+        { "name": "Amino Treatment", "rate": 1 },
+        { "name": "Algen Extract", "rate": 1 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Magnesium Mg0 8%", "rate": 0.5 },
+        { "name": "Drip Clean", "rate": 0.1 }
+      ]},
+      { "week": 2, "products": [
+        { "name": "Coco A+B", "rate": 3 },
+        { "name": "Roots Excelurator", "rate": 0.3 },
+        { "name": "Amino Treatment", "rate": 1 },
+        { "name": "Algen Extract", "rate": 1 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Magnesium Mg0 8%", "rate": 0.5 },
+        { "name": "Drip Clean", "rate": 0.1 }
+      ]},
+      { "week": 3, "products": [
+        { "name": "Coco A+B", "rate": 3 },
+        { "name": "Amino Treatment", "rate": 1 },
+        { "name": "Algen Extract", "rate": 1 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Magnesium Mg0 8%", "rate": 0.5 },
+        { "name": "Drip Clean", "rate": 0.1 }
+      ]},
+      { "week": 4, "products": [
+        { "name": "Coco A+B", "rate": 3 },
+        { "name": "Amino Treatment", "rate": 1 },
+        { "name": "Algen Extract", "rate": 1 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Magnesium Mg0 8%", "rate": 0.5 },
+        { "name": "Bud XL", "rate": 1 },
+        { "name": "Drip Clean", "rate": 0.1 }
+      ]},
+      { "week": 5, "products": [
+        { "name": "Coco A+B", "rate": 3 },
+        { "name": "Algen Extract", "rate": 1 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Magnesium Mg0 8%", "rate": 0.5 },
+        { "name": "Bud XL", "rate": 1 },
+        { "name": "Top Booster", "rate": 1.5 },
+        { "name": "Drip Clean", "rate": 0.1 }
+      ]},
+      { "week": 6, "products": [
+        { "name": "Coco A+B", "rate": 1.5 },
+        { "name": "Roots Excelurator", "rate": 0.3 },
+        { "name": "Algen Extract", "rate": 1 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Magnesium Mg0 8%", "rate": 0.5 },
+        { "name": "Bud XL", "rate": 1 },
+        { "name": "Top Shooter", "rate": 0.5 },
+        { "name": "Drip Clean", "rate": 0.1 }
+      ]},
+      { "week": 7, "products": [
+        { "name": "Coco A+B", "rate": 1.5 },
+        { "name": "Roots Excelurator", "rate": 0.3 },
+        { "name": "Algen Extract", "rate": 1 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Magnesium Mg0 8%", "rate": 0.5 },
+        { "name": "Bud XL", "rate": 1 },
+        { "name": "Top Shooter", "rate": 1 },
+        { "name": "Drip Clean", "rate": 0.1 }
+      ]},
+      { "week": 8, "products": [
+        { "name": "Coco A+B", "rate": 1.5 },
+        { "name": "Roots Excelurator", "rate": 0.3 },
+        { "name": "Algen Extract", "rate": 1 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Magnesium Mg0 8%", "rate": 0.5 },
+        { "name": "Bud XL", "rate": 1 },
+        { "name": "Top Shooter", "rate": 1 },
+        { "name": "Drip Clean", "rate": 0.1 }
+        ]}
+    ]
+  },
+  "house_garden_classic_Aqua": {
+    "name": "House & Garden Classic Program - Aqua Flakes",
+    "vegetative": [
+      { "week": 1, "products": [
+        { "name": "Aqua Flakes A+B", "rate": 1.5 },
+        { "name": "Roots Excelurator", "rate": 0.3 },
+        { "name": "Amino Treatment", "rate": 0.2 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Magic Green", "rate": 0.5 },
+        { "name": "Drip Clean", "rate": 0.1 }
+      ]},
+      { "week": 2, "products": [
+        { "name": "Aqua Flakes A+B", "rate": 2 },
+        { "name": "Roots Excelurator", "rate": 0.3 },
+        { "name": "Amino Treatment", "rate": 0.25 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Magic Green", "rate": 1 },
+        { "name": "Drip Clean", "rate": 0.1 }
+      ]},
+      { "week": 3, "products": [
+        { "name": "Aqua Flakes A+B", "rate": 2.5 },
+        { "name": "Roots Excelurator", "rate": 0.3 },
+        { "name": "Amino Treatment", "rate": 0.35 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Magic Green", "rate": 1.5 },
+        { "name": "Drip Clean", "rate": 0.1 }
+      ]},
+      { "week": 4, "products": [
+        { "name": "Aqua Flakes A+B", "rate": 2.75 },
+        { "name": "Roots Excelurator", "rate": 0.3 },
+        { "name": "Amino Treatment", "rate": 0.5 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Magic Green", "rate": 2 },
+        { "name": "Drip Clean", "rate": 0.1 }
+      ]}
+    ],
+    "flowering": [
+      { "week": 1, "products": [
+        { "name": "Aqua Flakes A+B", "rate": 2.75 },
+        { "name": "Roots Excelurator", "rate": 0.3 },
+        { "name": "Amino Treatment", "rate": 1 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Drip Clean", "rate": 0.1 }
+      ]},
+      { "week": 2, "products": [
+        { "name": "Aqua Flakes A+B", "rate": 3 },
+        { "name": "Roots Excelurator", "rate": 0.3 },
+        { "name": "Amino Treatment", "rate": 1 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Drip Clean", "rate": 0.1 }
+      ]},
+      { "week": 3, "products": [
+        { "name": "Aqua Flakes A+B", "rate": 3 },
+        { "name": "Amino Treatment", "rate": 1 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Drip Clean", "rate": 0.1 }
+      ]},
+      { "week": 4, "products": [
+        { "name": "Aqua Flakes A+B", "rate": 3 },
+        { "name": "Amino Treatment", "rate": 1 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Drip Clean", "rate": 0.1 }
+      ]},
+      { "week": 5, "products": [
+        { "name": "Aqua Flakes A+B", "rate": 3 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Drip Clean", "rate": 0.1 },
+        { "name": "Bud XL", "rate": 1 },
+        { "name": "Top Booster", "rate": 1.5 }
+      ]},
+      { "week": 6, "products": [
+        { "name": "Aqua Flakes A+B", "rate": 1.5 },
+        { "name": "Roots Excelurator", "rate": 0.3 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Drip Clean", "rate": 0.1 },
+        { "name": "Bud XL", "rate": 1 },
+        { "name": "Top Shooter", "rate": 0.5 }
+      ]},
+      { "week": 7, "products": [
+        { "name": "Aqua Flakes A+B", "rate": 1.5 },
+        { "name": "Roots Excelurator", "rate": 0.3 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Drip Clean", "rate": 0.1 },
+        { "name": "Bud XL", "rate": 1 },
+        { "name": "Top Shooter", "rate": 1 }
+      ]},
+      { "week": 8, "products": [
+        { "name": "Aqua Flakes A+B", "rate": 1.5 },
+        { "name": "Roots Excelurator", "rate": 0.3 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Drip Clean", "rate": 0.1 },
+        { "name": "Bud XL", "rate": 1 },
+        { "name": "Top Shooter", "rate": 1 }
+      ]}
+    ]
+  },
+
+  "house_garden_pro_aqua": {
+    "name": "House & Garden Pro Program - Aqua Flakes",
+    "vegetative": [
+      { "week": 1, "products": [
+        { "name": "Aqua Flakes A+B", "rate": 1.5 },
+        { "name": "Roots Excelurator", "rate": 0.3 },
+        { "name": "Amino Treatment", "rate": 0.2 },
+        { "name": "Algen Extract", "rate": 1 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Nitrogen", "rate": 0.25 },
+        { "name": "Magnesium Mg0 8%", "rate": 0.5 },
+        { "name": "Magic Green", "rate": 0.5 },
+        { "name": "Drip Clean", "rate": 0.1 }
+      ]},
+      { "week": 2, "products": [
+        { "name": "Aqua Flakes A+B", "rate": 2 },
+        { "name": "Roots Excelurator", "rate": 0.3 },
+        { "name": "Amino Treatment", "rate": 0.25 },
+        { "name": "Algen Extract", "rate": 1 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Nitrogen", "rate": 0.5 },
+        { "name": "Magnesium Mg0 8%", "rate": 0.5 },
+        { "name": "Magic Green", "rate": 1 },
+        { "name": "Drip Clean", "rate": 0.1 }
+      ]},
+      { "week": 3, "products": [
+        { "name": "Aqua Flakes A+B", "rate": 2.5 },
+        { "name": "Roots Excelurator", "rate": 0.3 },
+        { "name": "Amino Treatment", "rate": 0.35 },
+        { "name": "Algen Extract", "rate": 1 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Nitrogen", "rate": 1 },
+        { "name": "Magnesium Mg0 8%", "rate": 0.5 },
+        { "name": "Magic Green", "rate": 1.5 },
+        { "name": "Drip Clean", "rate": 0.1 }
+      ]},
+      { "week": 4, "products": [
+        { "name": "Aqua Flakes A+B", "rate": 2.75 },
+        { "name": "Roots Excelurator", "rate": 0.3 },
+        { "name": "Amino Treatment", "rate": 0.5 },
+        { "name": "Algen Extract", "rate": 1 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Nitrogen", "rate": 1 },
+        { "name": "Magnesium Mg0 8%", "rate": 0.5 },
+        { "name": "Magic Green", "rate": 2 },
+        { "name": "Drip Clean", "rate": 0.1 }
+      ]}
+    ],
+    "flowering": [
+      { "week": 1, "products": [
+        { "name": "Aqua Flakes A+B", "rate": 2.75 },
+        { "name": "Roots Excelurator", "rate": 0.3 },
+        { "name": "Amino Treatment", "rate": 1 },
+        { "name": "Algen Extract", "rate": 1 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Magnesium Mg0 8%", "rate": 0.5 },
+        { "name": "Drip Clean", "rate": 0.1 }
+      ]},
+      { "week": 2, "products": [
+        { "name": "Aqua Flakes A+B", "rate": 3 },
+        { "name": "Roots Excelurator", "rate": 0.3 },
+        { "name": "Amino Treatment", "rate": 1 },
+        { "name": "Algen Extract", "rate": 1 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Magnesium Mg0 8%", "rate": 0.5 },
+        { "name": "Drip Clean", "rate": 0.1 }
+      ]},
+      { "week": 3, "products": [
+        { "name": "Aqua Flakes A+B", "rate": 3 },
+        { "name": "Amino Treatment", "rate": 1 },
+        { "name": "Algen Extract", "rate": 1 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Magnesium Mg0 8%", "rate": 0.5 },
+        { "name": "Drip Clean", "rate": 0.1 }
+      ]},
+      { "week": 4, "products": [
+        { "name": "Aqua Flakes A+B", "rate": 3 },
+        { "name": "Amino Treatment", "rate": 1 },
+        { "name": "Algen Extract", "rate": 1 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Magnesium Mg0 8%", "rate": 0.5 },
+        { "name": "Bud XL", "rate": 1 },
+        { "name": "Drip Clean", "rate": 0.1 }
+      ]},
+      { "week": 5, "products": [
+        { "name": "Aqua Flakes A+B", "rate": 3 },
+        { "name": "Algen Extract", "rate": 1 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Magnesium Mg0 8%", "rate": 0.5 },
+        { "name": "Bud XL", "rate": 1 },
+        { "name": "Top Booster", "rate": 1.5 },
+        { "name": "Drip Clean", "rate": 0.1 }
+      ]},
+      { "week": 6, "products": [
+        { "name": "Aqua Flakes A+B", "rate": 1.5 },
+        { "name": "Roots Excelurator", "rate": 0.3 },
+        { "name": "Algen Extract", "rate": 1 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Magnesium Mg0 8%", "rate": 0.5 },
+        { "name": "Bud XL", "rate": 1 },
+        { "name": "Top Shooter", "rate": 0.5 },
+        { "name": "Drip Clean", "rate": 0.1 }
+      ]},
+      { "week": 7, "products": [
+        { "name": "Aqua Flakes A+B", "rate": 1.5 },
+        { "name": "Roots Excelurator", "rate": 0.3 },
+        { "name": "Algen Extract", "rate": 1 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Magnesium Mg0 8%", "rate": 0.5 },
+        { "name": "Bud XL", "rate": 1 },
+        { "name": "Top Shooter", "rate": 1 },
+        { "name": "Drip Clean", "rate": 0.1 }
+      ]},
+      { "week": 8, "products": [
+        { "name": "Aqua Flakes A+B", "rate": 1.5 },
+        { "name": "Roots Excelurator", "rate": 0.3 },
+        { "name": "Algen Extract", "rate": 1 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Magnesium Mg0 8%", "rate": 0.5 },
+        { "name": "Bud XL", "rate": 1 },
+        { "name": "Top Shooter", "rate": 1 },
+        { "name": "Drip Clean", "rate": 0.1 }
+        ]}
+    ]
+  },
+  "house_garden_classic_Soil": {
+    "name": "House & Garden Classic Program - Soil",
+    "vegetative": [
+      { "week": 1, "products": [
+        { "name": "Soil A+B", "rate": 2 },
+        { "name": "Roots Excelurator", "rate": 0.3 },
+        { "name": "Amino Treatment", "rate": 0.2 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Magic Green", "rate": 0.5 },
+        { "name": "Drip Clean", "rate": 0.1 }
+      ]},
+      { "week": 2, "products": [
+        { "name": "Soil A+B", "rate": 2.5 },
+        { "name": "Roots Excelurator", "rate": 0.3 },
+        { "name": "Amino Treatment", "rate": 0.25 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Magic Green", "rate": 1 },
+        { "name": "Drip Clean", "rate": 0.1 }
+      ]},
+      { "week": 3, "products": [
+        { "name": "Soil A+B", "rate": 3 },
+        { "name": "Roots Excelurator", "rate": 0.3 },
+        { "name": "Amino Treatment", "rate": 0.35 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Magic Green", "rate": 1.5 },
+        { "name": "Drip Clean", "rate": 0.1 }
+      ]},
+      { "week": 4, "products": [
+        { "name": "Soil A+B", "rate": 3.5 },
+        { "name": "Roots Excelurator", "rate": 0.3 },
+        { "name": "Amino Treatment", "rate": 0.5 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Magic Green", "rate": 2 },
+        { "name": "Drip Clean", "rate": 0.1 }
+      ]}
+    ],
+    "flowering": [
+      { "week": 1, "products": [
+        { "name": "Soil A+B", "rate": 4 },
+        { "name": "Roots Excelurator", "rate": 0.3 },
+        { "name": "Amino Treatment", "rate": 1 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Drip Clean", "rate": 0.1 }
+      ]},
+      { "week": 2, "products": [
+        { "name": "Soil A+B", "rate": 5 },
+        { "name": "Roots Excelurator", "rate": 0.3 },
+        { "name": "Amino Treatment", "rate": 1 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Drip Clean", "rate": 0.1 }
+      ]},
+      { "week": 3, "products": [
+        { "name": "Soil A+B", "rate": 5 },
+        { "name": "Amino Treatment", "rate": 1 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Drip Clean", "rate": 0.1 }
+      ]},
+      { "week": 4, "products": [
+        { "name": "Soil A+B", "rate": 5 },
+        { "name": "Amino Treatment", "rate": 1 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Drip Clean", "rate": 0.1 }
+      ]},
+      { "week": 5, "products": [
+        { "name": "Soil A+B", "rate": 5 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Drip Clean", "rate": 0.1 },
+        { "name": "Bud XL", "rate": 1 },
+        { "name": "Top Booster", "rate": 1.5 }
+      ]},
+      { "week": 6, "products": [
+        { "name": "Soil A+B", "rate": 2 },
+        { "name": "Roots Excelurator", "rate": 0.3 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Drip Clean", "rate": 0.1 },
+        { "name": "Bud XL", "rate": 1 },
+        { "name": "Top Shooter", "rate": 0.5 }
+      ]},
+      { "week": 7, "products": [
+        { "name": "Soil A+B", "rate": 2 },
+        { "name": "Roots Excelurator", "rate": 0.3 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Drip Clean", "rate": 0.1 },
+        { "name": "Bud XL", "rate": 1 },
+        { "name": "Top Shooter", "rate": 1 }
+      ]},
+      { "week": 8, "products": [
+        { "name": "Soil A+B", "rate": 2 },
+        { "name": "Roots Excelurator", "rate": 0.3 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Drip Clean", "rate": 0.1 },
+        { "name": "Bud XL", "rate": 1 },
+        { "name": "Top Shooter", "rate": 1 }
+      ]}
+    ]
+  },
+  "house_garden_pro_soil": {
+    "name": "House & Garden Pro Program - Soil",
+    "vegetative": [
+      { "week": 1, "products": [
+        { "name": "Soil A+B", "rate": 2 },
+        { "name": "Roots Excelurator", "rate": 0.3 },
+        { "name": "Amino Treatment", "rate": 0.2 },
+        { "name": "Algen Extract", "rate": 1 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Nitrogen", "rate": 0.25 },
+        { "name": "Magnesium Mg0 8%", "rate": 0.5 },
+        { "name": "Magic Green", "rate": 0.5 },
+        { "name": "Drip Clean", "rate": 0.1 }
+      ]},
+      { "week": 2, "products": [
+        { "name": "Soil A+B", "rate": 2.5 },
+        { "name": "Roots Excelurator", "rate": 0.3 },
+        { "name": "Amino Treatment", "rate": 0.25 },
+        { "name": "Algen Extract", "rate": 1 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Nitrogen", "rate": 0.5 },
+        { "name": "Magnesium Mg0 8%", "rate": 0.5 },
+        { "name": "Magic Green", "rate": 1 },
+        { "name": "Drip Clean", "rate": 0.1 }
+      ]},
+      { "week": 3, "products": [
+        { "name": "Soil A+B", "rate": 3 },
+        { "name": "Roots Excelurator", "rate": 0.3 },
+        { "name": "Amino Treatment", "rate": 0.35 },
+        { "name": "Algen Extract", "rate": 1 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Nitrogen", "rate": 1 },
+        { "name": "Magnesium Mg0 8%", "rate": 0.5 },
+        { "name": "Magic Green", "rate": 1.5 },
+        { "name": "Drip Clean", "rate": 0.1 }
+      ]},
+      { "week": 4, "products": [
+        { "name": "Soil A+B", "rate": 3.5 },
+        { "name": "Roots Excelurator", "rate": 0.3 },
+        { "name": "Amino Treatment", "rate": 0.5 },
+        { "name": "Algen Extract", "rate": 1 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Nitrogen", "rate": 1 },
+        { "name": "Magnesium Mg0 8%", "rate": 0.5 },
+        { "name": "Magic Green", "rate": 2 },
+        { "name": "Drip Clean", "rate": 0.1 }
+      ]}
+    ],
+    "flowering": [
+      { "week": 1, "products": [
+        { "name": "Soil A+B", "rate": 4 },
+        { "name": "Roots Excelurator", "rate": 0.3 },
+        { "name": "Amino Treatment", "rate": 1 },
+        { "name": "Algen Extract", "rate": 1 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Magnesium Mg0 8%", "rate": 0.5 },
+        { "name": "Drip Clean", "rate": 0.1 }
+      ]},
+      { "week": 2, "products": [
+        { "name": "Soil A+B", "rate": 5 },
+        { "name": "Roots Excelurator", "rate": 0.3 },
+        { "name": "Amino Treatment", "rate": 1 },
+        { "name": "Algen Extract", "rate": 1 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Magnesium Mg0 8%", "rate": 0.5 },
+        { "name": "Drip Clean", "rate": 0.1 }
+      ]},
+      { "week": 3, "products": [
+        { "name": "Soil A+B", "rate": 5 },
+        { "name": "Amino Treatment", "rate": 1 },
+        { "name": "Algen Extract", "rate": 1 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Magnesium Mg0 8%", "rate": 0.5 },
+        { "name": "Drip Clean", "rate": 0.1 }
+      ]},
+      { "week": 4, "products": [
+        { "name": "Soil A+B", "rate": 5 },
+        { "name": "Amino Treatment", "rate": 1 },
+        { "name": "Algen Extract", "rate": 1 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Magnesium Mg0 8%", "rate": 0.5 },
+        { "name": "Bud XL", "rate": 1 },
+        { "name": "Drip Clean", "rate": 0.1 }
+      ]},
+      { "week": 5, "products": [
+        { "name": "Soil A+B", "rate": 5 },
+        { "name": "Algen Extract", "rate": 1 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Magnesium Mg0 8%", "rate": 0.5 },
+        { "name": "Bud XL", "rate": 1 },
+        { "name": "Top Booster", "rate": 1.5 },
+        { "name": "Drip Clean", "rate": 0.1 }
+      ]},
+      { "week": 6, "products": [
+        { "name": "Soil A+B", "rate": 2 },
+        { "name": "Roots Excelurator", "rate": 0.3 },
+        { "name": "Algen Extract", "rate": 1 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Magnesium Mg0 8%", "rate": 0.5 },
+        { "name": "Bud XL", "rate": 1 },
+        { "name": "Top Shooter", "rate": 0.5 },
+        { "name": "Drip Clean", "rate": 0.1 }
+      ]},
+      { "week": 7, "products": [
+        { "name": "Soil A+B", "rate": 2 },
+        { "name": "Roots Excelurator", "rate": 0.3 },
+        { "name": "Algen Extract", "rate": 1 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Magnesium Mg0 8%", "rate": 0.5 },
+        { "name": "Bud XL", "rate": 1 },
+        { "name": "Top Shooter", "rate": 1 },
+        { "name": "Drip Clean", "rate": 0.1 }
+      ]},
+      { "week": 8, "products": [
+        { "name": "Soil A+B", "rate": 2 },
+        { "name": "Roots Excelurator", "rate": 0.3 },
+        { "name": "Algen Extract", "rate": 1 },
+        { "name": "Multizyme", "rate": 1 },
+        { "name": "Magnesium Mg0 8%", "rate": 0.5 },
+        { "name": "Bud XL", "rate": 1 },
+        { "name": "Top Shooter", "rate": 1 },
+        { "name": "Drip Clean", "rate": 0.1 }
+        ]}
+    ]
+  },
+  "green_planet_dual_fuel_easy_feed": {
+    "name": "Green Planet Dual Fuel Easy Feed Program",
+    "vegetative": [
+      {
+        "week": 1,
+        "products": [
+          { "name": "DUAL FUEL 1+2", "rate": 0.8 }
+        ]
+      },
+      {
+        "week": 2,
+        "products": [
+          { "name": "DUAL FUEL 1+2", "rate": 2.1 }
+        ]
+      },
+      {
+        "week": 3,
+        "products": [
+          { "name": "DUAL FUEL 1+2", "rate": 2.4 },
+          { "name": "REZIN", "rate": 1 }
+        ]
+      }
+    ],
+    "flowering": [
+      {
+        "week": 1,
+        "products": [
+          { "name": "DUAL FUEL 1+2", "rate": 2.4 },
+          { "name": "REZIN", "rate": 1 }
+        ]
+      },
+      {
+        "week": 2,
+        "products": [
+          { "name": "DUAL FUEL 1+2", "rate": 2.2 },
+          { "name": "REZIN", "rate": 1 },
+          { "name": "MASSIVE", "rate": 5 }
+        ]
+      },
+      {
+        "week": 3,
+        "products": [
+          { "name": "DUAL FUEL 1+2", "rate": 2.2 },
+          { "name": "REZIN", "rate": 2 },
+          { "name": "MASSIVE", "rate": 5 }
+        ]
+      },
+      {
+        "week": 4,
+        "products": [
+          { "name": "DUAL FUEL 1+2", "rate": 2.2 },
+          { "name": "REZIN", "rate": 2 },
+          { "name": "MASSIVE", "rate": 5 }
+        ]
+      },
+      {
+        "week": 5,
+        "products": [
+          { "name": "DUAL FUEL 1+2", "rate": 2.2 },
+          { "name": "REZIN", "rate": 2 },
+          { "name": "MASSIVE", "rate": 5 }
+        ]
+      },
+      {
+        "week": 6,
+        "products": [
+          { "name": "DUAL FUEL 1+2", "rate": 2.2 },
+          { "name": "REZIN", "rate": 2 },
+          { "name": "MASSIVE", "rate": 5 }
+        ]
+      },
+      {
+        "week": 7,
+        "products": [
+          { "name": "DUAL FUEL 1+2", "rate": 2.2 },
+          { "name": "REZIN", "rate": 2 },
+          { "name": "MASSIVE", "rate": 5 }
+        ]
+      },
+      {
+        "week": 8,
+        "products": [
+          { "name": "REZIN", "rate": 1 }
+      ]}
+    ]
+  },
+  "green_planet_dual_fuel_professional": {
+    "name": "Green Planet Dual Fuel Professional Program",
+    "vegetative": [
+      {
+        "week": 1,
+        "products": [
+          { "name": "DUAL FUEL 1+2", "rate": 0.7 },
+          { "name": "OCEAN MAGIC", "rate": 0.5 },
+          { "name": "ROOT BUILDER", "rate": 1.25 },
+          { "name": "VITATHRIVE", "rate": 1 }
+        ]
+      },
+      {
+        "week": 2,
+        "products": [
+          { "name": "DUAL FUEL 1+2", "rate": 2 },
+          { "name": "OCEAN MAGIC", "rate": 0.5 },
+          { "name": "ROOT BUILDER", "rate": 1.25 },
+          { "name": "VITATHRIVE", "rate": 1 },
+          { "name": "PLANT GUARD", "rate": 0.5 }
+        ]
+      },
+      {
+        "week": 3,
+        "products": [
+          { "name": "DUAL FUEL 1+2", "rate": 2.3 },
+          { "name": "OCEAN MAGIC", "rate": 0.5 },
+          { "name": "ROOT BUILDER", "rate": 1.25 },
+          { "name": "VITATHRIVE", "rate": 2 },
+          { "name": "PLANT GUARD", "rate": 0.5 },
+          { "name": "REZIN", "rate": 1 }
+        ]
+      }
+    ],
+    "flowering": [
+      {
+        "week": 1,
+        "products": [
+          { "name": "DUAL FUEL 1+2", "rate": 2.3 },
+          { "name": "OCEAN MAGIC", "rate": 0.5 },
+          { "name": "ROOT BUILDER", "rate": 1.25 },
+          { "name": "VITATHRIVE", "rate": 2 },
+          { "name": "PLANT GUARD", "rate": 0.5 },
+          { "name": "REZIN", "rate": 1 }
+        ]
+      },
+      {
+        "week": 2,
+        "products": [
+          { "name": "DUAL FUEL 1+2", "rate": 2.1 },
+          { "name": "OCEAN MAGIC", "rate": 0.5 },
+          { "name": "ROOT BUILDER", "rate": 1.25 },
+          { "name": "VITATHRIVE", "rate": 2 },
+          { "name": "PLANT GUARD", "rate": 0.5 },
+          { "name": "REZIN", "rate": 1 },
+          { "name": "MASSIVE", "rate": 5 }
+        ]
+      },
+      {
+        "week": 3,
+        "products": [
+          { "name": "DUAL FUEL 1+2", "rate": 2.3 },
+          { "name": "OCEAN MAGIC", "rate": 0.5 },
+          { "name": "ROOT BUILDER", "rate": 1.25 },
+          { "name": "VITATHRIVE", "rate": 2 },
+          { "name": "PLANT GUARD", "rate": 0.5 },
+          { "name": "REZIN", "rate": 1 },
+          { "name": "MASSIVE", "rate": 5 }
+        ]
+      },
+      {
+        "week": 4,
+        "products": [
+          { "name": "DUAL FUEL 1+2", "rate": 2.7 },
+          { "name": "ROOT BUILDER", "rate": 1.25 },
+          { "name": "PLANT GUARD", "rate": 0.5 },
+          { "name": "REZIN", "rate": 2 },
+          { "name": "MASSIVE", "rate": 5 },
+          { "name": "LIQUID WEIGHT", "rate": 1 }
+        ]
+      },
+      {
+        "week": 5,
+        "products": [
+          { "name": "DUAL FUEL 1+2", "rate": 2.7 },
+          { "name": "ROOT BUILDER", "rate": 1.25 },
+          { "name": "PLANT GUARD", "rate": 0.5 },
+          { "name": "REZIN", "rate": 2 },
+          { "name": "MASSIVE", "rate": 5 },
+          { "name": "LIQUID WEIGHT", "rate": 1 }
+        ]
+      },
+      {
+        "week": 6,
+        "products": [
+          { "name": "DUAL FUEL 1+2", "rate": 2.2 },
+          { "name": "ROOT BUILDER", "rate": 1.25 },
+          { "name": "PLANT GUARD", "rate": 0.5 },
+          { "name": "REZIN", "rate": 2 },
+          { "name": "MASSIVE", "rate": 5 },
+          { "name": "LIQUID WEIGHT", "rate": 1 }
+        ]
+      },
+      {
+        "week": 7,
+        "products": [
+          { "name": "DUAL FUEL 1+2", "rate": 2.2 },
+          { "name": "ROOT BUILDER", "rate": 1.25 },
+          { "name": "REZIN", "rate": 2 },
+          { "name": "MASSIVE", "rate": 5 },
+          { "name": "LIQUID WEIGHT", "rate": 1 }
+        ]
+      },
+      {
+        "week": 8,
+        "products": [
+          { "name": "REZIN", "rate": 2 }
+        ]
+      }
+    ]
+  },
+  "green_planet_gp3_professional": {
+    "name": "Green Planet GP3 Professional Program",
+    "vegetative": [
+      {
+        "week": 1,
+        "products": [
+          { "name": "GROW", "rate": 0.5 },
+          { "name": "BLOOM", "rate": 0.5 },
+          { "name": "MICRO", "rate": 0.5 },
+          { "name": "OCEAN MAGIC", "rate": 0.5 },
+          { "name": "ROOT BUILDER", "rate": 1.25 },
+          { "name": "VITATHRIVE", "rate": 1 }
+        ]
+      },
+      {
+        "week": 2,
+        "products": [
+          { "name": "GROW", "rate": 1.5 },
+          { "name": "BLOOM", "rate": 0.5 },
+          { "name": "MICRO", "rate": 2 },
+          { "name": "OCEAN MAGIC", "rate": 0.5 },
+          { "name": "ROOT BUILDER", "rate": 1.25 },
+          { "name": "VITATHRIVE", "rate": 1 },
+          { "name": "PLANT GUARD", "rate": 0.5 }
+        ]
+      },
+      {
+        "week": 3,
+        "products": [
+          { "name": "GROW", "rate": 2.2 },
+          { "name": "BLOOM", "rate": 0.5 },
+          { "name": "MICRO", "rate": 2 },
+          { "name": "OCEAN MAGIC", "rate": 0.5 },
+          { "name": "ROOT BUILDER", "rate": 1.25 },
+          { "name": "VITATHRIVE", "rate": 2 },
+          { "name": "PLANT GUARD", "rate": 0.5 },
+          { "name": "REZIN", "rate": 1 }
+        ]
+      }
+    ],
+    "flowering": [
+      {
+        "week": 1,
+        "products": [
+          { "name": "GROW", "rate": 1.7 },
+          { "name": "BLOOM", "rate": 1.7 },
+          { "name": "MICRO", "rate": 1.7 },
+          { "name": "OCEAN MAGIC", "rate": 0.5 },
+          { "name": "ROOT BUILDER", "rate": 1.25 },
+          { "name": "VITATHRIVE", "rate": 2 },
+          { "name": "PLANT GUARD", "rate": 0.5 },
+          { "name": "REZIN", "rate": 1 }
+        ]
+      },
+      {
+        "week": 2,
+        "products": [
+          { "name": "GROW", "rate": 1.2 },
+          { "name": "BLOOM", "rate": 2.1 },
+          { "name": "MICRO", "rate": 1.7 },
+          { "name": "OCEAN MAGIC", "rate": 0.5 },
+          { "name": "ROOT BUILDER", "rate": 1.25 },
+          { "name": "VITATHRIVE", "rate": 2 },
+          { "name": "PLANT GUARD", "rate": 0.5 },
+          { "name": "REZIN", "rate": 1 },
+          { "name": "MASSIVE", "rate": 5 }
+        ]
+      },
+      {
+        "week": 3,
+        "products": [
+          { "name": "GROW", "rate": 1 },
+          { "name": "BLOOM", "rate": 2.9 },
+          { "name": "MICRO", "rate": 1.9 },
+          { "name": "OCEAN MAGIC", "rate": 0.5 },
+          { "name": "ROOT BUILDER", "rate": 1.25 },
+          { "name": "VITATHRIVE", "rate": 2 },
+          { "name": "PLANT GUARD", "rate": 0.5 },
+          { "name": "REZIN", "rate": 2 },
+          { "name": "MASSIVE", "rate": 5 }
+        ]
+      },
+      {
+        "week": 4,
+        "products": [
+          { "name": "GROW", "rate": 0.6 },
+          { "name": "BLOOM", "rate": 3.6 },
+          { "name": "MICRO", "rate": 2.4 },
+          { "name": "ROOT BUILDER", "rate": 1.25 },
+          { "name": "PLANT GUARD", "rate": 0.5 },
+          { "name": "REZIN", "rate": 2 },
+          { "name": "MASSIVE", "rate": 5 },
+          { "name": "LIQUID WEIGHT", "rate": 1 }
+        ]
+      },
+      {
+        "week": 5,
+        "products": [
+          { "name": "GROW", "rate": 0.6 },
+          { "name": "BLOOM", "rate": 3.6 },
+          { "name": "MICRO", "rate": 2.4 },
+          { "name": "ROOT BUILDER", "rate": 1.25 },
+          { "name": "PLANT GUARD", "rate": 0.5 },
+          { "name": "REZIN", "rate": 2 },
+          { "name": "MASSIVE", "rate": 5 },
+          { "name": "LIQUID WEIGHT", "rate": 1 }
+        ]
+      },
+      {
+        "week": 6,
+        "products": [
+          { "name": "BLOOM", "rate": 3.2 },
+          { "name": "MICRO", "rate": 2.2 },
+          { "name": "ROOT BUILDER", "rate": 1.25 },
+          { "name": "PLANT GUARD", "rate": 0.5 },
+          { "name": "REZIN", "rate": 2 },
+          { "name": "MASSIVE", "rate": 5 },
+          { "name": "LIQUID WEIGHT", "rate": 1 }
+        ]
+      },
+      {
+        "week": 7,
+        "products": [
+          { "name": "BLOOM", "rate": 3.2 },
+          { "name": "MICRO", "rate": 2.2 },
+          { "name": "ROOT BUILDER", "rate": 1.25 },
+          { "name": "REZIN", "rate": 2 },
+          { "name": "MASSIVE", "rate": 5 },
+          { "name": "LIQUID WEIGHT", "rate": 1 }
+        ]
+      },
+      {
+        "week": 8,
+        "products": [
+          { "name": "REZIN", "rate": 2 }
+        ]
+      }
+    ]
+  },
+  "biodiesel_coco_hydro": {
+    "name": "Bio Diesel - Coco",
+    "vegetative": [
+      {
+        "week": 1,
+        "products": [
+          { "name": "Green Diamond A&B", "rate": 2.0 },
+          { "name": "Supernatural", "rate": 0.5 },
+          { "name": "Marine CaMg+", "rate": 0.25 },
+          { "name": "Aloevate", "rate": 2.0 },
+          { "name": "Bio-One Inoculant", "rate": 1.0 }
+        ]
+      },
+      {
+        "week": 2,
+        "products": [
+          { "name": "Green Diamond A&B", "rate": 2.0 },
+          { "name": "Supernatural", "rate": 0.5 },
+          { "name": "Marine CaMg+", "rate": 0.25 },
+          { "name": "Aloevate", "rate": 2.0 },
+          { "name": "Bio-One Inoculant", "rate": 1.0 }
+        ]
+      },
+      {
+        "week": 3,
+        "products": [
+          { "name": "Green Diamond A&B", "rate": 3.0 },
+          { "name": "Supernatural", "rate": 0.5 },
+          { "name": "Marine CaMg+", "rate": 0.5 },
+          { "name": "Aloevate", "rate": 2.0 },
+          { "name": "Bio-One Inoculant", "rate": 1.0 }
+        ]
+      },
+      {
+        "week": 4,
+        "products": [
+          { "name": "Green Diamond A&B", "rate": 3.0 },
+          { "name": "Supernatural", "rate": 0.5 },
+          { "name": "Marine CaMg+", "rate": 0.5 },
+          { "name": "Aloevate", "rate": 5.0 },
+          { "name": "Bio-One Inoculant", "rate": 1.0 },
+          { "name": "Crystal Clear (Flush)", "rate": 5.0 }
+        ]
+      },
+      {
+        "week": 5,
+        "products": [
+          { "name": "Green Diamond A&B", "rate": 3.0 },
+          { "name": "Supernatural", "rate": 0.5 },
+          { "name": "Marine CaMg+", "rate": 1.0 },
+          { "name": "Aloevate", "rate": 5.0 },
+          { "name": "Bio-One Inoculant", "rate": 1.0 }
+        ]
+      },
+      {
+        "week": 6,
+        "products": [
+          { "name": "Green Diamond A&B", "rate": 4.0 },
+          { "name": "Supernatural", "rate": 0.5 },
+          { "name": "Marine CaMg+", "rate": 1.0 },
+          { "name": "Aloevate", "rate": 5.0 },
+          { "name": "Bio-One Inoculant", "rate": 1.0 },
+          { "name": "Crystal Clear (Flush)", "rate": 5.0 }
+        ]
+      }
+    ],
+    "flowering": [
+      {
+        "week": 1,
+        "products": [
+          { "name": "Green Diamond A&B", "rate": 3.0 },
+          { "name": "Supernatural", "rate": 0.5 },
+          { "name": "Aloevate", "rate": 5.0 },
+          { "name": "Bio Diesel", "rate": 2.0 },
+          { "name": "Bio-One Inoculant", "rate": 1.0 },
+          { "name": "Rhino K (Foliar)", "rate": 2.0 }
+        ]
+      },
+      {
+        "week": 2,
+        "products": [
+          { "name": "Green Diamond A&B", "rate": 3.0 },
+          { "name": "Supernatural", "rate": 0.5 },
+          { "name": "Aloevate", "rate": 5.0 },
+          { "name": "Bio Diesel", "rate": 2.0 },
+          { "name": "Bio-One Inoculant", "rate": 1.0 }
+        ]
+      },
+      {
+        "week": 3,
+        "products": [
+          { "name": "Green Diamond A&B", "rate": 3.0 },
+          { "name": "Supernatural", "rate": 0.5 },
+          { "name": "Aloevate", "rate": 5.0 },
+          { "name": "Bio Diesel", "rate": 2.0 },
+          { "name": "Bio-One Inoculant", "rate": 1.0 },
+          { "name": "Crystal Clear (Flush)", "rate": 5.0 }
+        ]
+      },
+      {
+        "week": 4,
+        "products": [
+          { "name": "Green Diamond A&B", "rate": 3.0 },
+          { "name": "Supernatural", "rate": 0.5 },
+          { "name": "Aloevate", "rate": 5.0 },
+          { "name": "Bio Diesel", "rate": 4.0 },
+          { "name": "Bio-One Inoculant", "rate": 1.0 }
+        ]
+      },
+      {
+        "week": 5,
+        "products": [
+          { "name": "Green Diamond A&B", "rate": 4.0 },
+          { "name": "Supernatural", "rate": 0.5 },
+          { "name": "Aloevate", "rate": 5.0 },
+          { "name": "Bio Diesel", "rate": 4.0 },
+          { "name": "Rhino K", "rate": 2.0 },
+          { "name": "Bio-One Inoculant", "rate": 1.0 }
+        ]
+      },
+      {
+        "week": 6,
+        "products": [
+          { "name": "Green Diamond A&B", "rate": 4.0 },
+          { "name": "Supernatural", "rate": 0.5 },
+          { "name": "Aloevate", "rate": 5.0 },
+          { "name": "Bio Diesel", "rate": 4.0 },
+          { "name": "Rhino K", "rate": 1.0 }
+        ]
+      },
+      {
+        "week": 7,
+        "products": [
+          { "name": "Green Diamond A&B", "rate": 3.0 },
+          { "name": "Rhino K", "rate": 1.0 }
+        ]
+      },
+      {
+        "week": 8,
+        "products": [
+          { "name": "Crystal Clear (Flush)", "rate": 5.0 }
+        ]
+      },
+      {
+        "week": 9,
+        "products": [
+          { "name": "Crystal Clear (Flush)", "rate": 5.0 }
+        ]
+      }
+    ]
+  },
+  "biodiesel_living_soil": {
+    "name": "Bio Diesel – Living Soil (AU)",
+    "vegetative": [
+      { "week": 1,  "products": [ { "name": "Supernatural", "rate": 0.5 }, { "name": "Aloevate", "rate": 5.0 }, { "name": "Bio-One Inoculant", "rate": 1.0 } ] },
+      { "week": 2,  "products": [ { "name": "Supernatural", "rate": 0.5 }, { "name": "Aloevate", "rate": 5.0 }, { "name": "Bio-One Inoculant", "rate": 1.0 } ] },
+      { "week": 3,  "products": [ { "name": "Supernatural", "rate": 0.5 }, { "name": "Aloevate", "rate": 5.0 }, { "name": "Bio-One Inoculant", "rate": 1.0 } ] },
+      { "week": 4,  "products": [ { "name": "Supernatural", "rate": 0.5 }, { "name": "Aloevate", "rate": 5.0 }, { "name": "Bio-One Inoculant", "rate": 1.0 } ] },
+      { "week": 5,  "products": [ { "name": "Supernatural", "rate": 0.5 }, { "name": "Aloevate", "rate": 5.0 }, { "name": "Bio-One Inoculant", "rate": 1.0 } ] },
+      { "week": 6,  "products": [ { "name": "Supernatural", "rate": 0.5 }, { "name": "Aloevate", "rate": 5.0 }, { "name": "Bio-One Inoculant", "rate": 1.0 } ] },
+      { "week": 7,  "products": [ { "name": "Supernatural", "rate": 0.5 }, { "name": "Aloevate", "rate": 5.0 }, { "name": "Bio-One Inoculant", "rate": 1.0 } ] },
+      { "week": 8,  "products": [ { "name": "Supernatural", "rate": 0.5 }, { "name": "Aloevate", "rate": 5.0 }, { "name": "Bio-One Inoculant", "rate": 1.0 } ] },
+      { "week": 9,  "products": [ { "name": "Supernatural", "rate": 0.5 }, { "name": "Aloevate", "rate": 5.0 }, { "name": "Bio-One Inoculant", "rate": 1.0 } ] },
+      { "week": 10, "products": [ { "name": "Supernatural", "rate": 0.5 }, { "name": "Aloevate", "rate": 5.0 }, { "name": "Bio-One Inoculant", "rate": 1.0 } ] }
+    ],
+    "flowering": [
+      {
+        "week": 1,
+        "products": [
+          { "name": "Supernatural", "rate": 0.5 },
+          { "name": "Aloevate", "rate": 5.0 },
+          { "name": "Bio Diesel", "rate": 2.0 },
+          { "name": "Bio-One Inoculant", "rate": 1.0 }
+        ]
+      },
+      {
+        "week": 2,
+        "products": [
+          { "name": "Supernatural", "rate": 0.5 },
+          { "name": "Aloevate", "rate": 5.0 },
+          { "name": "Bio Diesel", "rate": 2.0 },
+          { "name": "Bio-One Inoculant", "rate": 1.0 }
+        ]
+      },
+      {
+        "week": 3,
+        "products": [
+          { "name": "Supernatural", "rate": 0.5 },
+          { "name": "Aloevate", "rate": 5.0 },
+          { "name": "Bio Diesel", "rate": 2.0 },
+          { "name": "Bio-One Inoculant", "rate": 1.0 }
+        ]
+      },
+      {
+        "week": 4,
+        "products": [
+          { "name": "Supernatural", "rate": 0.5 },
+          { "name": "Aloevate", "rate": 5.0 },
+          { "name": "Bio Diesel", "rate": 4.0 },
+          { "name": "Bio-One Inoculant", "rate": 1.0 }
+        ]
+      },
+      {
+        "week": 5,
+        "products": [
+          { "name": "Supernatural", "rate": 0.5 },
+          { "name": "Aloevate", "rate": 5.0 },
+          { "name": "Bio Diesel", "rate": 4.0 },
+          { "name": "Bio-One Inoculant", "rate": 1.0 }
+        ]
+      },
+      {
+        "week": 6,
+        "products": [
+          { "name": "Supernatural", "rate": 0.5 },
+          { "name": "Aloevate", "rate": 5.0 },
+          { "name": "Bio Diesel", "rate": 4.0 },
+          { "name": "Bio-One Inoculant", "rate": 1.0 },
+          { "name": "Rhino K", "rate": 2.0 }
+        ]
+      },
+      {
+        "week": 7,
+        "products": [
+          { "name": "Aloevate", "rate": 5.0 },
+          { "name": "Rhino K", "rate": 2.0 }
+        ]
+      },
+      { "week": 8, "products": [] },
+      { "week": 9, "products": [] }
+        ]
+      }
+    ]
+  },
+  "plant_mechanics_coco_plus": {
+    "name": "Plant Mechanics COCO+ Program",
+    "vegetative": [
+      {
+        "week": 1,
+        "products": [
+          { "name": "SUPER SI", "rate": 0.15 },
+          { "name": "COCO+ A&B", "rate": "1-2" },
+          { "name": "SUPER N+", "rate": 0.3 },
+          { "name": "ROOT BOOSTER V2", "rate": 0.3 }
+        ]
+      },
+      {
+        "week": 2,
+        "products": [
+          { "name": "SUPER SI", "rate": 0.15 },
+          { "name": "COCO+ A&B", "rate": "1-2" },
+          { "name": "SUPER N+", "rate": 0.5 },
+          { "name": "ROOT BOOSTER V2", "rate": 0.5 }
+        ]
+      },
+      {
+        "week": 3,
+        "products": [
+          { "name": "SUPER SI", "rate": 0.15 },
+          { "name": "COCO+ A&B", "rate": 2 },
+          { "name": "SUPER N+", "rate": 0.5 },
+          { "name": "ROOT BOOSTER V2", "rate": 0.5 }
+        ]
+      },
+      {
+        "week": 4,
+        "products": [
+          { "name": "SUPER SI", "rate": 0.15 },
+          { "name": "COCO+ A&B", "rate": 2 },
+          { "name": "SUPER N+", "rate": 0.5 },
+          { "name": "ROOT BOOSTER V2", "rate": 0.5 }
+        ]
+      }
+    ],
+    "flowering": [
+      {
+        "week": 1,
+        "products": [
+          { "name": "SUPER SI", "rate": 0.3 },
+          { "name": "COCO+ A&B", "rate": "2-3" },
+          { "name": "SUPER N+", "rate": 0.5 },
+          { "name": "ROOT BOOSTER V2", "rate": 0.5 }
+        ]
+      },
+      {
+        "week": 2,
+        "products": [
+          { "name": "SUPER SI", "rate": 0.3 },
+          { "name": "COCO+ A&B", "rate": 3 },
+          { "name": "SUPER N+", "rate": 0.5 },
+          { "name": "ROOT BOOSTER V2", "rate": 0.5 }
+        ]
+      },
+      {
+        "week": 3,
+        "products": [
+          { "name": "SUPER SI", "rate": 0.15 },
+          { "name": "COCO+ A&B", "rate": 3 },
+          { "name": "ROOT BOOSTER V2", "rate": 0.5 },
+          { "name": "MEGA PK", "rate": 1 }
+        ]
+      },
+      {
+        "week": 4,
+        "products": [
+          { "name": "SUPER SI", "rate": 0.15 },
+          { "name": "COCO+ A&B", "rate": 3 },
+          { "name": "ROOT BOOSTER V2", "rate": 0.5 },
+          { "name": "MEGA PK", "rate": 1 },
+          { "name": "LED FUEL", "rate": 2 }
+        ]
+      },
+      {
+        "week": 5,
+        "products": [
+          { "name": "SUPER SI", "rate": 0.15 },
+          { "name": "COCO+ A&B", "rate": 3 },
+          { "name": "ROOT BOOSTER V2", "rate": 0.5 },
+          { "name": "MEGA PK", "rate": 1 },
+          { "name": "LED FUEL", "rate": 2 }
+        ]
+      },
+      {
+        "week": 6,
+        "products": [
+          { "name": "SUPER SI", "rate": 0.15 },
+          { "name": "COCO+ A&B", "rate": 3 },
+          { "name": "MEGA PK", "rate": 1 },
+          { "name": "LED FUEL", "rate": 2 }
+        ]
+      },
+      {
+        "week": 7,
+        "products": [
+          { "name": "SUPER SI", "rate": 0.15 },
+          { "name": "COCO+ A&B", "rate": 2 },
+          { "name": "MEGA PK", "rate": 1 },
+          { "name": "LED FUEL", "rate": 2 }
+        ]
+      },
+      {
+        "week": 8,
+        "products": [
+          { "name": "COCO+ A&B", "rate": 1 },
+          { "name": "LED FUEL", "rate": 2 }
+        ]
+      }
+    ]
+  },
+  "aptus_soil_basic": {
+    "name": "Aptus Soil Basic Program",
+    "vegetative": [
+      {
+        "week": 1,
+        "products": [
+          { "name": "BASEBOOST (grams per 25L)", "rate": "100g/25L" },
+          { "name": "FASiLITOR", "rate": 0.15 },
+          { "name": "STARTBOOST", "rate": 0.25 }
+        ]
+      },
+      {
+        "week": 2,
+        "products": [
+          { "name": "FASiLITOR", "rate": 0.15 }
+        ]
+      },
+      {
+        "week": 3,
+        "products": [
+          { "name": "FASiLITOR", "rate": 0.15 }
+        ]
+      },
+      {
+        "week": 4,
+        "products": [
+          { "name": "FASiLITOR", "rate": 0.15 }
+        ]
+      }
+    ],
+    "flowering": [
+      {
+        "week": 1,
+        "products": [
+          { "name": "FASiLITOR", "rate": 0.3 },
+          { "name": "STARTBOOST", "rate": 0.5 },
+          { "name": "BLOOMBOOST", "rate": 0.2 }
+        ]
+      },
+      {
+        "week": 2,
+        "products": [
+          { "name": "FASiLITOR", "rate": 0.3 },
+          { "name": "BLOOMBOOST", "rate": 0.2 }
+        ]
+      },
+      {
+        "week": 3,
+        "products": [
+          { "name": "FASiLITOR", "rate": 0.3 },
+          { "name": "BLOOMBOOST", "rate": 0.25 }
+        ]
+      },
+      {
+        "week": 4,
+        "products": [
+          { "name": "FASiLITOR", "rate": 0.15 },
+          { "name": "BLOOMBOOST", "rate": 0.25 }
+        ]
+      },
+      {
+        "week": 5,
+        "products": [
+          { "name": "FASiLITOR", "rate": 0.15 },
+          { "name": "BLOOMBOOST", "rate": 0.25 }
+        ]
+      },
+      {
+        "week": 6,
+        "products": [
+          { "name": "FASiLITOR", "rate": 0.15 },
+          { "name": "BLOOMBOOST", "rate": 0.25 }
+        ]
+      },
+      {
+        "week": 7,
+        "products": [
+          { "name": "FASiLITOR", "rate": 0.15 },
+          { "name": "BLOOMBOOST", "rate": 0.33 }
+        ]
+      },
+      {
+        "week": 8,
+        "products": [
+          { "name": "FASiLITOR", "rate": 0.15 }
+        ]
+      },
+      {
+        "week": 9,
+        "products": [
+          { "name": "FASiLITOR", "rate": 0.15 }
+        ]
+      }
+    ]
+  },
+  "APTUS_Soil_Basic": {
+    "name": "APTUS Soil Basic Program",
+    "vegetative": [
+      {
+        "week": 1,
+        "products": [
+          { "name": "APTUS Fasilitor", "rate": 0.15 },
+          { "name": "APTUS Startboost", "rate": 0.25 }
+        ]
+      },
+      {
+        "week": 2,
+        "products": [
+          { "name": "APTUS Fasilitor", "rate": 0.15 },
+          { "name": "APTUS Startboost", "rate": 0.25 }
+        ]
+      },
+      {
+        "week": 3,
+        "products": [
+          { "name": "APTUS Fasilitor", "rate": 0.15 },
+          { "name": "APTUS Startboost", "rate": 0.25 }
+        ]
+      },
+      {
+        "week": 4,
+        "products": [
+          { "name": "APTUS Fasilitor", "rate": 0.15 },
+          { "name": "APTUS Startboost", "rate": 0.25 }
+        ]
+      }
+    ],
+    "flowering": [
+      {
+        "week": 1,
+        "products": [
+          { "name": "APTUS Fasilitor", "rate": 0.30 },
+          { "name": "APTUS Startboost", "rate": 0.50 }
+        ]
+      },
+      {
+        "week": 2,
+        "products": [
+          { "name": "APTUS Fasilitor", "rate": 0.30 },
+          { "name": "APTUS Bloomboost", "rate": 0.20 }
+        ]
+      },
+      {
+        "week": 3,
+        "products": [
+          { "name": "APTUS Fasilitor", "rate": 0.30 },
+          { "name": "APTUS Bloomboost", "rate": 0.20 }
+        ]
+      },
+      {
+        "week": 4,
+        "products": [
+          { "name": "APTUS Fasilitor", "rate": 0.15 },
+          { "name": "APTUS Bloomboost", "rate": 0.25 }
+        ]
+      },
+      {
+        "week": 5,
+        "products": [
+          { "name": "APTUS Fasilitor", "rate": 0.15 },
+          { "name": "APTUS Bloomboost", "rate": 0.25 }
+        ]
+      },
+      {
+        "week": 6,
+        "products": [
+          { "name": "APTUS Fasilitor", "rate": 0.15 },
+          { "name": "APTUS Bloomboost", "rate": 0.25 }
+        ]
+      },
+      {
+        "week": 7,
+        "products": [
+          { "name": "APTUS Fasilitor", "rate": 0.15 },
+          { "name": "APTUS Bloomboost", "rate": 0.33 }
+        ]
+      },
+      {
+        "week": 8,
+        "products": [
+          { "name": "APTUS Fasilitor", "rate": 0.15 },
+	{ "name": "APTUS Bloomboost", "rate": 0.33 }
+        ]
+      }
+    ]
+  },
+  "aptus_soil_pro": {
+    "name": "Aptus Soil Pro Program",
+    "vegetative": [
+      {
+        "week": 1,
+        "products": [
+          { "name": "FASiLITOR", "rate": 0.15 },
+          { "name": "MASSBOOST", "rate": 0.2 },
+          { "name": "STARTBOOST", "rate": 0.25 },
+          { "name": "ECOZEN", "rate": 0.25 }
+        ]
+      },
+      {
+        "week": 2,
+        "products": [
+          { "name": "FASiLITOR", "rate": 0.15 },
+          { "name": "MASSBOOST", "rate": 0.2 },
+          { "name": "STARTBOOST", "rate": 0.25 },
+          { "name": "ECOZEN", "rate": 0.25 }
+        ]
+      },
+      {
+        "week": 3,
+        "products": [
+          { "name": "FASiLITOR", "rate": 0.15 },
+          { "name": "MASSBOOST", "rate": 0.2 },
+          { "name": "STARTBOOST", "rate": 0.25 },
+          { "name": "ECOZEN", "rate": 0.25 }
+        ]
+      },
+      {
+        "week": 4,
+        "products": [
+          { "name": "FASiLITOR", "rate": 0.15 },
+          { "name": "MASSBOOST", "rate": 0.2 },
+          { "name": "STARTBOOST", "rate": 0.25 },
+          { "name": "ECOZEN", "rate": 0.25 }
+        ]
+      }
+    ],
+    "flowering": [
+      {
+        "week": 1,
+        "products": [
+          { "name": "FASiLITOR", "rate": 0.3 },
+          { "name": "MASSBOOST", "rate": 0.2 },
+          { "name": "STARTBOOST", "rate": 0.5 },
+          { "name": "ECOZEN", "rate": 0.25 }
+        ]
+      },
+      {
+        "week": 2,
+        "products": [
+          { "name": "FASiLITOR", "rate": 0.3 },
+          { "name": "MASSBOOST", "rate": 0.2 },
+          { "name": "PEAKBOOST", "rate": 0.1 },
+          { "name": "FINALEBOOST", "rate": 0.1 },
+          { "name": "BLOOMBOOST", "rate": 0.2 },
+          { "name": "ECOZEN", "rate": 0.25 }
+        ]
+      },
+      {
+        "week": 3,
+        "products": [
+          { "name": "FASiLITOR", "rate": 0.3 },
+          { "name": "MASSBOOST", "rate": 0.2 },
+          { "name": "PEAKBOOST", "rate": 0.1 },
+          { "name": "FINALEBOOST", "rate": 0.12 },
+          { "name": "BLOOMBOOST", "rate": 0.25 },
+          { "name": "ECOZEN", "rate": 0.25 }
+        ]
+      },
+      {
+        "week": 4,
+        "products": [
+          { "name": "FASiLITOR", "rate": 0.15 },
+          { "name": "MASSBOOST", "rate": 0.2 },
+          { "name": "PEAKBOOST", "rate": 0.1 },
+          { "name": "FINALEBOOST", "rate": 0.15 },
+          { "name": "BLOOMBOOST", "rate": 0.25 },
+          { "name": "ECOZEN", "rate": 0.25 }
+        ]
+      },
+      {
+        "week": 5,
+        "products": [
+          { "name": "FASiLITOR", "rate": 0.15 },
+          { "name": "MASSBOOST", "rate": 0.2 },
+          { "name": "PEAKBOOST", "rate": 0.1 },
+          { "name": "FINALEBOOST", "rate": 0.18 },
+          { "name": "BLOOMBOOST", "rate": 0.25 },
+          { "name": "ECOZEN", "rate": 0.25 }
+        ]
+      },
+      {
+        "week": 6,
+        "products": [
+          { "name": "FASiLITOR", "rate": 0.15 },
+          { "name": "MASSBOOST", "rate": 0.2 },
+          { "name": "PEAKBOOST", "rate": 0.1 },
+          { "name": "FINALEBOOST", "rate": 0.2 },
+          { "name": "BLOOMBOOST", "rate": 0.25 },
+          { "name": "ECOZEN", "rate": 0.25 }
+        ]
+      },
+      {
+        "week": 7,
+        "products": [
+          { "name": "FASiLITOR", "rate": 0.15 },
+          { "name": "MASSBOOST", "rate": 0.2 },
+          { "name": "FINALEBOOST", "rate": 0.25 },
+          { "name": "BLOOMBOOST", "rate": 0.25 },
+          { "name": "ECOZEN", "rate": 0.25 }
+        ]
+      },
+      {
+        "week": 8,
+        "products": [
+          { "name": "FASiLITOR", "rate": 0.15 },
+          { "name": "MASSBOOST", "rate": 0.2 },
+          { "name": "FINALEBOOST", "rate": 0.33 },
+          { "name": "BLOOMBOOST", "rate": 0.33 },
+          { "name": "ECOZEN", "rate": 0.25 }
+        ]
+      },
+      {
+        "week": 9,
+        "products": [
+          { "name": "ECOZEN", "rate": 0.5 }
+        ]
+      }
+    ]
+  },
+  "aptus_premium": {
+    "name": "Aptus Premium Program",
+    "vegetative": [
+      {
+        "week": 1,
+        "products": [
+          { "name": "FASiLITOR", "rate": 0.15 },
+          { "name": "MASSBOOST", "rate": 0.25 },
+          { "name": "STARTBOOST", "rate": 0.25 },
+          { "name": "BASE", "rate": 1.25 },
+          { "name": "ECOZEN", "rate": 0.25 }
+        ]
+      },
+      {
+        "week": 2,
+        "products": [
+          { "name": "FASiLITOR", "rate": 0.15 },
+          { "name": "MASSBOOST", "rate": 0.25 },
+          { "name": "STARTBOOST", "rate": 0.25 },
+          { "name": "BASE", "rate": 1.5 },
+          { "name": "ECOZEN", "rate": 0.25 }
+        ]
+      },
+      {
+        "week": 3,
+        "products": [
+          { "name": "FASiLITOR", "rate": 0.15 },
+          { "name": "MASSBOOST", "rate": 0.25 },
+          { "name": "STARTBOOST", "rate": 0.5 },
+          { "name": "BASE", "rate": 1.5 },
+          { "name": "ECOZEN", "rate": 0.25 }
+        ]
+      },
+      {
+        "week": 4,
+        "products": [
+          { "name": "FASiLITOR", "rate": 0.15 },
+          { "name": "MASSBOOST", "rate": 0.25 },
+          { "name": "STARTBOOST", "rate": 0.5 },
+          { "name": "BASE", "rate": 1.5 },
+          { "name": "ECOZEN", "rate": 0.25 }
+        ]
+      }
+    ],
+    "flowering": [
+      {
+        "week": 1,
+        "products": [
+          { "name": "FASiLITOR", "rate": 0.3 },
+          { "name": "MASSBOOST", "rate": 0.33 },
+          { "name": "BASE", "rate": 1.75 },
+          { "name": "ECOZEN", "rate": 0.25 }
+        ]
+      },
+      {
+        "week": 2,
+        "products": [
+          { "name": "FASiLITOR", "rate": 0.3 },
+          { "name": "MASSBOOST", "rate": 0.33 },
+          { "name": "PEAKBOOST", "rate": 0.14 },
+          { "name": "BLOOMBOOST", "rate": 0.2 },
+          { "name": "FINALEBOOST", "rate": 0.13 },
+          { "name": "BASE", "rate": 1.75 },
+          { "name": "ECOZEN", "rate": 0.25 }
+        ]
+      },
+      {
+        "week": 3,
+        "products": [
+          { "name": "FASiLITOR", "rate": 0.3 },
+          { "name": "MASSBOOST", "rate": 0.33 },
+          { "name": "PEAKBOOST", "rate": 0.16 },
+          { "name": "BLOOMBOOST", "rate": 0.25 },
+          { "name": "FINALEBOOST", "rate": 0.17 },
+          { "name": "BASE", "rate": 2.0 },
+          { "name": "ECOZEN", "rate": 0.25 }
+        ]
+      },
+      {
+        "week": 4,
+        "products": [
+          { "name": "FASiLITOR", "rate": 0.15 },
+          { "name": "MASSBOOST", "rate": 0.33 },
+          { "name": "PEAKBOOST", "rate": 0.16 },
+          { "name": "BLOOMBOOST", "rate": 0.29 },
+          { "name": "FINALEBOOST", "rate": 0.25 },
+          { "name": "BASE", "rate": 2.0 },
+          { "name": "ECOZEN", "rate": 0.25 }
+        ]
+      },
+      {
+        "week": 5,
+        "products": [
+          { "name": "FASiLITOR", "rate": 0.15 },
+          { "name": "MASSBOOST", "rate": 0.33 },
+          { "name": "PEAKBOOST", "rate": 0.12 },
+          { "name": "BLOOMBOOST", "rate": 0.33 },
+          { "name": "FINALEBOOST", "rate": 0.33 },
+          { "name": "BASE", "rate": 2.0 },
+          { "name": "ECOZEN", "rate": 0.25 }
+        ]
+      },
+      {
+        "week": 6,
+        "products": [
+          { "name": "FASiLITOR", "rate": 0.15 },
+          { "name": "MASSBOOST", "rate": 0.33 },
+          { "name": "BLOOMBOOST", "rate": 0.33 },
+          { "name": "FINALEBOOST", "rate": 0.4 },
+          { "name": "BASE", "rate": 2.0 },
+          { "name": "ECOZEN", "rate": 0.25 }
+        ]
+      },
+      {
+        "week": 7,
+        "products": [
+          { "name": "FASiLITOR", "rate": 0.15 },
+          { "name": "MASSBOOST", "rate": 0.33 },
+          { "name": "BLOOMBOOST", "rate": 0.4 },
+          { "name": "FINALEBOOST", "rate": 0.5 },
+          { "name": "BASE", "rate": 1.5 },
+          { "name": "ECOZEN", "rate": 0.25 }
+        ]
+      },
+      {
+        "week": 8,
+        "products": [
+          { "name": "FASiLITOR", "rate": 0.15 },
+          { "name": "MASSBOOST", "rate": 0.25 },
+          { "name": "BLOOMBOOST", "rate": 0.5 },
+          { "name": "FINALEBOOST", "rate": 0.67 },
+          { "name": "BASE", "rate": 1 },
+          { "name": "ECOZEN", "rate": 0.25 }
+        ]
+      },
+      {
+        "week": 9,
+        "products": [
+          { "name": "ECOZEN", "rate": 0.5 }
+        ]
+      }
+    ]
+  },
+  "aptus_clean": {
+    "name": "Aptus Clean Program",
+    "vegetative": [
+      {
+        "week": 1,
+        "products": [
+          { "name": "SYSTEM-CLEAN", "rate": 0.25 },
+          { "name": "MINERAL-CALMAG", "rate": 0.8 },
+          { "name": "BASE", "rate": 1.25 }
+        ]
+      },
+      {
+        "week": 2,
+        "products": [
+          { "name": "SYSTEM-CLEAN", "rate": 0.25 },
+          { "name": "MINERAL-CALMAG", "rate": 0.8 },
+          { "name": "BASE", "rate": 1.5 }
+        ]
+      },
+      {
+        "week": 3,
+        "products": [
+          { "name": "SYSTEM-CLEAN", "rate": 0.25 },
+          { "name": "MINERAL-CALMAG", "rate": 0.8 },
+          { "name": "BASE", "rate": 1.5 }
+        ]
+      },
+      {
+        "week": 4,
+        "products": [
+          { "name": "SYSTEM-CLEAN", "rate": 0.25 },
+          { "name": "MINERAL-CALMAG", "rate": 0.8 },
+          { "name": "BASE", "rate": 1.5 }
+        ]
+      }
+    ],
+    "flowering": [
+      {
+        "week": 1,
+        "products": [
+          { "name": "SYSTEM-CLEAN", "rate": 0.25 },
+          { "name": "MINERAL-CALMAG", "rate": 0.8 },
+          { "name": "BASE", "rate": 1.5 }
+        ]
+      },
+      {
+        "week": 2,
+        "products": [
+          { "name": "SYSTEM-CLEAN", "rate": 0.25 },
+          { "name": "MINERAL-CALMAG", "rate": 0.8 },
+          { "name": "BASE", "rate": 1.75 },
+          { "name": "BREAKOUT POWDER", "rate": 0.25 }
+        ]
+      },
+      {
+        "week": 3,
+        "products": [
+          { "name": "SYSTEM-CLEAN", "rate": 0.25 },
+          { "name": "MINERAL-CALMAG", "rate": 0.8 },
+          { "name": "BASE", "rate": 2.0 }
+        ]
+      },
+      {
+        "week": 4,
+        "products": [
+          { "name": "SYSTEM-CLEAN", "rate": 0.25 },
+          { "name": "MINERAL-CALMAG", "rate": 0.8 },
+          { "name": "BASE", "rate": 2.0 }
+        ]
+      },
+      {
+        "week": 5,
+        "products": [
+          { "name": "SYSTEM-CLEAN", "rate": 0.25 },
+          { "name": "MINERAL-CALMAG", "rate": 0.8 },
+          { "name": "BASE", "rate": 2.0 },
+          { "name": "BREAKOUT POWDER", "rate": 0.25 }
+        ]
+      },
+      {
+        "week": 6,
+        "products": [
+          { "name": "SYSTEM-CLEAN", "rate": 0.25 },
+          { "name": "MINERAL-CALMAG", "rate": 0.8 },
+          { "name": "BASE", "rate": 2.0 },
+          { "name": "FINALEBOOST", "rate": 0.5 }
+        ]
+      },
+      {
+        "week": 7,
+        "products": [
+          { "name": "SYSTEM-CLEAN", "rate": 0.25 },
+          { "name": "MINERAL-CALMAG", "rate": 0.8 },
+          { "name": "BASE", "rate": 1.75 },
+          { "name": "FINALEBOOST", "rate": 0.5 }
+        ]
+      },
+      {
+        "week": 8,
+        "products": [
+          { "name": "SYSTEM-CLEAN", "rate": 0.25 },
+          { "name": "MINERAL-CALMAG", "rate": 0.8 },
+          { "name": "BASE", "rate": 1.25 },
+          { "name": "FINALEBOOST", "rate": 0.5 }
+        ]
+      },
+      {
+        "week": 9,
+        "products": [
+          { "name": "SYSTEM-CLEAN", "rate": 0.25 }
+        ]
+      }
+    ]
+  }
+}
