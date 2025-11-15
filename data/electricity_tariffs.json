@@ -1,234 +1,410 @@
-[
-  {
-    "retailer": "Aurora Energy",
-    "region": "TAS",
-    "distributor": null,
-    "plan": "Tariff 31 (Flat)",
-    "type": "flat",
-    "flat_c_per_kWh": 29.0535,
-    "supply_c_per_day": null,
-    "notes": "From Power Tariffs sheet"
-  },
-  {
-    "retailer": "Aurora Energy",
-    "region": "TAS",
-    "distributor": null,
-    "plan": "Tariff 93 (TOU)",
-    "type": "tou",
-    "on_c_per_kWh": 35.4782,
-    "off_c_per_kWh": 16.6862,
-    "shoulder_c_per_kWh": null,
-    "supply_c_per_day": null,
-    "schedule": {
-      "on": "07:00–10:00 & 16:00–21:00",
-      "off": "10:00–16:00 & 21:00–07:00 (all day Sat/Sun)"
+{
+  "retailers": {
+    "actewagl": {
+      "displayName": "ActewAGL",
+      "regions": ["act"],
+      "plans": {
+        "home-plan-flat": {
+          "title": "Home Plan - Flat Rate",
+          "byRegion": { "act": { "on": 32.56, "off": 32.56 } },
+          "windows": { "on": [{ "start": "00:00", "end": "23:59", "days": [0,1,2,3,4,5,6] }], "off": [] }
+        },
+        "home-tou": {
+          "title": "Home Time of Use Plan",
+          "byRegion": { "act": { "on": 43.34, "off": 26.4, "shoulder": 29.8845 } },
+          "windows": {
+            "on": [
+              { "start": "07:00", "end": "09:00", "days": [1,2,3,4,5] },
+              { "start": "17:00", "end": "20:00", "days": [1,2,3,4,5] }
+            ],
+            "shoulder": [
+              { "start": "09:00", "end": "17:00", "days": [1,2,3,4,5] },
+              { "start": "20:00", "end": "22:00", "days": [1,2,3,4,5] }
+            ],
+            "off": [
+              { "start": "22:00", "end": "07:00", "days": [0,1,2,3,4,5,6] },
+              { "start": "00:00", "end": "23:59", "days": [0,6] }
+            ]
+          }
+        }
+      }
     },
-    "notes": "From Power Tariffs sheet"
-  },
-  {
-    "retailer": "Aurora Energy",
-    "region": "TAS",
-    "distributor": null,
-    "plan": "Tariff 62 (Controlled Load)",
-    "type": "flat",
-    "flat_c_per_kWh": 14.3078,
-    "supply_c_per_day": null,
-    "notes": "Night/off-peak CL"
-  },
-  {
-    "retailer": "AGL",
-    "region": "National",
-    "distributor": null,
-    "plan": "Home Plan (Flat)",
-    "type": "flat",
-    "flat_c_per_kWh": 40.183,
-    "supply_c_per_day": null,
-    "notes": "From Power Tariffs sheet"
-  },
-  {
-    "retailer": "AGL",
-    "region": "National",
-    "distributor": null,
-    "plan": "Home Time of Use",
-    "type": "tou",
-    "on_c_per_kWh": 59.301,
-    "off_c_per_kWh": 27.071,
-    "shoulder_c_per_kWh": 33.044,
-    "supply_c_per_day": null,
-    "schedule": {
-      "on": "16:00–21:00",
-      "shoulder": "09:00–17:00 & 20:00–22:00",
-      "off": "21:00–09:00"
-    }
-  },
-  {
-    "retailer": "Ergon Energy",
-    "region": "QLD",
-    "distributor": "Ergon",
-    "plan": "Tariff 11 (Flat)",
-    "type": "flat",
-    "flat_c_per_kWh": 32.973,
-    "supply_c_per_day": null,
-    "notes": "From Power Tariffs sheet"
-  },
-  {
-    "retailer": "Ergon Energy",
-    "region": "QLD",
-    "distributor": "Ergon",
-    "plan": "Tariff 12D (TOU)",
-    "type": "tou",
-    "on_c_per_kWh": 45.712,
-    "off_c_per_kWh": 22.68,
-    "shoulder_c_per_kWh": 28.035,
-    "schedule": {
-      "on": "16:00–21:00",
-      "shoulder": "21:00–11:00",
-      "off": "11:00–16:00"
-    }
-  },
-  {
-    "retailer": "Synergy",
-    "region": "WA",
-    "distributor": "Western Power",
-    "plan": "A1 (Flat)",
-    "type": "flat",
-    "flat_c_per_kWh": 32.3719,
-    "supply_c_per_day": null
-  },
-  {
-    "retailer": "Synergy",
-    "region": "WA",
-    "distributor": "Western Power",
-    "plan": "Midday Saver (TOU)",
-    "type": "tou",
-    "on_c_per_kWh": 53.8446,
-    "off_c_per_kWh": 8.6151,
-    "shoulder_c_per_kWh": 23.6916,
-    "schedule": {
-      "on": "15:00–21:00",
-      "shoulder": "21:00–09:00",
-      "off": "09:00–15:00"
-    }
-  },
-  {
-    "retailer": "Powershop",
-    "region": "VIC",
-    "distributor": "CitiPower",
-    "plan": "Residential Single Rate",
-    "type": "flat",
-    "flat_c_per_kWh": 28.71,
-    "supply_c_per_day": 115.25,
-    "notes": "VDO 2023–24"
-  },
-  {
-    "retailer": "Powershop",
-    "region": "VIC",
-    "distributor": "CitiPower",
-    "plan": "Residential TOU (2-period)",
-    "type": "tou",
-    "on_c_per_kWh": 37.19,
-    "off_c_per_kWh": 24.41,
-    "shoulder_c_per_kWh": null,
-    "supply_c_per_day": 115.25,
-    "schedule": {
-      "on": "15:00–21:00 (daily)",
-      "off": "all other times"
-    }
-  },
-  {
-    "retailer": "Powershop",
-    "region": "VIC",
-    "distributor": "AusNet",
-    "plan": "Residential Single Rate",
-    "type": "flat",
-    "flat_c_per_kWh": 38.51,
-    "supply_c_per_day": 132.51
-  },
-  {
-    "retailer": "Powershop",
-    "region": "VIC",
-    "distributor": "AusNet",
-    "plan": "Residential TOU (2-period)",
-    "type": "tou",
-    "on_c_per_kWh": 49.32,
-    "off_c_per_kWh": 28.69,
-    "supply_c_per_day": 132.51
-  },
-  {
-    "retailer": "EnergyAustralia",
-    "region": "VIC",
-    "distributor": "CitiPower",
-    "plan": "Residential Peak Anytime (Flat)",
-    "type": "flat",
-    "flat_c_per_kWh": 28.71,
-    "supply_c_per_day": 115.2492
-  },
-  {
-    "retailer": "EnergyAustralia",
-    "region": "VIC",
-    "distributor": "CitiPower",
-    "plan": "Residential 7-Day TOU",
-    "type": "tou",
-    "on_c_per_kWh": 37.1899,
-    "off_c_per_kWh": 24.4099,
-    "supply_c_per_day": 115.2492
-  },
-  {
-    "retailer": "Lumo Energy",
-    "region": "VIC",
-    "distributor": "CitiPower",
-    "plan": "Residential Single Rate",
-    "type": "flat",
-    "flat_c_per_kWh": 28.71,
-    "supply_c_per_day": 115.25
-  },
-  {
-    "retailer": "Lumo Energy",
-    "region": "VIC",
-    "distributor": "CitiPower",
-    "plan": "Residential TOU (7-Day)",
-    "type": "tou",
-    "on_c_per_kWh": 37.19,
-    "off_c_per_kWh": 24.41,
-    "supply_c_per_day": 115.25
-  },
-  {
-    "retailer": "Lumo Energy",
-    "region": "VIC",
-    "distributor": "AusNet",
-    "plan": "Residential Single Rate",
-    "type": "flat",
-    "flat_c_per_kWh": 38.51,
-    "supply_c_per_day": 132.51
-  },
-  {
-    "retailer": "Lumo Energy",
-    "region": "VIC",
-    "distributor": "AusNet",
-    "plan": "Residential TOU (7-Day)",
-    "type": "tou",
-    "on_c_per_kWh": 49.32,
-    "off_c_per_kWh": 28.69,
-    "supply_c_per_day": 132.51
-  },
-  {
-    "retailer": "Red Energy",
-    "region": "VIC",
-    "distributor": "CitiPower",
-    "plan": "VDO Single Rate",
-    "type": "flat",
-    "flat_c_per_kWh": 27.33,
-    "supply_c_per_day": 124.07,
-    "notes": "Effective 1 Jul 2025"
-  },
-  {
-    "retailer": "Red Energy",
-    "region": "VIC",
-    "distributor": "AusNet",
-    "plan": "VDO 2-Period TOU (Res.)",
-    "type": "tou",
-    "on_c_per_kWh": 46.82,
-    "off_c_per_kWh": 23.99,
-    "supply_c_per_day": 141.46
+
+    "agl": {
+      "displayName": "AGL",
+      "regions": ["national"],
+      "plans": {
+        "home-plan-flat": {
+          "title": "Home Plan - Flat Rate",
+          "byRegion": { "national": { "on": 40.183, "off": 40.183 } },
+          "windows": { "on": [{ "start": "00:00", "end": "23:59", "days": [0,1,2,3,4,5,6] }], "off": [] }
+        },
+        "home-tou": {
+          "title": "Home Time of Use Plan",
+          "byRegion": { "national": { "on": 59.301, "off": 27.071, "shoulder": 33.044 } },
+          "windows": {
+            "on": [{ "start": "16:00", "end": "21:00", "days": [0,1,2,3,4,5,6] }],
+            "shoulder": [
+              { "start": "09:00", "end": "17:00", "days": [1,2,3,4,5] },
+              { "start": "20:00", "end": "22:00", "days": [1,2,3,4,5] }
+            ],
+            "off": [{ "start": "21:00", "end": "09:00", "days": [0,1,2,3,4,5,6] }]
+          }
+        }
+      }
+    },
+
+    "alinta": {
+      "displayName": "Alinta Energy",
+      "regions": ["national"],
+      "plans": {
+        "standard-contract-flat-est": {
+          "title": "Standard Contract (est.) - Flat",
+          "byRegion": { "national": { "on": 21.45, "off": 21.45 } },
+          "windows": { "on": [{ "start": "00:00", "end": "23:59", "days": [0,1,2,3,4,5,6] }], "off": [] }
+        }
+      }
+    },
+
+    "amber": {
+      "displayName": "Amber Electric",
+      "regions": ["national"],
+      "plans": {
+        "standard-contract-flat-est": {
+          "title": "Standard Contract (est.) - Flat",
+          "byRegion": { "national": { "on": 38.42, "off": 38.42 } },
+          "windows": { "on": [{ "start": "00:00", "end": "23:59", "days": [0,1,2,3,4,5,6] }], "off": [] }
+        }
+      }
+    },
+
+    "aurora": {
+      "displayName": "Aurora Energy (TAS)",
+      "regions": ["tas"],
+      "plans": {
+        "tariff-31-flat": {
+          "title": "Tariff 31 - Residential Flat",
+          "byRegion": { "tas": { "on": 29.0535, "off": 29.0535 } },
+          "windows": { "on": [{ "start": "00:00", "end": "23:59", "days": [0,1,2,3,4,5,6] }], "off": [] }
+        },
+"tariff-93-tou": {
+  "title": "Tariff 93 - Time of Use",
+  "byRegion": { "tas": { "on": 35.4782, "off": 16.6862 } },
+  "windows": {
+    "on": [
+      { "start": "07:00", "end": "10:00", "days": [1,2,3,4,5] },
+      { "start": "16:00", "end": "21:00", "days": [1,2,3,4,5] }
+    ],
+    "off": [
+      { "start": "10:00", "end": "16:00", "days": [1,2,3,4,5] },
+      { "start": "21:00", "end": "07:00", "days": [1,2,3,4,5] },
+      { "start": "00:00", "end": "23:59", "days": [0,6] }
+    ]
   }
-]
+},
+        "tariff-62-night": {
+          "title": "Tariff 62 - Controlled Load (Night)",
+          "byRegion": { "tas": { "on": 14.3078, "off": 14.3078 } },
+          "windows": { "on": [{ "start": "00:00", "end": "23:59", "days": [0,1,2,3,4,5,6] }], "off": [] }
+        }
+      }
+    },
+
+    "ergon": {
+      "displayName": "Ergon Energy (QLD)",
+      "regions": ["qld-regional"],
+      "plans": {
+        "t11-flat": {
+          "title": "Tariff 11 - Flat",
+          "byRegion": { "qld-regional": { "on": 32.973, "off": 32.973 } },
+          "windows": { "on": [{ "start": "00:00", "end": "23:59", "days": [0,1,2,3,4,5,6] }], "off": [] }
+        },
+        "t12d-tou": {
+          "title": "Tariff 12D - TOU",
+          "byRegion": { "qld-regional": { "on": 45.712, "off": 22.68, "shoulder": 28.035 } },
+          "windows": {
+            "on": [{ "start": "16:00", "end": "21:00", "days": [1,2,3,4,5] }],
+            "shoulder": [{ "start": "21:00", "end": "11:00", "days": [0,1,2,3,4,5,6] }],
+            "off": [{ "start": "11:00", "end": "16:00", "days": [1,2,3,4,5] }]
+          }
+        }
+      }
+    },
+
+    "energex": {
+      "displayName": "Energex (QLD SEQ)",
+      "regions": ["qld-seq"],
+      "plans": {
+        "res-tou": {
+          "title": "Residential TOU",
+          "byRegion": { "qld-seq": { "on": 31.21, "off": 21.84, "shoulder": 25.4 } },
+          "windows": {
+            "on": [{ "start": "16:00", "end": "21:00", "days": [1,2,3,4,5] }],
+            "off": [{ "start": "11:00", "end": "16:00", "days": [1,2,3,4,5] }],
+            "shoulder": [
+              { "start": "21:00", "end": "07:00", "days": [0,1,2,3,4,5,6] },
+              { "start": "07:00", "end": "11:00", "days": [1,2,3,4,5] },
+              { "start": "00:00", "end": "23:59", "days": [0,6] }
+            ]
+          }
+        }
+      }
+    },
+
+    "momentum": {
+      "displayName": "Momentum Energy",
+      "regions": ["national"],
+      "plans": {
+        "flat": {
+          "title": "Residential Flat",
+          "byRegion": { "national": { "on": 46.72, "off": 46.72 } },
+          "windows": { "on": [{ "start": "00:00", "end": "23:59", "days": [0,1,2,3,4,5,6] }], "off": [] }
+        },
+        "tou": {
+          "title": "Residential TOU",
+          "byRegion": { "national": { "on": 46.82, "off": 23.99 } },
+          "windows": {
+            "on": [{ "start": "15:00", "end": "21:00", "days": [0,1,2,3,4,5,6] }],
+            "off": [{ "start": "21:00", "end": "15:00", "days": [0,1,2,3,4,5,6] }]
+          }
+        }
+      }
+    },
+
+    "origin": {
+      "displayName": "Origin Energy",
+      "regions": ["national"],
+      "plans": {
+        "flat": {
+          "title": "Residential Flat",
+          "byRegion": { "national": { "on": 28.71, "off": 28.71 } },
+          "windows": { "on": [{ "start": "00:00", "end": "23:59", "days": [0,1,2,3,4,5,6] }], "off": [] }
+        },
+        "tou": {
+          "title": "Residential TOU",
+          "byRegion": { "national": { "on": 37.19, "off": 24.41 } },
+          "windows": {
+            "on": [{ "start": "15:00", "end": "21:00", "days": [0,1,2,3,4,5,6] }],
+            "off": [{ "start": "21:00", "end": "15:00", "days": [0,1,2,3,4,5,6] }]
+          }
+        }
+      }
+    },
+
+    "sapower": {
+      "displayName": "SA Power Networks",
+      "regions": ["sa"],
+      "plans": {
+        "res-single-flat": {
+          "title": "Residential Single Rate - Flat",
+          "byRegion": { "sa": { "on": 7.26, "off": 7.26 } },
+          "windows": { "on": [{ "start": "00:00", "end": "23:59", "days": [0,1,2,3,4,5,6] }], "off": [] }
+        },
+        "res-tou": {
+          "title": "Residential TOU",
+          "byRegion": { "sa": { "on": 18.95, "off": 9.47 } },
+          "windows": {
+            "on": [
+              { "start": "06:00", "end": "10:00", "days": [1,2,3,4,5,6,0] },
+              { "start": "16:00", "end": "23:59", "days": [1,2,3,4,5,6,0] }
+            ],
+            "off": [{ "start": "00:00", "end": "06:00", "days": [0,1,2,3,4,5,6] }]
+          }
+        }
+      }
+    },
+
+    "synergy": {
+      "displayName": "Synergy (WA)",
+      "regions": ["wa"],
+      "plans": {
+        "a1-flat": {
+          "title": "A1 Tariff - Flat",
+          "byRegion": { "wa": { "on": 32.3719, "off": 32.3719 } },
+          "windows": { "on": [{ "start": "00:00", "end": "23:59", "days": [0,1,2,3,4,5,6] }], "off": [] }
+        },
+        "midday-saver-tou": {
+          "title": "Midday Saver TOU",
+          "byRegion": { "wa": { "on": 53.8446, "off": 8.6151, "shoulder": 23.6916 } },
+          "windows": {
+            "on": [{ "start": "15:00", "end": "21:00", "days": [0,1,2,3,4,5,6] }],
+            "off": [{ "start": "09:00", "end": "15:00", "days": [0,1,2,3,4,5,6] }],
+            "shoulder": [
+              { "start": "21:00", "end": "09:00", "days": [0,1,2,3,4,5,6] }
+            ]
+          }
+        }
+      }
+    },
+
+    "powershop": {
+      "displayName": "Powershop",
+      "regions": ["vic"],
+      "plans": {
+        "vdo-single-rate": {
+          "title": "VDO Residential Single Rate (VIC)",
+          "byRegion": {
+            "ausnet": { "on": 38.51, "off": 38.51 },
+            "citipower": { "on": 28.71, "off": 28.71 },
+            "jemena": { "on": 32.52, "off": 32.52 },
+            "powercor": { "on": 32.92, "off": 32.92 },
+            "united": { "on": 31.74, "off": 31.74 }
+          },
+          "windows": { "on": [{ "start": "00:00", "end": "23:59", "days": [0,1,2,3,4,5,6] }], "off": [] }
+        },
+        "vdo-tou": {
+          "title": "VDO Time of Use (VIC, Peak 3pm–9pm daily)",
+          "byRegion": {
+            "ausnet": { "on": 49.32, "off": 28.69 },
+            "citipower": { "on": 37.19, "off": 24.41 },
+            "jemena": { "on": 39.25, "off": 27.10 },
+            "powercor": { "on": 42.65, "off": 27.72 },
+            "united": { "on": 41.20, "off": 26.65 }
+          },
+          "windows": {
+            "on": [{ "start": "15:00", "end": "21:00", "days": [0,1,2,3,4,5,6] }],
+            "off": [{ "start": "21:00", "end": "15:00", "days": [0,1,2,3,4,5,6] }]
+          }
+        },
+        "controlled-load": {
+          "title": "Controlled Load (VIC)",
+          "byRegion": {
+            "ausnet": { "on": 28.69, "off": 28.69 },
+            "citipower": { "on": 22.71, "off": 22.71 },
+            "jemena": { "on": 26.39, "off": 26.39 },
+            "powercor": { "on": 25.59, "off": 25.59 },
+            "united": { "on": 24.66, "off": 24.66 }
+          },
+          "windows": { "on": [{ "start": "00:00", "end": "23:59", "days": [0,1,2,3,4,5,6] }], "off": [] }
+        }
+      }
+    },
+
+    "lumo": {
+      "displayName": "Lumo Energy",
+      "regions": ["vic"],
+      "plans": {
+        "single-rate": {
+          "title": "Residential Single Rate",
+          "byRegion": {
+            "ausnet": { "on": 38.51, "off": 38.51 },
+            "citipower": { "on": 28.71, "off": 28.71 },
+            "jemena": { "on": 32.52, "off": 32.52 },
+            "powercor": { "on": 32.92, "off": 32.92 }
+          },
+          "windows": { "on": [{ "start": "00:00", "end": "23:59", "days": [0,1,2,3,4,5,6] }], "off": [] }
+        },
+        "two-rate": {
+          "title": "Residential Two Rate (Anytime + CL)",
+          "byRegion": {
+            "ausnet": { "on": 38.51, "off": 38.51 },
+            "citipower": { "on": 28.71, "off": 28.71 },
+            "jemena": { "on": 32.52, "off": 32.52 },
+            "powercor": { "on": 32.92, "off": 32.92 }
+          },
+          "windows": { "on": [{ "start": "00:00", "end": "23:59", "days": [0,1,2,3,4,5,6] }], "off": [] }
+        },
+        "tou-7day": {
+          "title": "Residential Time of Use (7-Day, Peak 3pm–9pm)",
+          "byRegion": {
+            "ausnet": { "on": 49.32, "off": 28.69 },
+            "citipower": { "on": 37.19, "off": 24.41 },
+            "jemena": { "on": 39.25, "off": 27.10 },
+            "powercor": { "on": 42.65, "off": 27.72 }
+          },
+          "windows": {
+            "on": [{ "start": "15:00", "end": "21:00", "days": [0,1,2,3,4,5,6] }],
+            "off": [{ "start": "21:00", "end": "15:00", "days": [0,1,2,3,4,5,6] }]
+          }
+        }
+      }
+    },
+
+"redenergy": {
+  "displayName": "Red Energy",
+  "regions": ["vic"],
+  "plans": {
+    "vdo-single-rate": {
+      "title": "VDO Residential Single Rate (CitiPower)",
+      "byRegion": {
+        "citipower": { "on": 27.33, "off": 27.33, "supply": 124.07 }
+      },
+      "windows": {
+        "on": [
+          { "start": "00:00", "end": "23:59", "days": [0,1,2,3,4,5,6] }
+        ],
+        "off": []
+      }
+    },
+
+    "vdo-tou": {
+      "title": "VDO 2-Period TOU (Residential)",
+      "byRegion": {
+        "ausnet":   { "on": 46.82, "off": 23.99, "supply": 141.46 },
+        "citipower":{ "on": 36.33, "off": 22.06, "supply": 124.07 },
+        "jemena":   { "on": 37.61, "off": 23.68, "supply": 123.01 },
+        "powercor": { "on": 40.40, "off": 23.65, "supply": 136.84 },
+        "united":   { "on": 38.37, "off": 22.99, "supply": 116.48 }
+      },
+      "windows": {
+        "on": [
+          { "start": "15:00", "end": "21:00", "days": [0,1,2,3,4,5,6] }
+        ],
+        "off": [
+          { "start": "21:00", "end": "15:00", "days": [0,1,2,3,4,5,6] }
+        ]
+      }
+    },
+
+    "controlled-load": {
+      "title": "VDO Controlled Load (Residential)",
+      "byRegion": {
+        "ausnet":   { "on": 23.99, "off": 23.99 },
+        "citipower":{ "on": 20.12, "off": 20.12 },
+        "jemena":   { "on": 23.14, "off": 23.14 },
+        "powercor": { "on": 21.22, "off": 21.22 },
+        "united":   { "on": 21.07, "off": 21.07 }
+      },
+      "windows": {
+        "on": [
+          { "start": "00:00", "end": "23:59", "days": [0,1,2,3,4,5,6] }
+        ],
+        "off": []
+      }
+    }
+  }
+},
+
+    "energyaustralia": {
+      "displayName": "EnergyAustralia",
+      "regions": ["vic"],
+      "plans": {
+        "peak-anytime": {
+          "title": "Residential Peak Anytime / Peak + Dedicated Circuit",
+          "byRegion": {
+            "citipower": { "on": 28.71, "off": 28.71 },
+            "jemena": { "on": 32.5199, "off": 32.5199 },
+            "powercor": { "on": 32.9199, "off": 32.9199 },
+            "united": { "on": 31.7399, "off": 31.7399 },
+            "ausnet": { "on": 38.5099, "off": 39.5499 }
+          },
+          "windows": { "on": [{ "start": "00:00", "end": "23:59", "days": [0,1,2,3,4,5,6] }], "off": [] }
+        },
+        "7day-tou": {
+          "title": "Residential 7-Day Time of Use / TOU + Dedicated Circuit",
+          "byRegion": {
+            "citipower": { "on": 37.1899, "off": 24.4099 },
+            "jemena": { "on": 39.25, "off": 27.10 },
+            "powercor": { "on": 42.6499, "off": 27.72 },
+            "united": { "on": 41.1999, "off": 26.6499 },
+            "ausnet": { "on": 49.3199, "off": 28.6899 }
+          },
+          "windows": {
+            "on": [{ "start": "15:00", "end": "21:00", "days": [0,1,2,3,4,5,6] }],
+            "off": [{ "start": "21:00", "end": "15:00", "days": [0,1,2,3,4,5,6] }]
+          }
+        }
+      }
+    }
+  }
+}
