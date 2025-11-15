@@ -1,29 +1,193 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Air Ventilation Calculator</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../assets/cea.css">
-<link rel="stylesheet" href="../../shared/hoa-calcs.css">
-<!-- CDN fallbacks for GitHub preview / raw.githubusercontent -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/HydroOasis/Hydro-Oasis-Calculators@main/assets/cea.css" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/HydroOasis/Hydro-Oasis-Calculators@main/shared/hoa-calcs.css" media="print" onload="this.media='all'">
-</head>
 <body>
-<div class="hoa-calc" id="ventcalc">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ventilation Calculator</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+  /* ========= Hydro Oasis Palette + Tile Vars ========= */
+  :root{
+    --bg:#FDFBF4; --bg-alt:#FFFFFF; --text:#333333; --heading:#2D5C4E; --link:#2D5C4E; --link-hover:#A76DAB;
+    --btn:#2D5C4E; --btn-text:#FFFFFF; --btn-hover:#A76DAB; --card:#FFFFFF; --card-border:#E7E5DC;
+    --icon:#2D5C4E; --icon-hover:#A76DAB; --input-bg:#FFFFFF; --input-text:#000000; --input-ph:#565656; --input-border:#D1D1D1;
+    --banner:#F9C3B6; --accent:#F4EA9C; --err:#BE5C5C;
+
+    /* Results cards + tiles */
+    --sec-border:#D9E2DE;
+    --sec-head-bg:#F3F7F5;
+    --sec-head-text:#2D5C4E;
+    --tile-bg:#FFFFFF;
+    --tile-border:#E7E5DC;
+    --tile-label:#5C6F69;
+    --tile-value:#2D5C4E;
+  }
+
+  /* ========= Scoped base (no global bleed) ========= */
+  #vent-calc, #vent-calc * { box-sizing:border-box; font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans"; }
+  #vent-calc{ background:var(--bg); color:var(--text); padding:16px; }
+  #vent-calc .vc-wrap{ max-width:1100px; margin:0 auto; }
+
+  .card{ background:var(--card); border:1px solid var(--card-border); border-radius:16px; padding:20px; margin:18px 0;
+    box-shadow:0 6px 20px rgba(0,0,0,.06); }
+  .with-watermark{ position:relative; overflow:hidden; }
+  .wm-img{ position:absolute; right:-28px; bottom:-28px; width:220px; height:auto; opacity:.06; pointer-events:none; user-select:none;
+    filter:saturate(.9) contrast(.95); z-index:0; }
+  @media (min-width:768px){ .wm-img{ width:300px; } }
+
+  /* ===== Titles (scoped like nutrient calc) ===== */
+  #vent-calc .title-block{ text-align:center; margin:6px 0 10px; position:relative; z-index:1; }
+  #vent-calc .title-block h1{
+    margin:0; color:var(--heading); font-weight:800; font-size:clamp(26px,3.2vw,36px); letter-spacing:.3px;
+  }
+  #vent-calc .vc-sub{ color:#456E62; margin-top:6px; font-size:14px; }
+
+  .sec-title{ color:var(--heading); font-weight:800; font-size:18px; display:flex; align-items:center; gap:8px; margin:14px 0 14px; position:relative; z-index:1; }
+  .sec-title .dot{ width:18px; height:18px; border-radius:4px; background:var(--icon); display:inline-block; }
+
+  .grid{ display:grid; gap:14px; }
+  .g-3{ grid-template-columns: repeat(3, 1fr); }
+  .g-2{ grid-template-columns: repeat(2, 1fr); }
+  @media (max-width:820px){ .g-3, .g-2 { grid-template-columns:1fr; } }
+
+  label{ display:block; font-size:13px; color:#516A64; margin:2px 0 6px; }
+  input[type="number"], select{
+    appearance:none; -webkit-appearance:none; outline:none; background:var(--input-bg); color:var(--input-text);
+    border:1px solid var(--input-border); border-radius:10px; padding:12px 12px; width:100%; font-size:16px;
+  }
+  input::placeholder{ color:var(--input-ph); }
+
+  .inline-field{ display:flex; gap:8px; align-items:center; }
+  .inline-field .grow{ flex:1 1 auto; }
+  .inline-field .unit-select{ flex:0 0 96px; }
+  .unit-select select{ text-align:center; padding-left:0; padding-right:0; font-weight:700; }
+  @media (max-width:390px){ .inline-field .unit-select{ flex-basis:86px; } input, select{ font-size:15px; } }
+
+  .inline-options{ display:flex; gap:18px; flex-wrap:wrap; margin:6px 0 10px;}
+  .inline-options label{ display:flex; align-items:center; gap:8px; font-size:14px; cursor:pointer; }
+  input[type="radio"], input[type="checkbox"]{ width:18px; height:18px; }
+
+  .help{ font-size:12px; color:#6B7C77; margin-top:6px; }
+  .error{ border-color:var(--err) !important; }
+  .error-msg{ color:var(--err); font-size:12px; margin-top:6px; }
+  .hidden{ display:none; }
+
+  /* ===== Buttons (hover + pressed like nutrient calc) ===== */
+  .btn{
+    background:var(--btn); color:var(--btn-text); border:1px solid var(--btn);
+    border-radius:12px; padding:14px 20px; font-weight:700; font-size:16px;
+    display:inline-block; text-align:center; cursor:pointer; min-width:240px;
+    transition: transform .05s ease, box-shadow .08s ease, filter .08s ease, background-color .12s ease, border-color .12s ease;
+    box-shadow:0 4px 12px rgba(53,88,74,.2);
+    user-select:none; -webkit-tap-highlight-color:transparent;
+  }
+  .btn:hover{ background:var(--btn-hover); border-color:var(--btn-hover); }
+  .btn:focus{ outline:none; box-shadow:0 0 0 3px rgba(45,92,78,.18); }
+  /* Pressed state */
+  .btn:is(:active,.is-pressed){
+    transform: translateY(1px);
+    box-shadow: inset 0 2px 6px rgba(0,0,0,.15), 0 1px 3px rgba(0,0,0,.06);
+    filter: saturate(.98) brightness(.98);
+  }
+#vent-calc .btn{
+  color: var(--btn-text) !important;
+  -webkit-text-fill-color: var(--btn-text) !important;
+}
+#vent-calc .btn:hover,
+#vent-calc .btn:focus-visible,
+#vent-calc .btn:active,
+#vent-calc .btn:hover *{
+  background: var(--btn-hover) !important;
+  border-color: var(--btn-hover) !important;
+  color: var(--btn-text) !important;                 /* stay white */
+  -webkit-text-fill-color: var(--btn-text) !important;
+  filter: none !important;                           /* kill theme filters */
+}
+
+/* “Pick” links/cards (and any other links in the calc) */
+#vent-calc a,
+#vent-calc a:visited{
+  color: inherit !important;                         /* use the card/text colour */
+  -webkit-text-fill-color: inherit !important;
+}
+#vent-calc a:hover,
+#vent-calc a:hover *{
+  color: inherit !important;                         /* no green on hover */
+  -webkit-text-fill-color: inherit !important;
+  text-decoration: none;
+}
+
+  /* ===== Results: section cards + tiles ===== */
+  .sec-card{
+    border:1px solid var(--sec-border);
+    border-radius:12px;
+    padding:12px;
+    background:#fff;
+    margin-top:14px;
+    position:relative; z-index:1;
+  }
+  .sec-head{
+    display:flex; align-items:center; gap:8px;
+    background:var(--sec-head-bg);
+    color:var(--sec-head-text);
+    padding:8px 10px;
+    border-radius:9px;
+    font-weight:800; font-size:14px;
+  }
+  .sec-head .icon{ font-size:16px; line-height:1; }
+  .stats{
+    display:grid;
+    grid-template-columns: repeat(5, minmax(120px,1fr));
+    gap:10px;
+    padding:10px 6px 6px;
+  }
+  @media (max-width:980px){ .stats{ grid-template-columns: repeat(2, minmax(140px,1fr)); } }
+  @media (max-width:560px){ .stats{ grid-template-columns: 1fr; } }
+  .stat{
+    background:var(--tile-bg);
+    border:1px solid var(--tile-border);
+    border-radius:10px;
+    padding:10px 12px;
+    text-align:center;
+    box-shadow:0 2px 6px rgba(0,0,0,.03);
+  }
+  .stat .label{ font-size:12px; color:var(--tile-label); font-weight:700; letter-spacing:.2px; }
+  .stat .value{ margin-top:4px; font-size:18px; font-weight:800; color:var(--tile-value); }
+
+  .list{ font-size:14px; line-height:1.5; }
+  .subhead{ margin:10px 0 6px; font-weight:700; }
+  .pill{ background:#F7FAF9; border:1px solid var(--tile-border); padding:10px 12px; border-radius:10px; margin:6px 0; font-weight:700; }
+
+  .pick{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:12px; border-radius:10px; background:#FFFFFF;
+    text-decoration:none; color:inherit; border:1px solid var(--tile-border);
+    transition:transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+  }
+  .pick:hover{ transform:translateY(-1px); box-shadow:0 6px 16px rgba(0,0,0,.08); border-color:#d6d6d6; }
+  .pick:active{ transform:translateY(0); box-shadow:0 3px 10px rgba(0,0,0,.08); }
+
+  /* Fixed watermark (corrected) */
+  #ho-watermark{
+    position:fixed; right:16px; bottom:12px; background:rgba(45,92,78,.08); color:#2D5C4E;
+    border:1px solid #E7E5DC; border-radius:10px; padding:6px 10px; font:600 12px/1 'Inter',system-ui,sans-serif;
+    backdrop-filter:blur(2px); z-index:50; pointer-events:none; user-select:none;
+  }
+</style>
+
+<div id="vent-calc">
   <div class="vc-wrap">
 
     <div class="card with-watermark">
-      <img class="wm-img" src="https://cdn.shopify.com/s/files/1/0709/5261/6094/files/Cactus_Mascot.png?v=1750645317" alt="" aria-hidden="true">
+      <img class="wm-img" src="https://cdn.shopify.com/s/files/1/0709/5261/6094/files/Cactus_Mascot.png?v=1750645317" alt="" aria-hidden="true" decoding="async" loading="lazy">
 
       <div class="title-block">
-        <h1>Air Ventilation Calculator</h1>
+        <h1>Ventilation Calculator</h1>
         <div class="vc-sub">Calculate the perfect airflow for your room ventilation needs</div>
       </div>
 
-      <div class="sec-title"><span class="dot" aria-hidden="true"></span><span>Room Dimensions</span></div>
+      <div class="sec-title">
+        <span class="dot" aria-hidden="true"></span><span>Room Dimensions</span>
+      </div>
 
       <div class="grid g-2" style="margin-bottom:14px;">
         <div>
@@ -54,7 +218,9 @@
       </div>
       <div id="dim-err" class="error-msg hidden">Please enter room length, width, and height.</div>
 
-      <div class="sec-title"><span class="dot" aria-hidden="true"></span><span>Ventilation Calculation</span></div>
+      <div class="sec-title">
+        <span class="dot" aria-hidden="true"></span><span>Ventilation Calculation</span>
+      </div>
 
       <div class="grid g-2" style="margin-bottom:10px;">
         <div>
@@ -103,7 +269,9 @@
       </div>
 
       <div style="margin-top:16px;">
-        <div class="sec-title" style="font-size:16px;"><span class="dot" aria-hidden="true"></span><span>Optional Loss / Safety Model</span></div>
+        <div class="sec-title" style="font-size:16px;">
+          <span class="dot" aria-hidden="true"></span><span>Optional Loss / Safety Model</span>
+        </div>
 
         <div class="inline-options">
           <label><input type="radio" name="loss-mode" id="loss-mode-simple" checked> Simple Safety Margin (%)</label>
@@ -137,7 +305,7 @@
         </div>
       </div>
 
-      <div style="text-align:center; margin-top:18px;">
+      <div style="text-align:center; margin-top:18px; position:relative; z-index:1;">
         <button id="calculate-btn" type="button" class="btn">Calculate Ventilation</button>
       </div>
     </div>
@@ -146,6 +314,9 @@
     <div id="results" class="hidden" aria-live="polite" aria-atomic="true"></div>
   </div>
 </div>
+
+<!-- Fixed watermark (matches nutrient calculator styling) -->
+<div id="ho-watermark" aria-hidden="true">Hydro Oasis • Ventilation Calculator</div>
 
 <script>
   const CUBIC_METERS_TO_CUBIC_FEET = 35.3147;
@@ -212,6 +383,21 @@
     const d = document.createElement('div'); d.className='stat';
     d.innerHTML = `<div class="label">${label}</div><div class="value">${value}</div>`;
     return d;
+  }
+
+  /* === “Coming soon” card helper for Recommendations === */
+  function addComingSoon(recSection){
+    const a = document.createElement('a');
+    a.href = '#';
+    a.className = 'pick';
+    a.innerHTML = `
+      <div>
+        <div style="font-weight:700;">Coming soon</div>
+        <div style="font-size:12px;opacity:.9;">Tap to refresh</div>
+      </div>
+      <span style="font-size:12px;opacity:.9;">↻</span>`;
+    a.addEventListener('click', (e)=>{ e.preventDefault(); location.reload(); });
+    recSection.sec.appendChild(a);
   }
 
   function hideResults(){ $('results').classList.add('hidden'); $('results').innerHTML=''; }
@@ -309,26 +495,7 @@
       root.appendChild(core.sec);
 
       const rec = makeSection('Recommendations', '📋');
-      const recList=document.createElement('div'); recList.className='list';
-      recList.innerHTML =
-        `<div class="subhead">Grow Room Fans</div>
-         <div class="pill">Extraction: ${Math.round(cmh)} m³/h (${Math.round(cfm)} CFM)</div>
-         <div class="pill">Intake: ${Math.round(cmh*0.85)} m³/h (${Math.round(toCFM(cmh*0.85))} CFM)</div>`;
-      rec.sec.appendChild(recList);
-
-      if(showScrub){
-        const scrub60 = (vol*60)/(1-(loss||0));
-        const scrub120= (vol*120)/(1-(loss||0));
-        const s=document.createElement('div'); s.className='list';
-        s.innerHTML =
-          `<div class="subhead">Recirculating / Scrubbing Targets</div>
-           <div class="pill">Odour control (≈60 ACH): ~${Math.round(scrub60)} m³/h (${Math.round(toCFM(scrub60))} CFM)</div>
-           <div class="pill">Heavy odour (≈120 ACH): ~${Math.round(scrub120)} m³/h (${Math.round(toCFM(scrub120))} CFM)</div>`;
-        rec.sec.appendChild(s);
-      }
-      const picksHost = document.createElement('div'); picksHost.style.marginTop='10px';
-      rec.sec.appendChild(picksHost);
-      renderStorePicks(cmh, picksHost);
+      addComingSoon(rec);
       root.appendChild(rec.sec);
 
     } else if(inputs.flow && !inputs.ach){
@@ -346,24 +513,7 @@
       root.appendChild(core.sec);
 
       const rec = makeSection('Recommendations', '📋');
-      const d=document.createElement('div'); d.className='list';
-      function stage(actual){
-        if(actual>=40) return '✓ All stages incl. CO₂/high-heat';
-        if(actual>=30) return '✓ Flowering & late veg';
-        if(actual>=20) return '✓ Early–mid vegetative';
-        if(actual>=15) return '✓ Seedlings / clones only';
-        return '⚠ Not recommended for mature plants';
-      }
-      d.innerHTML =
-        `<div class="subhead">Grow Room Ventilation Assessment</div>
-         <div class="pill">${actualACH<15?'⚠ Insufficient – risk of heat/poor air':'OK'}</div>
-         <div class="subhead">Suitable Grow Stages</div>
-         <div class="pill">${stage(actualACH)}</div>`;
-      rec.sec.appendChild(d);
-
-      const picksHost = document.createElement('div'); picksHost.style.marginTop='10px';
-      rec.sec.appendChild(picksHost);
-      renderStorePicks(ratedCMH, picksHost);
+      addComingSoon(rec);
       root.appendChild(rec.sec);
 
     } else if(inputs.ach && inputs.flow){
@@ -384,22 +534,7 @@
       root.appendChild(core.sec);
 
       const rec = makeSection('Recommendations', '📋');
-      const d=document.createElement('div'); d.className='list';
-      const diff = actualACH - inputs.ach;
-      let assess = '';
-      if(Math.abs(diff)<1) assess='✅ Excellent match! Your fan meets the target.';
-      else if(diff>0) assess=`⚡ Fan exceeds target by ${Math.abs(diff).toFixed(1)} ACH`;
-      else assess=`⚠ Fan under target by ${Math.abs(diff).toFixed(1)} ACH`;
-      d.innerHTML =
-        `<div class="subhead">Grow Room Ventilation Assessment</div>
-         <div class="pill">${assess}</div>
-         <div class="subhead">Upgrade Suggestion</div>
-         <div class="pill">To reach <b>${inputs.ach} ACH</b> you need ~${Math.round(reqCMH)} m³/h (${Math.round(reqCFM)} CFM) rated.</div>`;
-      rec.sec.appendChild(d);
-
-      const picksHost = document.createElement('div'); picksHost.style.marginTop='10px';
-      rec.sec.appendChild(picksHost);
-      renderStorePicks(reqCMH, picksHost);
+      addComingSoon(rec);
       root.appendChild(rec.sec);
     } else {
       hideResults(); return;
@@ -458,21 +593,53 @@
   ['length','width','height','ach','flow-rate','flow-rate-unit','has-filter','duct-length','bends','tolerance','show-scrub']
     .forEach(id=> $(id).addEventListener('input', ()=>{ hideResults(); saveState(); }));
 
-  $('calculate-btn').addEventListener('click', (e)=>{ e.preventDefault(); calculate(); });
+  // Tactile "pressed" feel across mouse/touch/keyboard (like nutrient calc)
+  (function(){
+    const root = document.getElementById('vent-calc');
+    const BTN_SEL = '.btn';
+
+    function pressOn(el){ el.classList.add('is-pressed'); }
+    function pressOff(el){ el.classList.remove('is-pressed'); }
+
+    root.addEventListener('pointerdown', (e) => {
+      const b = e.target.closest(BTN_SEL);
+      if (b) pressOn(b);
+    });
+    root.addEventListener('pointerup', (e) => {
+      const b = e.target.closest(BTN_SEL);
+      if (b) pressOff(b);
+    });
+    root.addEventListener('pointercancel', (e) => {
+      const b = e.target.closest(BTN_SEL);
+      if (b) pressOff(b);
+    });
+    root.addEventListener('pointerleave', (e) => {
+      const b = e.target.closest(BTN_SEL);
+      if (b) pressOff(b);
+    });
+    // Keyboard accessibility (Space/Enter)
+    root.addEventListener('keydown', (e) => {
+      if ((e.key === ' ' || e.key === 'Enter')) {
+        const b = e.target.closest(BTN_SEL);
+        if (b) pressOn(b);
+      }
+    });
+    root.addEventListener('keyup', (e) => {
+      if ((e.key === ' ' || e.key === 'Enter')) {
+        const b = e.target.closest(BTN_SEL);
+        if (b) pressOff(b);
+      }
+    });
+  })();
+
+  // Blur button after click to avoid sticky focus/pressed state
+  $('calculate-btn').addEventListener('click', (e)=>{
+    e.preventDefault();
+    calculate();
+    e.currentTarget.blur();
+  });
 
   window.addEventListener('DOMContentLoaded', ()=>{ loadState(); });
   updateUnitLabels(); syncLossUI();
 </script>
-  <script src="../../shared/js/hoa-calcs.js"></script>
-  <script>
-  (function ensureHOA(){
-    if (window.HOA) return;
-    var s = document.createElement('script');
-    s.src = 'https://cdn.jsdelivr.net/gh/HydroOasis/Hydro-Oasis-Calculators@main/shared/js/hoa-calcs.js';
-    s.onload = function(){ if(!window.HOA){ console.error('HOA still not available'); } };
-    s.onerror = function(){ console.error('Failed to load HOA from CDN'); };
-    document.head.appendChild(s);
-  })();
-  </script>
 </body>
-</html>
