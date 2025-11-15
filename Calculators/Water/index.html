@@ -1,37 +1,144 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Water Cost Calculator</title>
-
-  <!-- SDKs -->
-  <script>
-  // Only try to load Shopify/theme SDK in production storefronts, not in GitHub preview
-  (function(){
-    var isPreview = /github\.io|raw\.githubusercontent\.com|htmlpreview/i.test(location.href);
-    if (isPreview) return; // skip in preview environments
-    var s = document.createElement('script');
-    s.src = '/_sdk/element_sdk.js';
-    s.defer = true;
-    document.head.appendChild(s);
-  })();
-  </script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-
-  <link rel="stylesheet" href="../../assets/cea.css">
-  <link rel="stylesheet" href="../../shared/hoa-calcs.css">
-  <!-- CDN fallbacks for GitHub preview / raw.githubusercontent -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/HydroOasis/Hydro-Oasis-Calculators@main/assets/cea.css" media="print" onload="this.media='all'">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/HydroOasis/Hydro-Oasis-Calculators@main/shared/hoa-calcs.css" media="print" onload="this.media='all'">
-</head>
 <body>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Water Cost Calculator</title>
 
-<div class="hoa-calc" id="water-calc">
+<!-- SDKs (kept consistent with your other calcs) -->
+<script src="/_sdk/element_sdk.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Inter:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+  /* ========= Hydro Oasis Scoped Theme (no global bleed) ========= */
+  :root{
+    --bg:#FDFBF4; --text:#333333; --heading:#2D5C4E;
+    --btn:#2D5C4E; --btn-hover:#A76DAB; --btn-text:#FFFFFF;
+    --card:#FFFFFF; --card-border:#E7E5DC; --icon:#2D5C4E; --err:#BE5C5C;
+
+    /* Results sections + tiles */
+    --sec-border:#D9E2DE;
+    --sec-head-bg:#F3F7F5;
+    --sec-head-text:#2D5C4E;
+    --tile-bg:#FFFFFF;
+    --tile-border:#E7E5DC;
+    --tile-label:#5C6F69;
+    --tile-value:#2D5C4E;
+  }
+
+  #water-calc, #water-calc * { box-sizing:border-box; }
+  #water-calc{
+    background:var(--bg); color:var(--text); padding:40px 20px;
+    font-family:'Nunito', sans-serif; line-height:1.6;
+  }
+  #water-calc .wrap{ max-width:1100px; margin:0 auto; }
+
+  /* Base card + watermark (match other calcs) */
+  #water-calc .card{
+    background:var(--card); border:1px solid var(--card-border); border-radius:14px;
+    padding:28px 24px 34px; box-shadow:0 2px 8px rgba(49,71,58,.08);
+    position:relative; overflow:hidden; margin:18px 0;
+  }
+  #water-calc .wm-img{
+    position:absolute; right:14px; bottom:14px; width:min(160px,20%);
+    opacity:.12; pointer-events:none; user-select:none; z-index:0;
+    filter:saturate(.95) contrast(.95);
+  }
+
+  /* Titles */
+  #water-calc .title-block{ text-align:center; margin:4px 0 6px; position:relative; z-index:1; }
+  #water-calc .title-block h1{
+    font-family:'Inter',system-ui,sans-serif; font-weight:800; letter-spacing:.2px;
+    color:var(--heading); margin:0; font-size:clamp(28px,4vw,40px);
+  }
+  #water-calc .subtitle{
+    text-align:center; color:#56645d; font-family:'Inter',system-ui,sans-serif;
+    font-weight:500; font-size:clamp(12px,2.1vw,14px); margin:0 0 16px;
+  }
+
+  /* Section titles */
+  #water-calc .sec-title{
+    color:var(--heading); font-weight:800; font-size:18px; display:flex;
+    align-items:center; gap:8px; margin:14px 0 12px; position:relative; z-index:1;
+  }
+  #water-calc .dot{ width:18px; height:18px; border-radius:4px; background:var(--icon); display:inline-block; }
+
+  /* Grid + inputs */
+  #water-calc .grid{ display:grid; gap:14px; position:relative; z-index:1; }
+  #water-calc .g-3{ grid-template-columns: repeat(3,1fr); }
+  #water-calc .g-2{ grid-template-columns: repeat(2,1fr); }
+  @media (max-width:820px){ #water-calc .g-3, #water-calc .g-2{ grid-template-columns:1fr; } }
+
+  #water-calc label{ display:block; font-size:13px; color:#516A64; margin:2px 0 6px; }
+  #water-calc .input, #water-calc select{
+    width:100%; padding:12px 12px; border-radius:10px; border:1px solid #c4c8b8; background:#fff; font-size:16px;
+    appearance:none; -webkit-appearance:none; color:#31473a;
+  }
+  #water-calc .help{ font-size:12px; color:#6B7C77; margin-top:6px; }
+  #water-calc .error{ border-color:var(--err)!important; }
+  #water-calc .error-msg{ color:var(--err); font-size:12px; margin:8px 0; display:none; text-align:center; font-weight:800; }
+  #water-calc .error-msg.show{ display:block; }
+
+  /* Buttons — purple hover + tactile pressed */
+  #water-calc .btn{
+    background:var(--btn); color:var(--btn-text); border:1px solid var(--btn);
+    border-radius:12px; padding:14px 36px; font-weight:800; cursor:pointer; font-size:1.1em;
+    display:inline-block; box-shadow:0 4px 12px rgba(53,88,74,.2);
+    transition: transform .05s ease, box-shadow .08s ease, filter .08s ease, background-color .12s ease, border-color .12s ease;
+    user-select:none; -webkit-tap-highlight-color:transparent;
+    -webkit-text-fill-color: var(--btn-text); /* lock white in WebKit */
+  }
+  #water-calc .btn:hover{
+    background:var(--btn-hover) !important; border-color:var(--btn-hover) !important;
+    color:var(--btn-text) !important; -webkit-text-fill-color:var(--btn-text) !important;
+  }
+  #water-calc .btn:focus{ outline:none; box-shadow:0 0 0 3px rgba(45,92,78,.18); }
+  #water-calc .btn:is(:active,.is-pressed){
+    transform: translateY(1px);
+    box-shadow: inset 0 2px 6px rgba(0,0,0,.15), 0 1px 3px rgba(0,0,0,.06);
+    filter: saturate(.98) brightness(.98);
+  }
+  #water-calc .center{ text-align:center; }
+
+  /* Results section cards + tiles (same as other calcs) */
+  #water-calc .sec-card{
+    border:1px solid var(--sec-border); border-radius:12px; padding:12px; background:#fff; margin-top:14px;
+  }
+  #water-calc .sec-head{
+    display:flex; align-items:center; gap:8px; background:var(--sec-head-bg); color:var(--sec-head-text);
+    padding:8px 10px; border-radius:9px; font-weight:800; font-size:14px;
+  }
+  #water-calc .sec-head .icon{ font-size:16px; line-height:1; }
+  #water-calc .stats{
+    display:grid; grid-template-columns: repeat(5, minmax(120px,1fr)); gap:10px; padding:10px 6px 6px;
+  }
+  @media (max-width:980px){ #water-calc .stats{ grid-template-columns: repeat(2, minmax(140px,1fr)); } }
+  @media (max-width:560px){ #water-calc .stats{ grid-template-columns: 1fr; } }
+  #water-calc .stat{
+    background:var(--tile-bg); border:1px solid var(--tile-border); border-radius:10px; padding:10px 12px; text-align:center;
+    box-shadow:0 2px 6px rgba(0,0,0,.03);
+  }
+  #water-calc .stat .label{ font-size:12px; color:var(--tile-label); font-weight:700; letter-spacing:.2px; }
+  #water-calc .stat .value{ margin-top:4px; font-size:18px; font-weight:800; color:var(--tile-value); }
+
+  /* Fixed watermark (same component as your other calcs) */
+  #ho-watermark{
+    position:fixed; right:16px; bottom:12px; background:rgba(45,92,78,.08); color:#2D5C4E;
+    border:1px solid #E7E5DC; border-radius:10px; padding:6px 10px; font:600 12px/1 'Inter',system-ui,sans-serif;
+    backdrop-filter:blur(2px); z-index:50; pointer-events:none; user-select:none;
+  }
+
+  /* Prevent theme from hijacking focus/hover text colours */
+  #water-calc .btn, #water-calc .btn *{
+    color:var(--btn-text) !important; -webkit-text-fill-color:var(--btn-text) !important;
+  }
+</style>
+
+<div id="water-calc">
   <div class="wrap">
     <div class="card">
-      <img class="wm-img" src="https://cdn.shopify.com/s/files/1/0709/5261/6094/files/Cactus_Mascot.png?v=1750645317" alt="" aria-hidden="true">
+      <img class="wm-img" src="https://cdn.shopify.com/s/files/1/0709/5261/6094/files/Cactus_Mascot.png?v=1750645317" alt="" aria-hidden="true" decoding="async" loading="lazy">
       <div class="title-block">
         <h1 id="main-heading">Water Cost Calculator</h1>
         <div class="subtitle">Estimate water cost per litre, per plant, and totals for your grow</div>
@@ -56,41 +163,21 @@
       </div>
 
       <div class="grid g-2" style="margin-top:6px;">
-        <!-- State -->
-        <div class="input">
-          <label for="waterState">State</label>
-          <select id="waterState">
-            <option value="">All states…</option>
-          </select>
-        </div>
-
-        <!-- Provider -->
-        <div class="input">
-          <label for="providerSelect">Water Provider</label>
-          <select id="providerSelect" disabled>
-            <option value="">Select provider…</option>
-          </select>
-          <small class="help-text">Choose a provider or leave blank to use a custom rate.</small>
-        </div>
-
-        <!-- Tier -->
-        <div class="input">
-          <label for="providerTier">Tariff Tier</label>
-          <select id="providerTier" disabled>
-            <option value="">Select tier…</option>
-          </select>
-          <small class="help-text">If your provider has multiple tiers, pick the one that applies.</small>
-        </div>
-
-        <!-- Custom rate stays as-is -->
         <div>
-          <label for="ratePerKL">Water Cost ($/kL)</label>
-          <input class="input" type="number" id="ratePerKL" min="0" step="0.01" placeholder="e.g., 2.50">
+          <label for="waterProvider">Water Provider</label>
+          <select class="input" id="waterProvider">
+            <option value="">Select your water provider...</option>
+            <option value="loading">Loading providers...</option>
+          </select>
+        </div>
+        <div>
+          <label for="waterCost">Water Cost ($/kL)</label>
+          <input class="input" type="number" id="waterCost" min="0" step="0.01" placeholder="e.g., 2.50">
+          <div id="rateInfo" class="help"></div>
         </div>
       </div>
 
-      <div id="waterErrors" class="error-message" style="display:none"></div>
-
+      <!-- Options + actions -->
       <div class="center" style="margin-top:14px;">
         <label class="inline" style="font-size:14px;">
           <input id="roundResults" type="checkbox" checked style="margin-right:6px; vertical-align:-2px;"> Round currency to 2 decimals
@@ -106,7 +193,7 @@
 
     <!-- Results -->
     <div id="resultsCard" class="card" style="display:none;">
-      <img class="wm-img" src="https://cdn.shopify.com/s/files/1/0709/5261/6094/files/Cactus_Mascot.png?v=1750645317" alt="" aria-hidden="true">
+      <img class="wm-img" src="https://cdn.shopify.com/s/files/1/0709/5261/6094/files/Cactus_Mascot.png?v=1750645317" alt="" aria-hidden="true" decoding="async" loading="lazy">
       <div id="resultsContainer"></div>
 
       <div class="center" style="margin-top:12px;">
@@ -116,13 +203,50 @@
   </div>
 </div>
 
+<!-- Fixed watermark (matches your other calculators) -->
+<div id="ho-watermark" aria-hidden="true">Hydro Oasis • Water Cost Calculator</div>
+
 <script>
-  /* ========= Config (Element SDK) ========= */
+  /* ========= Config ========= */
   const defaultConfig = {
     main_heading: "Water Cost Calculator",
     calculate_button_text: "Calculate",
     download_button_text: "Download Results (PDF)"
   };
+
+  /* ========= Provider Data (External JSON + fallback) ========= */
+  // If this file is placed at Calculators/Water/index.html, this relative path is correct:
+  const PROVIDERS_URL = "https://cdn.shopify.com/s/files/1/0709/5261/6094/files/Water_Providers.json?v=1762665123";
+
+  // Fallback (only used if the JSON file can’t be fetched)
+  const FALLBACK_PROVIDERS = [
+    {"name":"Icon Water","state":"ACT","rate":2.78,"tier":"Tier 1"},
+    {"name":"Icon Water","state":"ACT","rate":5.58,"tier":"Tier 2"},
+    {"name":"Sydney Water","state":"NSW","rate":3.17,"tier":"Standard Rate"},
+    {"name":"Hunter Water","state":"NSW","rate":2.89,"tier":"Standard Rate"},
+    {"name":"Central Coast Council","state":"NSW","rate":2.62,"tier":"Standard Rate"},
+    {"name":"Power and Water Corporation","state":"NT","rate":2.26,"tier":"Standard Rate"},
+    {"name":"Urban Utilities","state":"QLD","rate":0.98,"tier":"Tier 1"},
+    {"name":"Urban Utilities","state":"QLD","rate":2.03,"tier":"Tier 2"},
+    {"name":"Unity Water","state":"QLD","rate":0.787,"tier":"Tier 1"},
+    {"name":"Unity Water","state":"QLD","rate":1.57,"tier":"Tier 2"},
+    {"name":"Gold Coast Water","state":"QLD","rate":4.824,"tier":"Standard Rate"},
+    {"name":"Townsville Water – Standard Plan (excess over 772 kL)","state":"QLD","rate":4.13,"tier":"Excess Usage"},
+    {"name":"Townsville Water – Water Watchers Plan","state":"QLD","rate":1.73,"tier":"Usage Charge"},
+    {"name":"SA Water","state":"SA","rate":2.37,"tier":"Tier 1"},
+    {"name":"SA Water","state":"SA","rate":3.36,"tier":"Tier 2"},
+    {"name":"SA Water","state":"SA","rate":3.64,"tier":"Tier 3"},
+    {"name":"TasWater","state":"TAS","rate":1.26,"tier":"Standard Rate"},
+    {"name":"Yarra Valley Water","state":"VIC","rate":3.43,"tier":"Tier 1"},
+    {"name":"Yarra Valley Water","state":"VIC","rate":4.5,"tier":"Tier 2"},
+    {"name":"South East Water","state":"VIC","rate":3.76,"tier":"Tier 1"},
+    {"name":"South East Water","state":"VIC","rate":4.8,"tier":"Tier 2"},
+    {"name":"City West Water","state":"VIC","rate":3.64,"tier":"Tier 1"},
+    {"name":"City West Water","state":"VIC","rate":4.16,"tier":"Tier 2"},
+    {"name":"Water Corporation","state":"WA","rate":2.052,"tier":"Tier 1"},
+    {"name":"Water Corporation","state":"WA","rate":2.73,"tier":"Tier 2"},
+    {"name":"Water Corporation","state":"WA","rate":5.11,"tier":"Tier 3"}
+  ];
 
   /* ========= DOM ========= */
   const $ = (id)=>document.getElementById(id);
@@ -130,7 +254,9 @@
     numPlants: $('numPlants'),
     waterPerPlant: $('waterPerPlant'),
     waterFrequency: $('waterFrequency'),
-    ratePerKL: $('ratePerKL'),
+    waterProvider: $('waterProvider'),
+    waterCost: $('waterCost'),
+    rateInfo: $('rateInfo'),
     roundResults: $('roundResults'),
     errorMessage: $('errorMessage'),
     calculateBtn: $('calculateBtn'),
@@ -142,7 +268,7 @@
 
   let calculationResults = null;
 
-  /* ========= UI helpers ========= */
+  /* ========= UI Helpers ========= */
   function makeSection(title, icon){
     const sec = document.createElement('div');
     sec.className = 'sec-card';
@@ -168,21 +294,67 @@
   }
   function formatCurrency(v, round){ return '$' + formatNumber(v, round); }
 
+  /* ========= Providers ========= */
+  function getStateName(abbrev){
+    return ({NSW:'New South Wales',VIC:'Victoria',QLD:'Queensland',SA:'South Australia',WA:'Western Australia',TAS:'Tasmania',NT:'Northern Territory',ACT:'Australian Capital Territory'})[abbrev]||abbrev;
+  }
+  async function loadWaterProviders(){
+    let providers = [];
+    try{
+      const res = await fetch(PROVIDERS_URL + '?cb=' + Date.now(), {cache:'no-store', credentials:'omit', mode:'cors'});
+      if(!res.ok) throw new Error('HTTP '+res.status);
+      providers = await res.json();
+    }catch(e){
+      console.warn('Provider JSON fetch failed, using fallback.', e);
+      providers = FALLBACK_PROVIDERS;
+    }
+    els.waterProvider.innerHTML = '<option value="">Select your water provider...</option>';
+
+    const grouped = {};
+    providers.forEach(p=>{ (grouped[p.state]||(grouped[p.state]=[])).push(p); });
+    Object.keys(grouped).sort().forEach(state=>{
+      const og = document.createElement('optgroup'); og.label = getStateName(state);
+      grouped[state].forEach(p=>{
+        const opt = document.createElement('option');
+        opt.value = JSON.stringify(p);
+        opt.textContent = `${p.name} - $${p.rate}/kL (${p.tier})`;
+        og.appendChild(opt);
+      });
+      els.waterProvider.appendChild(og);
+    });
+    const custom = document.createElement('option');
+    custom.value = 'custom'; custom.textContent = 'Enter custom rate...';
+    els.waterProvider.appendChild(custom);
+  }
+  function handleProviderSelection(){
+    const v = els.waterProvider.value;
+    if(!v){ els.waterCost.value=''; els.rateInfo.textContent=''; els.waterCost.disabled=false; return; }
+    if(v==='custom'){
+      els.waterCost.value=''; els.waterCost.disabled=false; els.rateInfo.textContent='Enter your custom water rate per kilolitre'; els.waterCost.focus(); return;
+    }
+    try{
+      const provider = JSON.parse(v);
+      els.waterCost.value = provider.rate;
+      els.waterCost.disabled = true;
+      els.rateInfo.textContent = `Rate: $${provider.rate}/kL (${provider.tier}) – ${provider.name}`;
+    }catch(e){ els.waterCost.disabled=false; }
+  }
+
   /* ========= Validation & Calc ========= */
   function validate(){
     const np = parseFloat(els.numPlants.value);
     const wpp = parseFloat(els.waterPerPlant.value);
     const wf = parseFloat(els.waterFrequency.value);
-    const rate = parseFloat(els.ratePerKL.value);
+    const wc = parseFloat(els.waterCost.value);
 
     els.errorMessage.classList.remove('show');
 
-    if(!Number.isFinite(np) || !Number.isFinite(wpp) || !Number.isFinite(wf) || !Number.isFinite(rate))
+    if(!Number.isFinite(np) || !Number.isFinite(wpp) || !Number.isFinite(wf) || !Number.isFinite(wc))
       return "Please fill in all fields with valid numbers.";
     if(!(np>0)) return "Number of plants must be greater than zero.";
     if(!(wpp>0)) return "Litres per plant must be greater than zero.";
     if(!(wf>=0 && wf<=7)) return "Watering frequency must be between 0 and 7.";
-    if(!(rate>0)) return "Water cost must be greater than zero.";
+    if(!(wc>0)) return "Water cost must be greater than zero.";
     return null;
   }
 
@@ -200,49 +372,34 @@
     const np = parseFloat(els.numPlants.value);
     const wpp = parseFloat(els.waterPerPlant.value);
     const wf = parseFloat(els.waterFrequency.value);
-    const rate = parseFloat(els.ratePerKL.value);
+    const wc = parseFloat(els.waterCost.value);
     const round = els.roundResults.checked;
 
-    const costPerLitre = rate / 1000;
-    const totalLitres = np * wpp * wf;
-    const totalCost = totalLitres * costPerLitre;
-    const perPlantDaily = wpp * costPerLitre;
+    const costPerLitre = wc / 1000;
+    const perPlantDaily  = wpp * costPerLitre;
     const perPlantWeekly = perPlantDaily * wf;
-    const perPlantMonthly = perPlantWeekly * 4;
+    const perPlantMonthly= perPlantWeekly * 4;
     const perPlantYearly = perPlantMonthly * 12;
 
-    const totalDaily = perPlantDaily * np;
+    const totalDaily  = perPlantDaily  * np;
     const totalWeekly = perPlantWeekly * np;
-    const totalMonthly = perPlantMonthly * np;
+    const totalMonthly= perPlantMonthly* np;
     const totalYearly = perPlantYearly * np;
 
     calculationResults = {
-      inputs: { numPlants:np, waterPerPlant:wpp, waterFrequency:wf, waterCost:rate },
+      inputs:{ numPlants:np, waterPerPlant:wpp, waterFrequency:wf, waterCost:wc },
       costPerLitre,
-      perPlant: { daily:perPlantDaily, weekly:perPlantWeekly, monthly:perPlantMonthly, yearly:perPlantYearly },
-      totals:   { daily:totalDaily, weekly:totalWeekly, monthly:totalMonthly, yearly:totalYearly },
-      harvestSummary: {
-        // costPerL: number, totalLitres: number, costTotal: number
-        costPerL: costPerLitre,
-        totalLitres,
-        costTotal: totalCost
-      },
+      perPlant:{ daily:perPlantDaily, weekly:perPlantWeekly, monthly:perPlantMonthly, yearly:perPlantYearly },
+      totals:{ daily:totalDaily, weekly:totalWeekly, monthly:totalMonthly, yearly:totalYearly },
       round
     };
 
-    if (window.HOA && typeof HOA.pushToHarvest === 'function') {
-      HOA.pushToHarvest({
-        type: 'water',
-        createdAt: new Date().toISOString(),
-        summary: calculationResults.harvestSummary
-      });
-    }
-
     renderResults();
     els.resultsCard.style.display = 'block';
-    els.downloadBtn.style.display = 'inline-block';
+    els.downloadBtn.style.display  = 'inline-block';
   }
 
+  /* ========= Render results ========= */
   function renderResults(){
     if(!calculationResults) return;
     const R = calculationResults.round;
@@ -268,6 +425,7 @@
     root.appendChild(s3.sec);
   }
 
+  /* ========= PDF ========= */
   function generatePDF(){
     if(!calculationResults) return;
     const { jsPDF } = window.jspdf;
@@ -278,7 +436,7 @@
     const check = need => { if(y+need > pageH - margin){ doc.addPage(); y = 30; } };
 
     doc.setFont('helvetica','bold'); doc.setFontSize(22);
-    const title = $('main-heading').textContent || 'Water Cost Calculator';
+    const title = document.getElementById('main-heading').textContent || 'Water Cost Calculator';
     const w = doc.getTextWidth(title);
     doc.text(title, (doc.internal.pageSize.width - w)/2, y); y += 16;
 
@@ -317,7 +475,22 @@
     doc.save('WaterCostCalculatorResults.pdf');
   }
 
-  /* ========= Wiring ========= */
+  /* ========= Button tactile feedback (pressed feel) ========= */
+  (function(){
+    const root = document.getElementById('water-calc');
+    const BTN_SEL = '.btn';
+    function pressOn(el){ el.classList.add('is-pressed'); }
+    function pressOff(el){ el.classList.remove('is-pressed'); }
+
+    root.addEventListener('pointerdown', e => { const b=e.target.closest(BTN_SEL); if(b) pressOn(b); });
+    root.addEventListener('pointerup',   e => { const b=e.target.closest(BTN_SEL); if(b) pressOff(b); });
+    root.addEventListener('pointercancel', e => { const b=e.target.closest(BTN_SEL); if(b) pressOff(b); });
+    root.addEventListener('pointerleave',  e => { const b=e.target.closest(BTN_SEL); if(b) pressOff(b); });
+    root.addEventListener('keydown', e => { if(e.key===' '||e.key==='Enter'){ const b=e.target.closest(BTN_SEL); if(b) pressOn(b); }});
+    root.addEventListener('keyup',   e => { if(e.key===' '||e.key==='Enter'){ const b=e.target.closest(BTN_SEL); if(b) pressOff(b); }});
+  })();
+
+  /* ========= SDK + Events ========= */
   function onConfigChange(cfg){
     els.heading.textContent = cfg.main_heading || defaultConfig.main_heading;
     els.calculateBtn.textContent = cfg.calculate_button_text || defaultConfig.calculate_button_text;
@@ -327,9 +500,7 @@
   document.addEventListener('DOMContentLoaded', ()=>{
     try{
       if (window.elementSdk && typeof window.elementSdk.init === 'function') {
-        window.elementSdk.init({
-          defaultConfig,
-          onConfigChange: onConfigChange,
+        window.elementSdk.init({ defaultConfig, onConfigChange,
           mapToEditPanelValues: (cfg)=>new Map([
             ["main_heading", cfg.main_heading || defaultConfig.main_heading],
             ["calculate_button_text", cfg.calculate_button_text || defaultConfig.calculate_button_text],
@@ -339,92 +510,16 @@
       }
     }catch(e){ console.warn('Element SDK init skipped:', e); }
 
-    els.calculateBtn.addEventListener('click', calculate);
+    loadWaterProviders();
+
+    els.waterProvider.addEventListener('change', handleProviderSelection);
+    els.calculateBtn.addEventListener('click', (e)=>{ e.preventDefault(); calculate(); e.currentTarget.blur(); });
     els.downloadBtn.addEventListener('click', generatePDF);
-    ['numPlants','waterPerPlant','waterFrequency','ratePerKL'].forEach(id=>{
+
+    // Enter to calculate
+    ['numPlants','waterPerPlant','waterFrequency','waterCost'].forEach(id=>{
       $(id).addEventListener('keypress', e=>{ if(e.key==='Enter') calculate(); });
     });
   });
 </script>
-  <script src="../../shared/js/hoa-calcs.js"></script>
-  <script>
-  (function ensureHOA(){
-    if (window.HOA) return;
-    var s = document.createElement('script');
-    s.src = 'https://cdn.jsdelivr.net/gh/HydroOasis/Hydro-Oasis-Calculators@main/shared/js/hoa-calcs.js';
-    s.onload = function(){ if(!window.HOA){ console.error('HOA still not available'); } };
-    s.onerror = function(){ console.error('Failed to load HOA from CDN'); };
-    document.head.appendChild(s);
-  })();
-  </script>
-  <script>
-(async function initWaterCalc(){
-  const $state = document.getElementById('waterState');
-  const $prov  = document.getElementById('providerSelect');
-  const $tier  = document.getElementById('providerTier');
-  const $rate  = document.getElementById('ratePerKL');
-  const $err   = document.getElementById('waterErrors');
-  if (!$state || !$prov || !$tier || !$rate) return;
-
-  let providers = [];
-  try {
-    const data = await HOA.fetchJSON(HOA.DATA.waterProviders);
-    providers = Array.isArray(data.providers) ? data.providers : [];
-    // Populate states (unique, sorted)
-    const states = [...new Set(providers.map(p => p.state))].sort();
-    $state.innerHTML = '<option value="">All states…</option>' + states.map(s => `<option value="${s}">${s}</option>`).join('');
-    // Seed provider list
-    syncProviders();
-  } catch (e) {
-    if ($err) { $err.textContent = 'Unable to load water provider data.'; $err.style.display = 'block'; }
-    console.warn(e);
-  }
-
-  function syncProviders(){
-    const chosenState = $state.value;
-    const list = chosenState ? providers.filter(p => p.state === chosenState) : providers;
-    $prov.innerHTML = '<option value="">Select provider…</option>' + list.map((p, idx) => {
-      // store index to look back up quickly
-      return `<option value="${idx}" data-name="${p.name}" data-state="${p.state}">${p.name} (${p.state})</option>`;
-    }).join('');
-    $prov.disabled = list.length === 0;
-    $tier.innerHTML = '<option value="">Select tier…</option>';
-    $tier.disabled = true;
-    // Clear rate unless user overrides
-    if (!$rate.dataset.userEdited) $rate.value = '';
-  }
-
-  function syncTiers(){
-    const chosenState = $state.value;
-    const list = chosenState ? providers.filter(p => p.state === chosenState) : providers;
-    const idx = Number($prov.value);
-    const prov = Number.isFinite(idx) ? list[idx] : null;
-    if (!prov || !Array.isArray(prov.tariffs) || prov.tariffs.length === 0){
-      $tier.innerHTML = '<option value="">Select tier…</option>';
-      $tier.disabled = true;
-      return;
-    }
-    $tier.innerHTML = '<option value="">Select tier…</option>' + prov.tariffs.map((t,i) =>
-      `<option value="${i}" data-rate="${t.price_per_kL}">Tier ${t.tier} — $${t.price_per_kL}/kL</option>`
-    ).join('');
-    $tier.disabled = false;
-    // If only one tier, preselect and apply rate
-    if (prov.tariffs.length === 1){
-      $tier.value = '0';
-      const r = prov.tariffs[0].price_per_kL;
-      if (r != null && !$rate.dataset.userEdited) $rate.value = Number(r);
-    }
-  }
-
-  $state.addEventListener('change', syncProviders);
-  $prov.addEventListener('change', syncTiers);
-  $tier.addEventListener('change', () => {
-    const opt = $tier.options[$tier.selectedIndex];
-    const r = opt?.dataset?.rate;
-    if (r != null && !$rate.dataset.userEdited) $rate.value = Number(r);
-  });
-  $rate.addEventListener('input', () => { $rate.dataset.userEdited = '1'; }); // remember manual override
-})();
-</script>
 </body>
-</html>
