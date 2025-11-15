@@ -1,0 +1,961 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Inter:wght@400;500;600;700;800&display=swap');
+
+
+/* ===== Electricity Calculator Styles ===== */
+
+  /* ========= Hydro Oasis scoped theme (NO global bleed) ========= */
+  #ecalc{
+    --bg:#FDFBF4; --text:#333; --heading:#2D5C4E;
+    --btn:#2D5C4E; --btn-hover:#A76DAB; --btn-text:#fff;
+    --card:#fff; --card-border:#E7E5DC; --icon:#2D5C4E; --err:#BE5C5C;
+    --sec-border:#D9E2DE; --sec-head-bg:#F3F7F5; --sec-head-text:#2D5C4E;
+    --tile-bg:#FFFFFF; --tile-border:#E7E5DC; --tile-label:#5C6F69; --tile-value:#2D5C4E;
+
+    position:relative;
+    color:var(--text);
+    line-height:1.6;
+    min-height:100%;
+    font-family:'Nunito',system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial,sans-serif;
+
+    /* Keep inside theme content width */
+    max-width: var(--page-width, 1200px);
+    margin-left:auto; margin-right:auto;
+
+    /* Page gutters */
+    padding-left:clamp(12px,4vw,24px);
+    padding-right:clamp(12px,4vw,24px);
+
+    background:transparent;
+  }
+  #ecalc *{ margin:0; padding:0; box-sizing:border-box; }
+
+  #ecalc .container{
+    width:100%; max-width:1100px; margin:18px auto; padding:20px;
+    background:var(--card); border:1px solid var(--card-border); border-radius:16px;
+    box-shadow:0 6px 20px rgba(0,0,0,.06);
+    position:relative; overflow:hidden;
+  }
+  #ecalc .container>*{ position:relative; z-index:2; }
+  #ecalc .wm-img{ position:absolute; right:-28px; bottom:-28px; width:260px; opacity:.06; pointer-events:none; user-select:none; z-index:0; filter:saturate(.95) contrast(.95); }
+  @media (min-width:768px){ #ecalc .wm-img{ width:320px; } }
+
+  #ecalc .header{ text-align:center; padding:30px 16px 22px; margin:0 0 16px; }
+  #ecalc .header h1{ margin:0 0 6px; font-size:clamp(26px,3.2vw,36px); font-weight:800; color:var(--heading); line-height:1.2; font-family:'Inter',system-ui,sans-serif; }
+  #ecalc .header .subtitle{ font-size:14px; font-weight:500; color:#456E62; }
+  #ecalc .muted{ font-size:.9rem; color:#6B7C77; }
+
+  #ecalc .section{ background:#fff; border:1px solid var(--sec-border); border-radius:12px; padding:16px; margin-bottom:16px; }
+  #ecalc .section-title{ display:flex; align-items:center; gap:8px; margin:2px 0 10px; font-size:18px; font-weight:800; color:var(--heading); font-family:'Inter',system-ui,sans-serif; }
+
+  #ecalc .form-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:14px; margin-bottom:10px; position:relative; z-index:1; }
+  #ecalc .form-group{ display:flex; flex-direction:column; }
+  #ecalc .form-group label{ font-weight:700; color:var(--heading); margin-bottom:6px; font-size:.95em; }
+  #ecalc .form-group input, #ecalc .form-group select{
+    padding:12px; border:1px solid #D1D1D1; border-radius:10px; font-size:16px; background:#fff; color:#31473a;
+    transition: box-shadow .12s ease, border-color .12s ease;
+  }
+  #ecalc .form-group input:focus, #ecalc .form-group select:focus{ outline:none; border-color:var(--heading); box-shadow:0 0 0 3px rgba(45,92,78,.18); }
+
+  /* ===== Toggle (clear enabled state) ===== */
+  #ecalc .toggle-container{ display:flex; align-items:center; gap:10px; }
+  #ecalc .toggle{
+    position:relative; width:52px; height:28px; border-radius:14px; cursor:pointer;
+    background:#cbd5e1; border:1px solid #94a3b8;
+    transition:background-color .15s ease, transform .06s ease, border-color .15s ease;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,.04);
+  }
+  #ecalc .toggle:active{ transform:scale(.98); }
+  #ecalc .toggle.active{
+    background:#16a34a; border-color:#0f8a3a;
+    box-shadow:0 0 0 3px rgba(22,163,74,.18) inset;
+  }
+  #ecalc .toggle-slider{
+    position:absolute; top:3px; left:3px; width:22px; height:22px; background:#fff;
+    border-radius:50%; transition:transform .15s ease; box-shadow:0 1px 2px rgba(0,0,0,.2);
+  }
+  #ecalc .toggle.active .toggle-slider{ transform:translateX(24px); }
+  #ecalc .toggles-row{ display:flex; flex-wrap:wrap; gap:16px; align-items:center; margin-top:8px; }
+
+  /* Buttons */
+  #ecalc .btn{ display:inline-flex; align-items:center; justify-content:center; padding:12px 18px; border:1px solid transparent; border-radius:12px; font-size:16px; font-weight:700; cursor:pointer; transition:.15s; gap:8px; text-align:center; white-space:nowrap; font-family:'Inter',system-ui,sans-serif; box-shadow:0 1px 0 rgba(0,0,0,.03); }
+  #ecalc .btn:hover{ filter:brightness(1.03); }
+  #ecalc .btn:active{ transform:translateY(1px); }
+  #ecalc .btn-primary{ background:var(--btn); color:var(--btn-text); border-color:var(--btn); }
+  #ecalc .btn-primary:hover{ background:var(--btn-hover); border-color:var(--btn-hover); }
+  #ecalc .btn-secondary{ background:#f3f5f1; color:#1f3b33; border-color:#d9e2de; }
+  #ecalc .btn-secondary:hover{ background:#e8eee9; }
+  #ecalc .btn-success{ background:#10b981; color:#fff; border-color:#10b981; }
+  #ecalc .btn-success:hover{ background:#059669; border-color:#059669; }
+  #ecalc .btn-danger{ background:#ef4444; color:#fff; border-color:#ef4444; }
+  #ecalc .btn-danger:hover{ background:#dc2626; border-color:#dc2626; }
+
+  /* Shared “×” chip */
+  #ecalc .btn-x, #ecalc .remove-day-group{
+    background:#ef4444; color:#fff; border:none; border-radius:10px; padding:6px 10px; font-size:14px; cursor:pointer;
+    display:inline-flex; align-items:center; justify-content:center; line-height:1; transition: transform .1s ease, filter .15s ease, background-color .15s ease;
+  }
+  #ecalc .btn-x:hover, #ecalc .remove-day-group:hover{ background:#dc2626; }
+  #ecalc .btn-x:active, #ecalc .remove-day-group:active{ transform:scale(.96); }
+
+  /* ===== Time ranges & day selectors ===== */
+  #ecalc .time-range{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:10px; padding:12px; background:#fcfaf3; border-radius:8px; border:1px solid #e3e2d7; }
+  #ecalc .time-row{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; width:100%; min-width:0; }
+  #ecalc .time-input{ padding:10px 12px; border:1px solid #c4c8b8; border-radius:8px; font-size:14px; background:#fff; color:#31473a; transition: box-shadow .12s ease, border-color .12s ease; min-width:110px; }
+  #ecalc .time-input:focus{ outline:none; border-color:var(--heading); box-shadow:0 0 0 3px rgba(45,92,78,.18); }
+
+  #ecalc .day-range-group{
+    border:1px dashed #e3e2d7; border-radius:10px; padding:12px; margin-bottom:12px; background:#fffef8; position:relative;
+    overflow:hidden; /* keep children inside rounded corners */
+  }
+  #ecalc .days-row{ display:flex; align-items:center; gap:8px; justify-content:space-between; flex-wrap:wrap; width:100%; }
+
+  /* Desktop: 7 even columns that NEVER overflow */
+  #ecalc .days-selector{
+    display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:8px; flex:1; width:100%; min-width:0;
+  }
+  #ecalc .day-btn{
+    display:flex; align-items:center; justify-content:center; width:100%;
+    height:44px; line-height:1; white-space:nowrap;
+    padding:0 10px; border:1px solid #c4c8b8; background:#fff; border-radius:8px;
+    cursor:pointer; font-size:14px; font-weight:700; color:#31473a;
+    transition: background-color .12s ease, border-color .12s ease, transform .06s ease;
+    text-align:center; overflow:hidden; text-overflow:ellipsis;
+  }
+  #ecalc .day-btn:hover{ background:#f3f7f5; border-color:#b8c2b5; }
+  #ecalc .day-btn:active{ transform:scale(.98); }
+  #ecalc .day-btn.active{ background:var(--btn); color:#fff; border-color:var(--btn); }
+
+  /* Hide the literal "to" when All Day is toggled on */
+  #ecalc .time-range[data-all-day="1"] .time-row .to,
+  #ecalc .time-range[data-allday="1"] .time-row .to,
+  #ecalc .time-row .toggle.active ~ .to{ display:none; }
+
+  /* Per-equipment card */
+  #ecalc .equipment-card{ position:relative; border:1px solid var(--sec-border); border-radius:12px; padding:14px; margin-top:12px; background:#fff; }
+  #ecalc .equipment-card > .remove-btn{ position:absolute; top:10px; right:10px; }
+  #ecalc .equipment-header{ display:flex; align-items:center; justify-content:space-between; }
+  #ecalc .equipment-title{ font-weight:800; color:#2f3e39; font-family:'Inter',system-ui; }
+
+  #ecalc .results-section{ border:1px solid var(--sec-border); border-radius:12px; padding:12px; background:#fff; margin-top:14px; }
+  #ecalc .results-section .section-title{ display:flex; align-items:center; gap:8px; margin:0 0 8px; background:var(--sec-head-bg); color:var(--sec-head-text); padding:8px 10px; border-radius:9px; font-weight:800; font-size:14px; font-family:'Inter',system-ui,sans-serif; }
+  #ecalc .results-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; margin-top:8px; }
+  #ecalc .result-item{ background:var(--tile-bg); border:1px solid var(--tile-border); border-radius:10px; padding:10px 12px; text-align:center; box-shadow:0 2px 6px rgba(0,0,0,.03); }
+  #ecalc .result-label{ font-size:12px; color:var(--tile-label); font-weight:700; letter-spacing:.2px; }
+  #ecalc .result-value{ margin-top:4px; font-size:18px; font-weight:800; color:var(--tile-value); }
+
+  #ecalc .error-message{ color:var(--err); background:#fef2f2; border:1px solid var(--err); padding:12px; border-radius:8px; margin-top:10px; font-size:14px; font-weight:700; text-align:left; }
+
+  #ecalc .modal{ position:fixed; inset:0; background:rgba(0,0,0,.5); display:none; align-items:center; justify-content:center; z-index:1000; }
+  #ecalc .modal-content{ background:#fff; padding:24px; border-radius:12px; max-width:560px; width:90%; max-height:80%; overflow-y:auto; border:1px solid var(--card-border); position:relative; z-index:1001; box-shadow:0 6px 20px rgba(0,0,0,.12); }
+  #ecalc .modal-header{ display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+  #ecalc .modal-title{ font-size:1.15rem; font-weight:800; color:var(--heading); font-family:'Inter',system-ui,sans-serif; }
+  #ecalc .close-btn{ background:none; border:none; font-size:24px; cursor:pointer; color:var(--text); }
+  #ecalc .modal.show{ display:flex; }
+  #ecalc .close-btn:hover{ filter:brightness(1.2); }
+  #ecalc .close-btn:active{ transform:scale(.96); }
+
+  /* ======== Mobile polish (match Harvest calc) ======== */
+  @media (max-width:768px){
+    #ecalc{ padding-left:16px; padding-right:16px; }
+    #ecalc .container{ max-width:680px; margin:14px auto; padding:14px; border-radius:14px; }
+    #ecalc .header{ padding:18px 8px 10px; }
+    #ecalc .header h1{ font-size:clamp(22px,5.2vw,28px); }
+    #ecalc .header .subtitle{ font-size:13px; }
+    #ecalc .section{ padding:14px; margin-bottom:14px; }
+    #ecalc .form-grid{ grid-template-columns:1fr; gap:10px; }
+    #ecalc .time-range{ flex-direction:column; align-items:stretch; gap:8px; }
+    #ecalc .time-row{ gap:8px; }
+    #ecalc .time-row span{ order:2; }
+    #ecalc .time-input{ width:100%; font-size:16px; }
+    #ecalc .toggles-row{ gap:12px; }
+    #ecalc .btn{ padding:12px 14px; font-size:15px; width:100%; }
+    #ecalc .group-actions{ flex-direction:column; }
+    #ecalc .results-grid{ grid-template-columns:1fr 1fr; gap:8px; }
+
+    /* 3 equal columns; zero min width to avoid overflow */
+    #ecalc .days-selector{ grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
+    #ecalc .day-btn{ height:48px; font-size:16px; }
+
+    #ecalc .remove-day-group{ margin-left:auto; }
+    #ecalc .wm-img{ display:none; }
+    #ho-watermark{ display:none; }
+
+    /* sticky CTA like Harvest calc */
+    #ecalc .cta-row{ position:sticky; bottom:8px; z-index:20; background:transparent; padding-top:6px; }
+    #ecalc .cta-row .btn{ border-radius:14px; }
+
+    /* friendlier modal on phones */
+    #ecalc .modal-content{ width:94%; padding:16px; border-radius:14px; }
+  }
+
+  #ho-watermark{ position:fixed; right:16px; bottom:12px; background:rgba(45,92,78,.08); color:#2D5C4E; border:1px solid #E7E5DC; border-radius:10px; padding:6px 10px; font:600 12px/1 'Inter',system-ui,sans-serif; backdrop-filter:blur(2px); z-index:9999; pointer-events:none; }
+  @view-transition { navigation:auto; }
+
+
+/* ===== Harvest Calculator Styles ===== */
+/* ========= Hydro Oasis Scoped Theme (NO global bleed) ========= */
+  :root{
+    --bg:#FDFBF4; --text:#333; --heading:#2D5C4E;
+    --btn:#2D5C4E; --btn-hover:#A76DAB; --btn-text:#fff;
+    --card:#fff; --card-border:#E7E5DC; --icon:#2D5C4E; --err:#BE5C5C;
+
+    /* Results sections + tiles (match your other calcs) */
+    --sec-border:#D9E2DE;
+    --sec-head-bg:#F3F7F5;
+    --sec-head-text:#2D5C4E;
+    --tile-bg:#FFFFFF;
+    --tile-border:#E7E5DC;
+    --tile-label:#5C6F69;
+    --tile-value:#2D5C4E;
+  }
+
+  #harvest-calc, #harvest-calc * { box-sizing:border-box; font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial; }
+  #harvest-calc { background:var(--bg); color:var(--text); padding:16px; }
+  #harvest-calc .wrap{ max-width:1100px; margin:0 auto; }
+
+  /* Base card + watermark */
+  #harvest-calc .card{
+    background:var(--card); border:1px solid var(--card-border); border-radius:16px;
+    padding:20px; box-shadow:0 6px 20px rgba(0,0,0,.06); position:relative; overflow:hidden;
+    margin:18px 0;
+  }
+  #harvest-calc .wm-img{
+    position:absolute; right:-28px; bottom:-28px; width:260px; opacity:.06;
+    pointer-events:none; user-select:none; z-index:0;
+    filter:saturate(.95) contrast(.95);
+  }
+  @media (min-width:768px){ #harvest-calc .wm-img{ width:320px; } }
+
+  /* Title */
+  #harvest-calc .title-block{ text-align:center; margin:6px 0 10px; position:relative; z-index:1; }
+  #harvest-calc .title-block h1{ color:var(--heading); font-weight:800; font-size:clamp(26px,3.2vw,36px); margin:0; letter-spacing:.3px; }
+  #harvest-calc .subtitle{ color:#456E62; font-size:14px; }
+
+  /* Section titles */
+  #harvest-calc .sec-title{ color:var(--heading); font-weight:800; font-size:18px; display:flex; align-items:center; gap:8px; margin:14px 0 12px; position:relative; z-index:1; }
+  #harvest-calc .dot{ width:18px; height:18px; border-radius:4px; background:var(--icon); display:inline-block; }
+
+  /* Grid + inputs */
+  #harvest-calc .grid{ display:grid; gap:14px; position:relative; z-index:1; }
+  #harvest-calc .g-3{ grid-template-columns: repeat(3,1fr); }
+  #harvest-calc .g-2{ grid-template-columns: repeat(2,1fr); }
+  @media (max-width:820px){ #harvest-calc .g-3, #harvest-calc .g-2{ grid-template-columns:1fr; } }
+
+  #harvest-calc label{ display:block; font-size:13px; color:#516A64; margin:2px 0 6px; }
+  #harvest-calc .input, #harvest-calc select{
+    width:100%; padding:12px 12px; border-radius:10px; border:1px solid #D1D1D1; background:#fff; font-size:16px;
+    appearance:none; -webkit-appearance:none;
+  }
+  #harvest-calc .help{ font-size:12px; color:#6B7C77; margin-top:6px; }
+  #harvest-calc .error{ border-color:var(--err)!important; }
+  #harvest-calc .error-msg{ color:var(--err); font-size:12px; margin:8px 0; display:none; }
+  #harvest-calc .error-msg.show{ display:block; }
+
+  /* Buttons */
+  #harvest-calc .btn{
+    background:var(--btn); color:var(--btn-text); border:1px solid var(--btn);
+    border-radius:12px; padding:12px 18px; font-weight:700; cursor:pointer; transition:.15s; position:relative; z-index:1;
+  }
+  #harvest-calc .btn:hover{ background:var(--btn-hover); border-color:var(--btn-hover); }
+  #harvest-calc .btn-ghost{ background:#f3f5f1; color:#1f3b33; border-color:#d9e2de; }
+  #harvest-calc .btn-ghost:hover{ background:#e8eee9; }
+  #harvest-calc .remove{ background:#ef4444; border-color:#ef4444; }
+  #harvest-calc .remove:hover{ background:#dc2626; border-color:#dc2626; }
+  #harvest-calc .center{ text-align:center; }
+
+  /* Week mini-cards (match Nutrient cards look) */
+  #harvest-calc .week-card{ background:#f8faf8; border:1px solid #e2e7e4; border-radius:12px; padding:16px; }
+  #harvest-calc .week-head{ display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:10px; }
+  #harvest-calc .week-title{ font-weight:700; color:#1f3b33; }
+
+  /* Results section cards + tiles */
+  #harvest-calc .sec-card{
+    border:1px solid var(--sec-border); border-radius:12px; padding:12px; background:#fff; margin-top:14px;
+  }
+  #harvest-calc .sec-head{
+    display:flex; align-items:center; gap:8px; background:var(--sec-head-bg); color:var(--sec-head-text);
+    padding:8px 10px; border-radius:9px; font-weight:800; font-size:14px;
+  }
+  #harvest-calc .sec-head .icon{ font-size:16px; line-height:1; }
+  #harvest-calc .stats{
+    display:grid; grid-template-columns: repeat(4, minmax(140px,1fr)); gap:10px; padding:10px 6px 6px;
+  }
+  @media (max-width:980px){ #harvest-calc .stats{ grid-template-columns: repeat(2, minmax(140px,1fr)); } }
+  @media (max-width:560px){ #harvest-calc .stats{ grid-template-columns: 1fr; } }
+  #harvest-calc .stat{
+    background:var(--tile-bg); border:1px solid var(--tile-border); border-radius:10px; padding:10px 12px; text-align:center;
+    box-shadow:0 2px 6px rgba(0,0,0,.03);
+  }
+  #harvest-calc .stat .label{ font-size:12px; color:var(--tile-label); font-weight:700; letter-spacing:.2px; }
+  #harvest-calc .stat .value{ margin-top:4px; font-size:18px; font-weight:800; color:var(--tile-value); }
+
+#ho-watermark {
+  position: fixed;
+  right: 16px;
+  bottom: 12px;
+  background: rgba(45,92,78,.08);
+  color: #2D5C4E;
+  border: 1px solid #E7E5DC;
+  border-radius: 10px;
+  padding: 6px 10px;
+  font: 600 12px/1 'Inter', system-ui, sans-serif;
+  backdrop-filter: blur(2px);
+  z-index: 9999;              /* Always top layer */
+  pointer-events: none;       /* Prevent interference with UI */
+}
+
+
+/* ===== Ventilation Calculator Styles ===== */
+/* ========= Hydro Oasis Palette + Tile Vars ========= */
+  :root{
+    --bg:#FDFBF4; --bg-alt:#FFFFFF; --text:#333333; --heading:#2D5C4E; --link:#2D5C4E; --link-hover:#A76DAB;
+    --btn:#2D5C4E; --btn-text:#FFFFFF; --btn-hover:#A76DAB; --card:#FFFFFF; --card-border:#E7E5DC;
+    --icon:#2D5C4E; --icon-hover:#A76DAB; --input-bg:#FFFFFF; --input-text:#000000; --input-ph:#565656; --input-border:#D1D1D1;
+    --banner:#F9C3B6; --accent:#F4EA9C; --err:#BE5C5C;
+
+    /* Results cards + tiles */
+    --sec-border:#D9E2DE;
+    --sec-head-bg:#F3F7F5;
+    --sec-head-text:#2D5C4E;
+    --tile-bg:#FFFFFF;
+    --tile-border:#E7E5DC;
+    --tile-label:#5C6F69;
+    --tile-value:#2D5C4E;
+  }
+
+  /* ========= Scoped base (no global bleed) ========= */
+  #vent-calc, #vent-calc * { box-sizing:border-box; font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans"; }
+  #vent-calc{ background:var(--bg); color:var(--text); padding:16px; }
+  #vent-calc .vc-wrap{ max-width:1100px; margin:0 auto; }
+
+  .card{ background:var(--card); border:1px solid var(--card-border); border-radius:16px; padding:20px; margin:18px 0;
+    box-shadow:0 6px 20px rgba(0,0,0,.06); }
+  .with-watermark{ position:relative; overflow:hidden; }
+  .wm-img{ position:absolute; right:-28px; bottom:-28px; width:220px; height:auto; opacity:.06; pointer-events:none; user-select:none;
+    filter:saturate(.9) contrast(.95); z-index:0; }
+  @media (min-width:768px){ .wm-img{ width:300px; } }
+
+  /* ===== Titles (scoped like nutrient calc) ===== */
+  #vent-calc .title-block{ text-align:center; margin:6px 0 10px; position:relative; z-index:1; }
+  #vent-calc .title-block h1{
+    margin:0; color:var(--heading); font-weight:800; font-size:clamp(26px,3.2vw,36px); letter-spacing:.3px;
+  }
+  #vent-calc .vc-sub{ color:#456E62; margin-top:6px; font-size:14px; }
+
+  .sec-title{ color:var(--heading); font-weight:800; font-size:18px; display:flex; align-items:center; gap:8px; margin:14px 0 14px; position:relative; z-index:1; }
+  .sec-title .dot{ width:18px; height:18px; border-radius:4px; background:var(--icon); display:inline-block; }
+
+  .grid{ display:grid; gap:14px; }
+  .g-3{ grid-template-columns: repeat(3, 1fr); }
+  .g-2{ grid-template-columns: repeat(2, 1fr); }
+  @media (max-width:820px){ .g-3, .g-2 { grid-template-columns:1fr; } }
+
+  label{ display:block; font-size:13px; color:#516A64; margin:2px 0 6px; }
+  input[type="number"], select{
+    appearance:none; -webkit-appearance:none; outline:none; background:var(--input-bg); color:var(--input-text);
+    border:1px solid var(--input-border); border-radius:10px; padding:12px 12px; width:100%; font-size:16px;
+  }
+  input::placeholder{ color:var(--input-ph); }
+
+  .inline-field{ display:flex; gap:8px; align-items:center; }
+  .inline-field .grow{ flex:1 1 auto; }
+  .inline-field .unit-select{ flex:0 0 96px; }
+  .unit-select select{ text-align:center; padding-left:0; padding-right:0; font-weight:700; }
+  @media (max-width:390px){ .inline-field .unit-select{ flex-basis:86px; } input, select{ font-size:15px; } }
+
+  .inline-options{ display:flex; gap:18px; flex-wrap:wrap; margin:6px 0 10px;}
+  .inline-options label{ display:flex; align-items:center; gap:8px; font-size:14px; cursor:pointer; }
+  input[type="radio"], input[type="checkbox"]{ width:18px; height:18px; }
+
+  .help{ font-size:12px; color:#6B7C77; margin-top:6px; }
+  .error{ border-color:var(--err) !important; }
+  .error-msg{ color:var(--err); font-size:12px; margin-top:6px; }
+  .hidden{ display:none; }
+
+  /* ===== Buttons (hover + pressed like nutrient calc) ===== */
+  .btn{
+    background:var(--btn); color:var(--btn-text); border:1px solid var(--btn);
+    border-radius:12px; padding:14px 20px; font-weight:700; font-size:16px;
+    display:inline-block; text-align:center; cursor:pointer; min-width:240px;
+    transition: transform .05s ease, box-shadow .08s ease, filter .08s ease, background-color .12s ease, border-color .12s ease;
+    box-shadow:0 4px 12px rgba(53,88,74,.2);
+    user-select:none; -webkit-tap-highlight-color:transparent;
+  }
+  .btn:hover{ background:var(--btn-hover); border-color:var(--btn-hover); }
+  .btn:focus{ outline:none; box-shadow:0 0 0 3px rgba(45,92,78,.18); }
+  /* Pressed state */
+  .btn:is(:active,.is-pressed){
+    transform: translateY(1px);
+    box-shadow: inset 0 2px 6px rgba(0,0,0,.15), 0 1px 3px rgba(0,0,0,.06);
+    filter: saturate(.98) brightness(.98);
+  }
+#vent-calc .btn{
+  color: var(--btn-text) !important;
+  -webkit-text-fill-color: var(--btn-text) !important;
+}
+#vent-calc .btn:hover,
+#vent-calc .btn:focus-visible,
+#vent-calc .btn:active,
+#vent-calc .btn:hover *{
+  background: var(--btn-hover) !important;
+  border-color: var(--btn-hover) !important;
+  color: var(--btn-text) !important;                 /* stay white */
+  -webkit-text-fill-color: var(--btn-text) !important;
+  filter: none !important;                           /* kill theme filters */
+}
+
+/* “Pick” links/cards (and any other links in the calc) */
+#vent-calc a,
+#vent-calc a:visited{
+  color: inherit !important;                         /* use the card/text colour */
+  -webkit-text-fill-color: inherit !important;
+}
+#vent-calc a:hover,
+#vent-calc a:hover *{
+  color: inherit !important;                         /* no green on hover */
+  -webkit-text-fill-color: inherit !important;
+  text-decoration: none;
+}
+
+  /* ===== Results: section cards + tiles ===== */
+  .sec-card{
+    border:1px solid var(--sec-border);
+    border-radius:12px;
+    padding:12px;
+    background:#fff;
+    margin-top:14px;
+    position:relative; z-index:1;
+  }
+  .sec-head{
+    display:flex; align-items:center; gap:8px;
+    background:var(--sec-head-bg);
+    color:var(--sec-head-text);
+    padding:8px 10px;
+    border-radius:9px;
+    font-weight:800; font-size:14px;
+  }
+  .sec-head .icon{ font-size:16px; line-height:1; }
+  .stats{
+    display:grid;
+    grid-template-columns: repeat(5, minmax(120px,1fr));
+    gap:10px;
+    padding:10px 6px 6px;
+  }
+  @media (max-width:980px){ .stats{ grid-template-columns: repeat(2, minmax(140px,1fr)); } }
+  @media (max-width:560px){ .stats{ grid-template-columns: 1fr; } }
+  .stat{
+    background:var(--tile-bg);
+    border:1px solid var(--tile-border);
+    border-radius:10px;
+    padding:10px 12px;
+    text-align:center;
+    box-shadow:0 2px 6px rgba(0,0,0,.03);
+  }
+  .stat .label{ font-size:12px; color:var(--tile-label); font-weight:700; letter-spacing:.2px; }
+  .stat .value{ margin-top:4px; font-size:18px; font-weight:800; color:var(--tile-value); }
+
+  .list{ font-size:14px; line-height:1.5; }
+  .subhead{ margin:10px 0 6px; font-weight:700; }
+  .pill{ background:#F7FAF9; border:1px solid var(--tile-border); padding:10px 12px; border-radius:10px; margin:6px 0; font-weight:700; }
+
+  .pick{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:12px; border-radius:10px; background:#FFFFFF;
+    text-decoration:none; color:inherit; border:1px solid var(--tile-border);
+    transition:transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+  }
+  .pick:hover{ transform:translateY(-1px); box-shadow:0 6px 16px rgba(0,0,0,.08); border-color:#d6d6d6; }
+  .pick:active{ transform:translateY(0); box-shadow:0 3px 10px rgba(0,0,0,.08); }
+
+  /* Fixed watermark (corrected) */
+  #ho-watermark{
+    position:fixed; right:16px; bottom:12px; background:rgba(45,92,78,.08); color:#2D5C4E;
+    border:1px solid #E7E5DC; border-radius:10px; padding:6px 10px; font:600 12px/1 'Inter',system-ui,sans-serif;
+    backdrop-filter:blur(2px); z-index:50; pointer-events:none; user-select:none;
+  }
+
+
+/* ===== Water Calculator Styles ===== */
+/* ========= Hydro Oasis Scoped Theme (no global bleed) ========= */
+  :root{
+    --bg:#FDFBF4; --text:#333333; --heading:#2D5C4E;
+    --btn:#2D5C4E; --btn-hover:#A76DAB; --btn-text:#FFFFFF;
+    --card:#FFFFFF; --card-border:#E7E5DC; --icon:#2D5C4E; --err:#BE5C5C;
+
+    /* Results sections + tiles */
+    --sec-border:#D9E2DE;
+    --sec-head-bg:#F3F7F5;
+    --sec-head-text:#2D5C4E;
+    --tile-bg:#FFFFFF;
+    --tile-border:#E7E5DC;
+    --tile-label:#5C6F69;
+    --tile-value:#2D5C4E;
+  }
+
+  #water-calc, #water-calc * { box-sizing:border-box; }
+  #water-calc{
+    background:var(--bg); color:var(--text); padding:40px 20px;
+    font-family:'Nunito', sans-serif; line-height:1.6;
+  }
+  #water-calc .wrap{ max-width:1100px; margin:0 auto; }
+
+  /* Base card + watermark (match other calcs) */
+  #water-calc .card{
+    background:var(--card); border:1px solid var(--card-border); border-radius:14px;
+    padding:28px 24px 34px; box-shadow:0 2px 8px rgba(49,71,58,.08);
+    position:relative; overflow:hidden; margin:18px 0;
+  }
+  #water-calc .wm-img{
+    position:absolute; right:14px; bottom:14px; width:min(160px,20%);
+    opacity:.12; pointer-events:none; user-select:none; z-index:0;
+    filter:saturate(.95) contrast(.95);
+  }
+
+  /* Titles */
+  #water-calc .title-block{ text-align:center; margin:4px 0 6px; position:relative; z-index:1; }
+  #water-calc .title-block h1{
+    font-family:'Inter',system-ui,sans-serif; font-weight:800; letter-spacing:.2px;
+    color:var(--heading); margin:0; font-size:clamp(28px,4vw,40px);
+  }
+  #water-calc .subtitle{
+    text-align:center; color:#56645d; font-family:'Inter',system-ui,sans-serif;
+    font-weight:500; font-size:clamp(12px,2.1vw,14px); margin:0 0 16px;
+  }
+
+  /* Section titles */
+  #water-calc .sec-title{
+    color:var(--heading); font-weight:800; font-size:18px; display:flex;
+    align-items:center; gap:8px; margin:14px 0 12px; position:relative; z-index:1;
+  }
+  #water-calc .dot{ width:18px; height:18px; border-radius:4px; background:var(--icon); display:inline-block; }
+
+  /* Grid + inputs */
+  #water-calc .grid{ display:grid; gap:14px; position:relative; z-index:1; }
+  #water-calc .g-3{ grid-template-columns: repeat(3,1fr); }
+  #water-calc .g-2{ grid-template-columns: repeat(2,1fr); }
+  @media (max-width:820px){ #water-calc .g-3, #water-calc .g-2{ grid-template-columns:1fr; } }
+
+  #water-calc label{ display:block; font-size:13px; color:#516A64; margin:2px 0 6px; }
+  #water-calc .input, #water-calc select{
+    width:100%; padding:12px 12px; border-radius:10px; border:1px solid #c4c8b8; background:#fff; font-size:16px;
+    appearance:none; -webkit-appearance:none; color:#31473a;
+  }
+  #water-calc .help{ font-size:12px; color:#6B7C77; margin-top:6px; }
+  #water-calc .error{ border-color:var(--err)!important; }
+  #water-calc .error-msg{ color:var(--err); font-size:12px; margin:8px 0; display:none; text-align:center; font-weight:800; }
+  #water-calc .error-msg.show{ display:block; }
+
+  /* Buttons — purple hover + tactile pressed */
+  #water-calc .btn{
+    background:var(--btn); color:var(--btn-text); border:1px solid var(--btn);
+    border-radius:12px; padding:14px 36px; font-weight:800; cursor:pointer; font-size:1.1em;
+    display:inline-block; box-shadow:0 4px 12px rgba(53,88,74,.2);
+    transition: transform .05s ease, box-shadow .08s ease, filter .08s ease, background-color .12s ease, border-color .12s ease;
+    user-select:none; -webkit-tap-highlight-color:transparent;
+    -webkit-text-fill-color: var(--btn-text); /* lock white in WebKit */
+  }
+  #water-calc .btn:hover{
+    background:var(--btn-hover) !important; border-color:var(--btn-hover) !important;
+    color:var(--btn-text) !important; -webkit-text-fill-color:var(--btn-text) !important;
+  }
+  #water-calc .btn:focus{ outline:none; box-shadow:0 0 0 3px rgba(45,92,78,.18); }
+  #water-calc .btn:is(:active,.is-pressed){
+    transform: translateY(1px);
+    box-shadow: inset 0 2px 6px rgba(0,0,0,.15), 0 1px 3px rgba(0,0,0,.06);
+    filter: saturate(.98) brightness(.98);
+  }
+  #water-calc .center{ text-align:center; }
+
+  /* Results section cards + tiles (same as other calcs) */
+  #water-calc .sec-card{
+    border:1px solid var(--sec-border); border-radius:12px; padding:12px; background:#fff; margin-top:14px;
+  }
+  #water-calc .sec-head{
+    display:flex; align-items:center; gap:8px; background:var(--sec-head-bg); color:var(--sec-head-text);
+    padding:8px 10px; border-radius:9px; font-weight:800; font-size:14px;
+  }
+  #water-calc .sec-head .icon{ font-size:16px; line-height:1; }
+  #water-calc .stats{
+    display:grid; grid-template-columns: repeat(5, minmax(120px,1fr)); gap:10px; padding:10px 6px 6px;
+  }
+  @media (max-width:980px){ #water-calc .stats{ grid-template-columns: repeat(2, minmax(140px,1fr)); } }
+  @media (max-width:560px){ #water-calc .stats{ grid-template-columns: 1fr; } }
+  #water-calc .stat{
+    background:var(--tile-bg); border:1px solid var(--tile-border); border-radius:10px; padding:10px 12px; text-align:center;
+    box-shadow:0 2px 6px rgba(0,0,0,.03);
+  }
+  #water-calc .stat .label{ font-size:12px; color:var(--tile-label); font-weight:700; letter-spacing:.2px; }
+  #water-calc .stat .value{ margin-top:4px; font-size:18px; font-weight:800; color:var(--tile-value); }
+
+  /* Fixed watermark (same component as your other calcs) */
+  #ho-watermark{
+    position:fixed; right:16px; bottom:12px; background:rgba(45,92,78,.08); color:#2D5C4E;
+    border:1px solid #E7E5DC; border-radius:10px; padding:6px 10px; font:600 12px/1 'Inter',system-ui,sans-serif;
+    backdrop-filter:blur(2px); z-index:50; pointer-events:none; user-select:none;
+  }
+
+  /* Prevent theme from hijacking focus/hover text colours */
+  #water-calc .btn, #water-calc .btn *{
+    color:var(--btn-text) !important; -webkit-text-fill-color:var(--btn-text) !important;
+  }
+
+
+/* ===== Nutrient Calculator Styles ===== */
+/* ========= Scoped Hydro Oasis theme (NO global bleed) ========= */
+  :root{
+    --bg:#FDFBF4; --text:#333; --heading:#2D5C4E;
+    --btn:#2D5C4E; --btn-hover:#A76DAB; --btn-text:#fff;
+    --card:#fff; --card-border:#E7E5DC; --icon:#2D5C4E; --err:#BE5C5C;
+
+    /* results look + tiles like your screenshots */
+    --sec-border:#D9E2DE;        /* outer card border */
+    --sec-head-bg:#F3F7F5;       /* section header background */
+    --sec-head-text:#2D5C4E;     /* header text */
+    --tile-bg:#FFFFFF;           /* stat tile background */
+    --tile-border:#E7E5DC;       /* stat tile border */
+    --tile-label:#5C6F69;        /* small label */
+    --tile-value:#2D5C4E;        /* bold value */
+  }
+
+  #nutri-calc, #nutri-calc * { box-sizing:border-box; font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial; }
+  #nutri-calc { background:var(--bg); color:var(--text); padding:16px; }
+  #nutri-calc .wrap{ max-width:1100px; margin:0 auto; }
+
+  /* Base card (with watermark) */
+  #nutri-calc .card{
+    background:var(--card); border:1px solid var(--card-border); border-radius:16px;
+    padding:20px; box-shadow:0 6px 20px rgba(0,0,0,.06); position:relative; overflow:hidden;
+  }
+  #nutri-calc .wm-img{
+    position:absolute; right:-28px; bottom:-28px; width:260px; opacity:.06;
+    pointer-events:none; user-select:none; z-index:0;
+  }
+  @media (min-width:768px){ #nutri-calc .wm-img{ width:320px; } }
+
+  /* Title */
+  #nutri-calc .title-block{ text-align:center; margin:6px 0 10px; position:relative; z-index:1; }
+  #nutri-calc .title-block h1{ color:var(--heading); font-weight:800; font-size:clamp(26px,3.2vw,36px); margin:0; letter-spacing:.3px; }
+  #nutri-calc .subtitle{ color:#456E62; font-size:14px; }
+
+  /* Section titles (input areas) */
+  #nutri-calc .sec-title{ color:var(--heading); font-weight:800; font-size:18px; display:flex; align-items:center; gap:8px; margin:16px 0 12px; position:relative; z-index:1; }
+  #nutri-calc .dot{ width:18px; height:18px; border-radius:4px; background:var(--icon); display:inline-block; }
+
+  /* Inputs */
+  #nutri-calc .grid{ display:grid; gap:14px; position:relative; z-index:1; }
+  #nutri-calc .g-3{ grid-template-columns: repeat(3,1fr); }
+  @media (max-width:820px){ #nutri-calc .g-3{ grid-template-columns:1fr; } }
+  #nutri-calc label{ display:block; font-size:13px; color:#516A64; margin:2px 0 6px; }
+  #nutri-calc .input{ width:100%; padding:12px 12px; border-radius:10px; border:1px solid #D1D1D1; background:#fff; font-size:16px; }
+  #nutri-calc .help{ font-size:12px; color:#6B7C77; margin-top:6px; }
+  #nutri-calc .error{ border-color:var(--err)!important; }
+  #nutri-calc .error-msg{ color:var(--err); font-size:12px; margin:8px 0; display:none; }
+  #nutri-calc .error-msg.show{ display:block; }
+
+  /* Buttons */
+  #nutri-calc .btn{
+    background:var(--btn); color:var(--btn-text); border:1px solid var(--btn);
+    border-radius:12px; padding:12px 18px; font-weight:700; cursor:pointer; transition:.15s; position:relative; z-index:1;
+  }
+  #nutri-calc .btn:hover{ background:var(--btn-hover); border-color:var(--btn-hover); }
+  #nutri-calc .btn-ghost{ background:#f3f5f1; color:#1f3b33; border-color:#d9e2de; }
+  #nutri-calc .btn-ghost:hover{ background:#e8eee9; }
+  #nutri-calc .center{ text-align:center; }
+
+  /* Nutrient mini-cards (input) */
+  #nutri-calc .nutr-card{ background:#f8faf8; border:1px solid #e2e7e4; border-radius:12px; padding:16px; }
+  #nutri-calc .nutr-head{ display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:10px; }
+  #nutri-calc .nutr-title{ font-weight:700; color:#1f3b33; }
+  #nutri-calc .remove{ background:#ef4444; border-color:#ef4444; }
+  #nutri-calc .remove:hover{ background:#dc2626; border-color:#dc2626; }
+
+  /* =================== RESULTS UI (matches screenshots) =================== */
+  /* Outer section card (each nutrient & totals) */
+  #nutri-calc .sec-card{
+    border:1px solid var(--sec-border);
+    border-radius:12px;
+    padding:12px;
+    background:#fff;
+    margin-top:14px;
+  }
+  /* Section header strip */
+  #nutri-calc .sec-head{
+    display:flex; align-items:center; gap:8px;
+    background:var(--sec-head-bg);
+    color:var(--sec-head-text);
+    padding:8px 10px;
+    border-radius:9px;
+    font-weight:800;
+    font-size:14px;
+  }
+  #nutri-calc .sec-head .icon{ font-size:16px; line-height:1; }
+
+  /* Stats grid inside each section */
+  #nutri-calc .stats{
+    display:grid;
+    grid-template-columns: repeat(5, minmax(120px,1fr));
+    gap:10px;
+    padding:10px 6px 6px;
+  }
+  @media (max-width:980px){
+    #nutri-calc .stats{ grid-template-columns: repeat(2, minmax(140px,1fr)); }
+  }
+  @media (max-width:560px){
+    #nutri-calc .stats{ grid-template-columns: 1fr; }
+  }
+
+  /* Individual stat tile */
+  #nutri-calc .stat{
+    background:var(--tile-bg);
+    border:1px solid var(--tile-border);
+    border-radius:10px;
+    padding:10px 12px;
+    text-align:center;
+    box-shadow:0 2px 6px rgba(0,0,0,.03);
+  }
+  #nutri-calc .stat .label{
+    font-size:12px; color:var(--tile-label); font-weight:700; letter-spacing:.2px;
+  }
+  #nutri-calc .stat .value{
+    margin-top:4px; font-size:18px; font-weight:800; color:var(--tile-value);
+  }
+
+  #ho-watermark{
+    position:fixed; right:16px; bottom:12px; background:rgba(45,92,78,.08); color:#2D5C4E;
+    border:1px solid #E7E5DC; border-radius:10px; padding:6px 10px; font:600 12px/1 'Inter',system-ui,sans-serif; backdrop-filter:blur(2px); z-index:50;
+  }
+
+
+/* ===== Nutrient Program Calculator Styles ===== */
+/* Import fonts safely inside CSS for Shopify embeds */
+
+  /* ========= Hydro Oasis scoped theme ========= */
+  #npcalc{
+    --bg:#FDFBF4; --text:#333; --heading:#2D5C4E;
+    --btn:#2D5C4E; --btn-hover:#A76DAB; --btn-text:#fff;
+    --card:#fff; --card-border:#E7E5DC; --icon:#2D5C4E; --err:#BE5C4C;
+    --sec-border:#D9E2DE; --sec-head-bg:#F3F7F5;
+
+    position:relative;
+    /* Match Harvest: let theme bg show */
+    background:transparent;
+    color:var(--text);
+    font-family:'Nunito',system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial,sans-serif;
+    line-height:1.6;
+
+    /* Page gutters like Harvest */
+    padding-left:clamp(12px,4vw,24px);
+    padding-right:clamp(12px,4vw,24px);
+    padding-top:28px; padding-bottom:28px;
+
+    /* Overflow guards */
+    width:100%; max-width:100vw; overflow-x:hidden;
+  }
+  #npcalc *{ box-sizing:border-box; }
+
+  /* ---- Container / shell (fully scoped) ---- */
+  #npcalc .container{
+    width:100%;
+    max-width:1100px;
+    margin:0 auto;
+    padding:0;
+  }
+  #npcalc .calc-shell{
+    position:relative;
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:16px;
+    box-shadow:0 6px 20px rgba(0,0,0,.06);
+    padding:24px;
+    overflow:hidden;  /* keep watermark & children inside */
+  }
+  #npcalc .mascot-watermark{
+    position:absolute; right:10px; bottom:10px;
+    width:min(140px,22%); opacity:.12; pointer-events:none;
+  }
+
+  /* ---- Titles ---- */
+  #npcalc .calc-title{
+    font-family:'Inter',system-ui,sans-serif;
+    font-weight:800; letter-spacing:.2px; color:var(--heading);
+    text-align:center; margin:2px 0 4px;
+    font-size:clamp(24px,4.2vw,40px);
+  }
+  #npcalc .calc-subtitle{
+    text-align:center; color:#56645d; font-family:'Inter',system-ui,sans-serif;
+    font-weight:500; font-size:clamp(12px,2.6vw,14px); margin:0 0 18px;
+  }
+
+  /* ---- Config ---- */
+  #npcalc .config-section{ margin:8px 0 10px; text-align:center; }
+  #npcalc .config-section label{
+    display:block; font-weight:800; color:var(--heading); margin-bottom:8px; font-size:1.05em;
+  }
+  #npcalc .config-section select{
+    padding:12px 14px; font-size:1em; background:#fff; border:1px solid #c4c8b8; border-radius:10px; color:#31473a;
+    min-width:280px; max-width:100%; cursor:pointer;
+  }
+  #npcalc .config-section select:focus{ outline:none; border-color:var(--heading); box-shadow:0 0 0 3px rgba(45,92,78,.18); }
+
+  /* ---- Stages / Weeks ---- */
+  #npcalc .stages-container{ display:flex; flex-direction:column; gap:22px; margin-bottom:22px; }
+  #npcalc .stage{
+    background:#f7f5eb; padding:18px; border-radius:14px; box-shadow:0 2px 8px rgba(49,71,58,.08);
+  }
+  #npcalc .stage-header{ display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:14px; }
+  #npcalc .stage-title{ font-size:clamp(18px,3.8vw,24px); font-weight:800; color:var(--heading); margin:0; }
+
+  #npcalc .add-week-btn{
+    background:var(--btn) !important; color:#fff !important; border:none; padding:10px 16px; border-radius:20px;
+    font-weight:700; cursor:pointer; transition: background-color .12s ease, box-shadow .08s ease, transform .05s ease;
+    -webkit-appearance:none; appearance:none;
+  }
+  #npcalc .add-week-btn:hover,#npcalc .add-week-btn:focus-visible{
+    background:var(--btn-hover) !important; color:#fff !important; box-shadow:0 0 0 3px rgba(45,92,78,.18);
+  }
+  #npcalc .add-week-btn:active{ transform:translateY(1px); }
+
+  /* ---- Week card ---- */
+  #npcalc .week-card{
+    background:#fcfaf3; border-radius:12px; padding:14px; margin-bottom:12px;
+    border:1px solid #e3e2d7; box-shadow:0 2px 6px rgba(49,71,58,.06);
+  }
+  #npcalc .week-header{ display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:10px; flex-wrap:wrap; }
+  #npcalc .week-title{ font-size:1.1em; font-weight:800; color:var(--heading); margin:0; }
+  #npcalc .week-controls{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  #npcalc .toggle-btn,#npcalc .remove-week-btn{
+    border:none; padding:8px 12px; border-radius:10px; font-weight:700; cursor:pointer; font-size:.9em;
+  }
+  #npcalc .toggle-btn{ background:#e3e2d7; color:var(--heading); }
+  #npcalc .toggle-btn:hover{ background:#d5d4c9; }
+  #npcalc .remove-week-btn{ background:#b54848; color:#fff; }
+  #npcalc .remove-week-btn:hover{ background:#a03d3d; }
+  #npcalc .week-body{ display:block; }
+  #npcalc .week-body.hidden{ display:none; }
+
+  /* ---- Products ---- */
+  #npcalc .product-row{
+    background:#fff; border:1px solid #dddcd2; border-radius:8px; padding:12px; margin-bottom:10px; box-shadow:0 2px 4px rgba(49,71,58,.06);
+  }
+  #npcalc .product-fields{ display:grid; grid-template-columns:1fr 1fr auto; gap:10px; align-items:end; }
+  #npcalc .field-group{ display:flex; flex-direction:column; }
+  #npcalc .field-group label{ font-weight:800; color:var(--heading); margin-bottom:6px; font-size:.95em; }
+  #npcalc .field-group input{
+    padding:10px 12px; font-size:1em; background:#fff; border:1px solid #c4c8b8; border-radius:8px; color:#31473a; width:100%;
+  }
+  #npcalc .remove-product-btn{
+    background:#b03d3c; color:#fff; border:none; padding:10px 12px; border-radius:8px; font-weight:700; cursor:pointer; white-space:nowrap;
+  }
+  #npcalc .add-product-btn{
+    background:transparent; color:var(--heading); border:2px dashed #c4c8b8; padding:10px 14px; border-radius:8px; font-weight:700; cursor:pointer; width:100%; margin-top:8px;
+  }
+  #npcalc .add-product-btn:hover{ border-color:var(--heading); background:rgba(53,88,74,.05); }
+
+  /* ---- Reservoir ---- */
+  #npcalc .reservoir-section{
+    background:#f7f5eb; padding:18px; border-radius:14px; margin-bottom:20px; box-shadow:0 2px 8px rgba(49,71,58,.08);
+  }
+  #npcalc .reservoir-section label{ display:block; font-weight:800; color:var(--heading); margin-bottom:8px; font-size:1.05em; }
+  #npcalc .reservoir-section input{
+    padding:12px 14px; font-size:1.05em; background:#fff; border:1px solid #c4c8b8; border-radius:10px; color:#31473a; max-width:360px; width:100%;
+  }
+
+  /* ---- Buttons ---- */
+  #npcalc .calculate-btn,#npcalc .download-btn{
+    background:var(--btn); color:#fff; border:none; padding:14px 32px; border-radius:12px; font-weight:800; cursor:pointer;
+    font-size:1.05em; display:block; margin:22px auto; box-shadow:0 4px 12px rgba(53,88,74,.2);
+    transition:transform .05s ease, box-shadow .08s ease, background-color .12s ease;
+  }
+  #npcalc .calculate-btn:hover,#npcalc .download-btn:hover{ background:var(--btn-hover); color:#fff; }
+  #npcalc .calculate-btn:focus,#npcalc .download-btn:focus{ outline:none; box-shadow:0 0 0 3px rgba(45,92,78,.18); }
+  #npcalc .calculate-btn:active,#npcalc .download-btn:active{ transform:translateY(1px); box-shadow:inset 0 2px 6px rgba(0,0,0,.15), 0 1px 3px rgba(0,0,0,.06); }
+
+  /* ---- Errors & Results ---- */
+  #npcalc .error-message{ color:var(--err); font-weight:800; text-align:center; margin:14px 0; font-size:1.02em; }
+  #npcalc .results-section{ margin-top:22px; }
+
+  /* ---- Desktop Matrix ---- */
+  #npcalc .feed-chart-matrix{
+    overflow-x:auto; border-radius:10px; border:1px solid #c4c8b8; background:#fff;
+    -webkit-overflow-scrolling:touch; scroll-snap-type:x proximity; position:relative; max-width:100%;
+  }
+  #npcalc .feed-chart-matrix table{ width:100%; border-collapse:collapse; background:#fff; table-layout:fixed; }
+  #npcalc .feed-chart-matrix th,#npcalc .feed-chart-matrix td{ border:1px solid #c4c8b8; padding:10px; text-align:center; vertical-align:middle; }
+  #npcalc .feed-chart-matrix thead th{ position:sticky; top:0; z-index:8; background:var(--heading); color:#fff; font-weight:800; }
+  #npcalc .matrix-week-header{ min-width:110px; white-space:nowrap; }
+  #npcalc .matrix-nutrient-header{ text-align:left; min-width:200px; position:sticky; left:0; z-index:12; }
+  #npcalc .matrix-nutrient-name{ background:#f7f5eb; font-weight:700; text-align:left; color:var(--heading); min-width:200px; position:sticky; left:0; z-index:10; border-right:2px solid #c4c8b8; }
+  #npcalc .matrix-data-cell{ background:#fff; min-width:100px; scroll-snap-align:start; }
+  #npcalc .matrix-rate-value{ font-weight:800; color:#2D5C4E; font-size:.95em; line-height:1.2; }
+  #npcalc .matrix-empty-cell{ background:#f9f9f9; color:#999; font-style:italic; font-size:1.02em; }
+
+  /* ---- Mobile Results ---- */
+  #npcalc .mobile-feed-list{ display:none; }
+  #npcalc .week-summary{
+    background:#fff; border:1px solid #c4c8b8; border-radius:12px; padding:14px; margin-bottom:12px;
+  }
+  #npcalc .week-summary h3{
+    margin:0 0 10px; font-family:'Inter',system-ui,sans-serif; color:var(--heading);
+    font-size:1.05em; font-weight:800;
+  }
+  #npcalc .week-summary ul{ list-style:none; padding:0; margin:0; display:grid; gap:8px; }
+  #npcalc .week-summary li{ display:flex; justify-content:space-between; gap:12px; padding:8px 10px; border:1px solid #eceae0; border-radius:8px; background:#fcfaf3; }
+  #npcalc .week-summary .n-name{ font-weight:700; color:#2D5C4E; }
+  #npcalc .week-summary .n-val{ font-family:'Inter',system-ui,sans-serif; font-weight:800; }
+
+  /* ---- Watermark ---- */
+  #npcalc #ho-watermark{
+    position:fixed; right:12px; bottom:10px; background:rgba(45,92,78,.08); color:#2D5C4E;
+    border:1px solid #E7E5DC; border-radius:10px; padding:6px 10px; font:600 12px/1 'Inter',system-ui,sans-serif; backdrop-filter:blur(2px); z-index:50;
+  }
+
+  /* ---- Focus polish (prevent theme hijack) ---- */
+  #npcalc button,#npcalc input,#npcalc select{ -webkit-tap-highlight-color:transparent; }
+  #npcalc .add-week-btn,#npcalc .remove-week-btn,#npcalc .toggle-btn,#npcalc .remove-product-btn,#npcalc .add-product-btn,#npcalc .calculate-btn,#npcalc .download-btn{
+    outline:none; box-shadow:none; filter:none; transform:none;
+  }
+  #npcalc .add-week-btn:focus,#npcalc .remove-week-btn:focus,#npcalc .toggle-btn:focus,#npcalc .remove-product-btn:focus,#npcalc .add-product-btn:focus,
+  #npcalc .calculate-btn:focus,#npcalc .download-btn:focus,#npcalc input:focus,#npcalc select:focus{
+    outline:none; box-shadow:0 0 0 3px rgba(45,92,78,.18); border-color:var(--heading);
+  }
+  #npcalc button:focus-visible,#npcalc input:focus-visible,#npcalc select:focus-visible{ outline:none; box-shadow:0 0 0 3px rgba(45,92,78,.18); }
+
+  /* ========= Responsive tweaks (match Harvest) ========= */
+  @media (max-width:1024px){
+    #npcalc .container{ padding:0 6px; }
+  }
+  @media (max-width:820px){
+    #npcalc .product-fields{ grid-template-columns:1fr 1fr; }
+    #npcalc .remove-product-btn{ justify-self:start; }
+  }
+  @media (max-width:700px){
+    #npcalc .calc-shell{ padding:16px; }
+    #npcalc .config-section select{ min-width:0; width:100%; }
+    #npcalc .stage{ padding:14px; }
+    #npcalc .reservoir-section{ padding:14px; }
+    #npcalc .product-fields{ grid-template-columns:1fr; }
+    #npcalc .remove-product-btn{ width:100%; }
+    /* Disable sticky headers/columns on small screens */
+    #npcalc .feed-chart-matrix thead th,
+    #npcalc .matrix-nutrient-header,
+    #npcalc .matrix-nutrient-name{ position:static; left:auto; top:auto; }
+    /* Switch to mobile list view */
+    #npcalc .feed-chart-matrix{ display:none; }
+    #npcalc .mobile-feed-list{ display:block; }
+    #npcalc .matrix-data-cell{ min-width:84px; }
+  }
+  @media (max-width:480px){
+    #npcalc{ padding-left:12px; padding-right:12px; }
+    #npcalc .calculate-btn,#npcalc .download-btn{ width:100%; }
+    #npcalc .week-controls{ width:100%; }
+    #npcalc .toggle-btn,#npcalc .remove-week-btn{ flex:1 1 48%; text-align:center; }
+  }
+
+  /* ---- Clamp only the Shopify wrapper that contains #npcalc ---- */
+  #MainContent:has(#npcalc),
+  .shopify-section:has(#npcalc),
+  .page-width:has(#npcalc),
+  .template-page .page-width:has(#npcalc){
+    overflow-x:hidden;
+    max-width:100%;
+  }
