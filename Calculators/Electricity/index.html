@@ -1,1716 +1,1261 @@
 <!doctype html>
 <html lang="en">
- <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Electricity Cost Calculator</title>
-  <link rel="stylesheet" href="../../assets/cea.css" data-preview-href="assets/cea.css">
-  <link rel="stylesheet" href="../../shared/hoa-calcs.css" data-preview-href="shared/hoa-calcs.css">
-  <script type="application/json" id="electricity-tariffs-fallback">
-[{
-  "retailer": "Aurora Energy",
-  "region": "TAS",
-  "distributor": null,
-  "plan": "Tariff 31 (Flat)",
-  "type": "flat",
-  "flat_c_per_kWh": 29.0535,
-  "supply_c_per_day": null,
-  "notes": "From Power Tariffs sheet"
-},
-{
-  "retailer": "Aurora Energy",
-  "region": "TAS",
-  "distributor": null,
-  "plan": "Tariff 93 (TOU)",
-  "type": "tou",
-  "on_c_per_kWh": 35.4782,
-  "off_c_per_kWh": 16.6862,
-  "shoulder_c_per_kWh": null,
-  "supply_c_per_day": null,
-  "schedule": {
-    "on": "07:00–10:00 & 16:00–21:00",
-    "off": "10:00–16:00 & 21:00–07:00 (all day Sat/Sun)"
-  },
-  "notes": "From Power Tariffs sheet"
-},
-{
-  "retailer": "Aurora Energy",
-  "region": "TAS",
-  "distributor": null,
-  "plan": "Tariff 62 (Controlled Load)",
-  "type": "flat",
-  "flat_c_per_kWh": 14.3078,
-  "supply_c_per_day": null,
-  "notes": "Night/off-peak CL"
-},
-{
-  "retailer": "AGL",
-  "region": "National",
-  "distributor": null,
-  "plan": "Home Plan (Flat)",
-  "type": "flat",
-  "flat_c_per_kWh": 40.183,
-  "supply_c_per_day": null,
-  "notes": "From Power Tariffs sheet"
-},
-{
-  "retailer": "AGL",
-  "region": "National",
-  "distributor": null,
-  "plan": "Home Time of Use",
-  "type": "tou",
-  "on_c_per_kWh": 59.301,
-  "off_c_per_kWh": 27.071,
-  "shoulder_c_per_kWh": 33.044,
-  "supply_c_per_day": null,
-  "schedule": {
-    "on": "16:00–21:00",
-    "shoulder": "09:00–17:00 & 20:00–22:00",
-    "off": "21:00–09:00"
-  }
-},
-{
-  "retailer": "Ergon Energy",
-  "region": "QLD",
-  "distributor": "Ergon",
-  "plan": "Tariff 11 (Flat)",
-  "type": "flat",
-  "flat_c_per_kWh": 32.973,
-  "supply_c_per_day": null,
-  "notes": "From Power Tariffs sheet"
-},
-{
-  "retailer": "Ergon Energy",
-  "region": "QLD",
-  "distributor": "Ergon",
-  "plan": "Tariff 12D (TOU)",
-  "type": "tou",
-  "on_c_per_kWh": 45.712,
-  "off_c_per_kWh": 22.68,
-  "shoulder_c_per_kWh": 28.035,
-  "schedule": {
-    "on": "16:00–21:00",
-    "shoulder": "21:00–11:00",
-    "off": "11:00–16:00"
-  }
-},
-{
-  "retailer": "Synergy",
-  "region": "WA",
-  "distributor": "Western Power",
-  "plan": "A1 (Flat)",
-  "type": "flat",
-  "flat_c_per_kWh": 32.3719,
-  "supply_c_per_day": null
-},
-{
-  "retailer": "Synergy",
-  "region": "WA",
-  "distributor": "Western Power",
-  "plan": "Midday Saver (TOU)",
-  "type": "tou",
-  "on_c_per_kWh": 53.8446,
-  "off_c_per_kWh": 8.6151,
-  "shoulder_c_per_kWh": 23.6916,
-  "schedule": {
-    "on": "15:00–21:00",
-    "shoulder": "21:00–09:00",
-    "off": "09:00–15:00"
-  }
-},
-{
-  "retailer": "Powershop",
-  "region": "VIC",
-  "distributor": "CitiPower",
-  "plan": "Residential Single Rate",
-  "type": "flat",
-  "flat_c_per_kWh": 28.71,
-  "supply_c_per_day": 115.25,
-  "notes": "VDO 2023–24"
-},
-{
-  "retailer": "Powershop",
-  "region": "VIC",
-  "distributor": "CitiPower",
-  "plan": "Residential TOU (2-period)",
-  "type": "tou",
-  "on_c_per_kWh": 37.19,
-  "off_c_per_kWh": 24.41,
-  "shoulder_c_per_kWh": null,
-  "supply_c_per_day": 115.25,
-  "schedule": {
-    "on": "15:00–21:00 (daily)",
-    "off": "all other times"
-  }
-},
-{
-  "retailer": "Powershop",
-  "region": "VIC",
-  "distributor": "AusNet",
-  "plan": "Residential Single Rate",
-  "type": "flat",
-  "flat_c_per_kWh": 38.51,
-  "supply_c_per_day": 132.51
-},
-{
-  "retailer": "Powershop",
-  "region": "VIC",
-  "distributor": "AusNet",
-  "plan": "Residential TOU (2-period)",
-  "type": "tou",
-  "on_c_per_kWh": 49.32,
-  "off_c_per_kWh": 28.69,
-  "supply_c_per_day": 132.51
-},
-{
-  "retailer": "EnergyAustralia",
-  "region": "VIC",
-  "distributor": "CitiPower",
-  "plan": "Residential Peak Anytime (Flat)",
-  "type": "flat",
-  "flat_c_per_kWh": 28.71,
-  "supply_c_per_day": 115.2492
-},
-{
-  "retailer": "EnergyAustralia",
-  "region": "VIC",
-  "distributor": "CitiPower",
-  "plan": "Residential 7-Day TOU",
-  "type": "tou",
-  "on_c_per_kWh": 37.1899,
-  "off_c_per_kWh": 24.4099,
-  "supply_c_per_day": 115.2492
-},
-{
-  "retailer": "Lumo Energy",
-  "region": "VIC",
-  "distributor": "CitiPower",
-  "plan": "Residential Single Rate",
-  "type": "flat",
-  "flat_c_per_kWh": 28.71,
-  "supply_c_per_day": 115.25
-},
-{
-  "retailer": "Lumo Energy",
-  "region": "VIC",
-  "distributor": "CitiPower",
-  "plan": "Residential TOU (7-Day)",
-  "type": "tou",
-  "on_c_per_kWh": 37.19,
-  "off_c_per_kWh": 24.41,
-  "supply_c_per_day": 115.25
-},
-{
-  "retailer": "Lumo Energy",
-  "region": "VIC",
-  "distributor": "AusNet",
-  "plan": "Residential Single Rate",
-  "type": "flat",
-  "flat_c_per_kWh": 38.51,
-  "supply_c_per_day": 132.51
-},
-{
-  "retailer": "Lumo Energy",
-  "region": "VIC",
-  "distributor": "AusNet",
-  "plan": "Residential TOU (7-Day)",
-  "type": "tou",
-  "on_c_per_kWh": 49.32,
-  "off_c_per_kWh": 28.69,
-  "supply_c_per_day": 132.51
-},
-{
-  "retailer": "Red Energy",
-  "region": "VIC",
-  "distributor": "CitiPower",
-  "plan": "VDO Single Rate",
-  "type": "flat",
-  "flat_c_per_kWh": 27.33,
-  "supply_c_per_day": 124.07,
-  "notes": "Effective 1 Jul 2025"
-},
-{
-  "retailer": "Red Energy",
-  "region": "VIC",
-  "distributor": "AusNet",
-  "plan": "VDO 2-Period TOU (Res.)",
-  "type": "tou",
-  "on_c_per_kWh": 46.82,
-  "off_c_per_kWh": 23.99,
-  "supply_c_per_day": 141.46
-}]
-  </script>
-  <!-- CDN fallbacks for GitHub preview / raw.githubusercontent -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/HydroOasis/Hydro-Oasis-Calculators@main/assets/cea.css" media="print" onload="this.media='all'">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/HydroOasis/Hydro-Oasis-Calculators@main/shared/hoa-calcs.css" media="print" onload="this.media='all'">
-  <script>
-  (function(){
-    var isPreview = /github\.io|raw\.githubusercontent\.com|htmlpreview/i.test(location.href);
-    if (!isPreview) return;
 
-    var defaults = { owner: 'HydroOasis', repo: 'Hydro-Oasis-Calculators', branch: 'main' };
+  <!-- SDKs -->
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
 
-    function normalizeBranch(branch){
-      if (!branch) return branch;
-      return String(branch)
-        .replace(/^refs\/?heads\//i, '')
-        .replace(/^heads\//i, '')
-        .replace(/^origin\//i, '');
-    }
-
-    function parsePreviewContext(){
-      try {
-        var href = String(location.href);
-        var queryMatch = href.match(/\?(https?:\/\/[^\s]+)$/);
-        if (queryMatch) {
-          href = queryMatch[1];
-        }
-        href = decodeURIComponent(href);
-        var match = href.match(/https?:\/\/[^/]*github(?:usercontent)?\.com\/([^/]+)\/([^/]+)\/(.+)$/i);
-        if (!match) return defaults;
-        var owner = match[1];
-        var repo = match[2];
-        var remainder = match[3].split(/[?#]/)[0];
-        var segments = remainder.split('/').filter(Boolean);
-
-        if (segments[0] === 'blob' || segments[0] === 'raw' || segments[0] === 'tree') {
-          segments = segments.slice(1);
-        }
-        if (segments[0] === 'refs' && segments[1] === 'heads') {
-          segments = segments.slice(2);
-        }
-
-        var markers = ['Calculators','assets','shared','data','Recommendations','build','dist','public','src','docs','.github'];
-        var branchEnd = segments.length;
-        for (var i = 0; i < segments.length; i++) {
-          if (markers.indexOf(segments[i]) !== -1) {
-            branchEnd = i;
-            break;
-          }
-        }
-        var branchParts = segments.slice(0, branchEnd);
-        if (!branchParts.length && segments.length) {
-          branchParts = [segments[0]];
-        }
-        var rawBranch = branchParts.join('/') || defaults.branch;
-        var branch = normalizeBranch(rawBranch) || defaults.branch;
-        return { owner: owner, repo: repo, branch: branch };
-      } catch(err) {
-        console.warn('Failed to detect preview context', err);
-        return defaults;
-      }
-    }
-
-    function computeBases(ctx){
-      var branch = normalizeBranch(ctx.branch) || defaults.branch;
-      var bases = [
-        'https://raw.githubusercontent.com/' + ctx.owner + '/' + ctx.repo + '/' + branch + '/'
-      ];
-      if (branch.indexOf('/') === -1) {
-        bases.push('https://cdn.jsdelivr.net/gh/' + ctx.owner + '/' + ctx.repo + '@' + branch + '/');
-      }
-      bases.push('https://rawcdn.githack.com/' + ctx.owner + '/' + ctx.repo + '/' + branch + '/');
-      return Array.from(new Set(bases));
-    }
-
-    var context = window.__HOA_PREVIEW_CTX__ = parsePreviewContext();
-    var bases = window.__HOA_PREVIEW_BASES__ = computeBases(context);
-    var primaryBase = bases[0];
-
-    function join(base, target){
-      return base.replace(/\/+$/, '/') + target.replace(/^\/+/, '');
-    }
-
-    document.querySelectorAll('link[data-preview-href]').forEach(function(link){
-      var target = link.getAttribute('data-preview-href');
-      if (target) link.href = join(primaryBase, target);
-    });
-    document.querySelectorAll('script[data-preview-src]').forEach(function(scr){
-      var target = scr.getAttribute('data-preview-src');
-      if (target) scr.src = join(primaryBase, target);
-    });
-  })();
-  </script>
-  <script>
-  // Only try to load Shopify/theme SDK in production storefronts, not in GitHub preview
-  (function(){
-    var isPreview = /github\.io|raw\.githubusercontent\.com|htmlpreview/i.test(location.href);
-    if (isPreview) return; // skip in preview environments
-    var s = document.createElement('script');
-    s.src = '/_sdk/element_sdk.js';
-    s.defer = true;
-    document.head.appendChild(s);
-  })();
-  </script>
+  <!-- jsPDF -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  
-  <script>
-  (function(){
-    var href = window.location && window.location.href || '';
-    var isPreview = /github\.io|raw\.githubusercontent\.com|htmlpreview/i.test(href);
-    if (isPreview) return;
-    var doc = document;
-    if (doc.querySelector('script[src="/_sdk/data_sdk.js"]')) return;
-    var s = doc.createElement('script');
-    s.src = '/_sdk/data_sdk.js';
-    s.type = 'text/javascript';
-    s.defer = true;
-    doc.head.appendChild(s);
-  })();
-  </script>
- </head>
- <body>
-  <div id="elecFetchError" class="error-message" style="display:none"></div>
-  <div class="hoa-calc" id="ecalc">
-   <div class="container"><img class="wm-img" src="https://cdn.shopify.com/s/files/1/0709/5261/6094/files/Cactus_Mascot.png?v=1750645317" alt="">
-    <div class="header">
-     <h1 id="app-title">Electricity Cost Calculator</h1>
-     <p class="subtitle">Calculate your energy usage and cost breakdown</p>
-    </div><!-- Rate Configuration -->
-    <div class="section">
-     <h2 class="section-title">⚡ Rate Configuration</h2>
-     <div class="form-grid">
-      <div class="form-group"><label for="on-peak-rate">On-Peak Rate (c/kWh)</label> <input type="number" id="on-peak-rate" min="0" step="0.01" placeholder="25.5">
-      </div>
-      <div class="form-group"><label for="off-peak-rate">Off-Peak Rate (c/kWh)</label> <input type="number" id="off-peak-rate" min="0" step="0.01" placeholder="15.2">
-      </div>
-     </div>
-     <div class="toggle-container"><span>Round to 2 decimals</span>
-      <div class="toggle active" id="rounding-toggle">
-       <div class="toggle-slider"></div>
-      </div><span>Show up to 6 decimals</span>
-     </div><button class="btn btn-secondary" id="fetch-tariffs-btn" style="margin-top: 16px;"> 📋 Fetch Tariffs </button>
-    </div><!-- Tariff Schedule -->
-    <div class="section">
-     <h2 class="section-title">📅 Tariff Schedule</h2>
-     <div id="tariff-schedule">
-      <div class="tariff-type" data-type="on-peak">
-       <h3 style="color: #dc2626; margin-bottom: 16px;">On-Peak Times</h3>
-       <div class="tariff-ranges" id="on-peak-ranges">
-        <div class="time-range"><input type="time" class="time-input" value="15:00"> <span>to</span> <input type="time" class="time-input" value="21:00"> <button class="btn btn-danger" onclick="removeTimeRange(this)" style="padding: 4px 8px; font-size: 12px;">×</button>
-        </div>
-       </div><button class="btn btn-secondary" onclick="addTimeRange('on-peak-ranges')" style="margin-bottom: 12px;">+ Add Time Range</button>
-       <div class="days-selector"><button class="day-btn active" data-day="1">Mon</button> <button class="day-btn active" data-day="2">Tue</button> <button class="day-btn active" data-day="3">Wed</button> <button class="day-btn active" data-day="4">Thu</button> <button class="day-btn active" data-day="5">Fri</button> <button class="day-btn" data-day="6">Sat</button> <button class="day-btn" data-day="0">Sun</button>
-       </div>
-      </div>
-      <div class="tariff-type" data-type="off-peak" style="margin-top: 24px;">
-       <h3 style="color: #059669; margin-bottom: 16px;">Off-Peak Times</h3>
-       <div class="tariff-ranges" id="off-peak-ranges">
-        <div class="time-range"><input type="time" class="time-input" value="21:00"> <span>to</span> <input type="time" class="time-input" value="15:00"> <button class="btn btn-danger" onclick="removeTimeRange(this)" style="padding: 4px 8px; font-size: 12px;">×</button>
-        </div>
-       </div><button class="btn btn-secondary" onclick="addTimeRange('off-peak-ranges')" style="margin-bottom: 12px;">+ Add Time Range</button>
-       <div class="days-selector"><button class="day-btn active" data-day="1">Mon</button> <button class="day-btn active" data-day="2">Tue</button> <button class="day-btn active" data-day="3">Wed</button> <button class="day-btn active" data-day="4">Thu</button> <button class="day-btn active" data-day="5">Fri</button> <button class="day-btn active" data-day="6">Sat</button> <button class="day-btn active" data-day="0">Sun</button>
-       </div>
-      </div>
-     </div>
-     <div id="tariff-errors"></div>
-    </div><!-- Equipment Section -->
-    <div class="section">
-     <h2 class="section-title">🔌 Equipment</h2><button class="btn btn-primary" id="add-equipment-btn">+ Add Equipment</button>
-     <div id="equipment-list"></div>
-     <div id="equipment-errors"></div>
-    </div><!-- Calculate Button -->
-    <div style="text-align: center; margin: 32px 0;"><button class="btn btn-success" id="calculate-btn" style="font-size: 18px; padding: 16px 32px; margin-right: 16px;"> 🧮 Calculate Costs </button>
-    </div><!-- Results -->
-    <div id="results-container" style="display: none;"></div>
-   </div><!-- Tariff Fetch Modal -->
-   <div class="modal" id="tariff-modal">
-    <div class="modal-content">
-     <div class="modal-header">
-      <h3 class="modal-title">Fetch Tariff Data</h3><button class="close-btn" onclick="closeTariffModal()">×</button>
-     </div>
-     <div class="form-group"><label for="retailer-select">Retailer</label> <select id="retailer-select" disabled> <option value="">Select Retailer</option> </select>
-     </div>
-     <div class="form-group"><label for="plan-select">Plan</label> <select id="plan-select" disabled> <option value="">Select Plan</option> </select>
-     </div>
-     <div class="form-group"><label for="region-select">State/Network</label> <select id="region-select" disabled> <option value="">Select Region</option> </select>
-     </div>
-     <div style="display: flex; gap: 12px; margin-top: 24px;"><button class="btn btn-primary" onclick="fetchTariffData()">Fetch Data</button> <button class="btn btn-secondary" onclick="closeTariffModal()">Cancel</button>
-     </div>
-     <div id="fetch-status" style="margin-top: 16px;"></div>
-    </div>
-   </div>
-  </div>
-  <script>
-        // Configuration object for Element SDK
-        const defaultConfig = {
-            app_title: "Electricity Cost Calculator",
-            footer_text: "Hydro Oasis • Electricity Cost Calculator"
-        };
 
-        let equipmentCounter = 0;
-        let roundingEnabled = true;
-        let applySelectedTariffFromModal = null;
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Inter:wght@500;600;700;800&display=swap');
 
-        // Initialize SDKs
-        async function initializeSDKs() {
-            // Initialize Element SDK
-            if (window.elementSdk) {
-                window.elementSdk.init({
-                    defaultConfig: defaultConfig,
-                    onConfigChange: async (config) => {
-                        const titleElement = document.getElementById('app-title');
-                        if (titleElement) {
-                            titleElement.textContent = config.app_title || defaultConfig.app_title;
-                        }
-                    },
-                    mapToCapabilities: (config) => ({
-                        recolorables: [],
-                        borderables: [],
-                        fontEditable: undefined,
-                        fontSizeable: undefined
-                    }),
-                    mapToEditPanelValues: (config) => new Map([
-                        ["app_title", config.app_title || defaultConfig.app_title],
-                        ["footer_text", config.footer_text || defaultConfig.footer_text]
-                    ])
-                });
-            }
-        }
+  /* ========= Hydro Oasis scoped theme (NO global bleed) ========= */
+  #ecalc{
+    --bg:#FDFBF4; --text:#333; --heading:#2D5C4E;
+    --btn:#2D5C4E; --btn-hover:#A76DAB; --btn-text:#fff;
+    --card:#fff; --card-border:#E7E5DC; --icon:#2D5C4E; --err:#BE5C5C;
+    --sec-border:#D9E2DE; --sec-head-bg:#F3F7F5; --sec-head-text:#2D5C4E;
+    --tile-bg:#FFFFFF; --tile-border:#E7E5DC; --tile-label:#5C6F69; --tile-value:#2D5C4E;
 
-        // Initialize SDKs when page loads
-        initializeSDKs();
+    position:relative;
+    color:var(--text);
+    line-height:1.6;
+    min-height:100%;
+    font-family:'Nunito',system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial,sans-serif;
 
-        // Time overlap calculation engine
-        function normalizeTimeRange(start, end) {
-            const startMinutes = timeToMinutes(start);
-            const endMinutes = timeToMinutes(end);
-            
-            if (startMinutes <= endMinutes) {
-                return [{ start: startMinutes, end: endMinutes }];
-            } else {
-                // Range crosses midnight
-                return [
-                    { start: startMinutes, end: 1440 }, // Until midnight
-                    { start: 0, end: endMinutes }       // From midnight
-                ];
-            }
-        }
+    /* Keep inside theme content width */
+    max-width: var(--page-width, 1200px);
+    margin-left:auto; margin-right:auto;
 
-        function timeToMinutes(timeStr) {
-            const [hours, minutes] = timeStr.split(':').map(Number);
-            return hours * 60 + minutes;
-        }
+    /* Page gutters */
+    padding-left:clamp(12px,4vw,24px);
+    padding-right:clamp(12px,4vw,24px);
 
-        function minutesToTime(minutes) {
-            const hours = Math.floor(minutes / 60);
-            const mins = minutes % 60;
-            return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
-        }
-
-        function mergeOverlappingRanges(ranges) {
-            if (ranges.length === 0) return [];
-            
-            ranges.sort((a, b) => a.start - b.start);
-            const merged = [ranges[0]];
-            
-            for (let i = 1; i < ranges.length; i++) {
-                const current = ranges[i];
-                const last = merged[merged.length - 1];
-                
-                if (current.start <= last.end) {
-                    last.end = Math.max(last.end, current.end);
-                } else {
-                    merged.push(current);
-                }
-            }
-            
-            return merged;
-        }
-
-        function calculateOverlap(ranges1, ranges2) {
-            let totalOverlap = 0;
-            
-            for (const range1 of ranges1) {
-                for (const range2 of ranges2) {
-                    const overlapStart = Math.max(range1.start, range2.start);
-                    const overlapEnd = Math.min(range1.end, range2.end);
-                    
-                    if (overlapStart < overlapEnd) {
-                        totalOverlap += overlapEnd - overlapStart;
-                    }
-                }
-            }
-            
-            return totalOverlap / 60; // Convert to hours
-        }
-
-        // Equipment management
-        function addEquipment() {
-            equipmentCounter++;
-            const equipmentList = document.getElementById('equipment-list');
-            
-            const equipmentCard = document.createElement('div');
-            equipmentCard.className = 'equipment-card';
-            equipmentCard.dataset.id = equipmentCounter;
-            
-            equipmentCard.innerHTML = `
-                <button class="remove-btn" onclick="removeEquipment(${equipmentCounter})">×</button>
-                <div class="equipment-header">
-                    <div class="equipment-title">Equipment ${equipmentCounter}</div>
-                </div>
-                
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label>Equipment Name</label>
-                        <input type="text" class="equipment-name" placeholder="e.g., Air Conditioner" value="Equipment ${equipmentCounter}">
-                    </div>
-                    <div class="form-group">
-                        <label>Power (W)</label>
-                        <input type="number" class="equipment-power" min="0" step="0.1" placeholder="1500" value="1500">
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label>Daily kWh Cap (optional note)</label>
-                    <input type="text" class="equipment-cap" placeholder="e.g., Max 8 hours per day">
-                </div>
-                
-                <h4 style="margin: 20px 0 12px 0; color: #4f46e5;">Operating Schedule</h4>
-                <div class="equipment-ranges">
-                    <div class="time-range">
-                        <input type="time" class="time-input" value="09:00">
-                        <span>to</span>
-                        <input type="time" class="time-input" value="17:00">
-                        <button class="btn btn-danger" onclick="removeEquipmentTimeRange(this)" style="padding: 4px 8px; font-size: 12px;">×</button>
-                    </div>
-                </div>
-                <button class="btn btn-secondary" onclick="addEquipmentTimeRange(${equipmentCounter})" style="margin-bottom: 12px;">+ Add Time Range</button>
-                
-                <div class="days-selector">
-                    <button class="day-btn active" data-day="1">Mon</button>
-                    <button class="day-btn active" data-day="2">Tue</button>
-                    <button class="day-btn active" data-day="3">Wed</button>
-                    <button class="day-btn active" data-day="4">Thu</button>
-                    <button class="day-btn active" data-day="5">Fri</button>
-                    <button class="day-btn" data-day="6">Sat</button>
-                    <button class="day-btn" data-day="0">Sun</button>
-                </div>
-                
-                <div class="equipment-results" style="display: none; margin-top: 20px; padding: 16px; background: #f8fafc; border-radius: 8px;">
-                    <div class="results-grid"></div>
-                </div>
-            `;
-            
-            equipmentList.appendChild(equipmentCard);
-            
-            // Add event listeners for day buttons
-            equipmentCard.querySelectorAll('.day-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    this.classList.toggle('active');
-                });
-            });
-        }
-
-        function removeEquipment(id) {
-            const equipment = document.querySelector(`[data-id="${id}"]`);
-            if (equipment) {
-                equipment.remove();
-            }
-        }
-
-        function addEquipmentTimeRange(equipmentId) {
-            const equipment = document.querySelector(`[data-id="${equipmentId}"]`);
-            const rangesContainer = equipment.querySelector('.equipment-ranges');
-            
-            const timeRange = document.createElement('div');
-            timeRange.className = 'time-range';
-            timeRange.innerHTML = `
-                <input type="time" class="time-input" value="09:00">
-                <span>to</span>
-                <input type="time" class="time-input" value="17:00">
-                <button class="btn btn-danger" onclick="removeEquipmentTimeRange(this)" style="padding: 4px 8px; font-size: 12px;">×</button>
-            `;
-            
-            rangesContainer.appendChild(timeRange);
-        }
-
-        function removeEquipmentTimeRange(btn) {
-            btn.parentElement.remove();
-        }
-
-        // Tariff schedule management
-        function addTimeRange(containerId) {
-            const container = document.getElementById(containerId);
-            const timeRange = document.createElement('div');
-            timeRange.className = 'time-range';
-            timeRange.innerHTML = `
-                <input type="time" class="time-input" value="09:00">
-                <span>to</span>
-                <input type="time" class="time-input" value="17:00">
-                <button class="btn btn-danger" onclick="removeTimeRange(this)" style="padding: 4px 8px; font-size: 12px;">×</button>
-            `;
-            
-            container.appendChild(timeRange);
-        }
-
-        function removeTimeRange(btn) {
-            btn.parentElement.remove();
-        }
-
-        // Tariff fetching
-        function openTariffModal() {
-            const modal = document.getElementById('tariff-modal');
-            modal.classList.add('show');
-            startElecTariffs().catch(err => {
-                console.warn('Tariff modal prefetch failed', err);
-            });
-        }
-
-        function closeTariffModal() {
-            const modal = document.getElementById('tariff-modal');
-            modal.classList.remove('show');
-        }
-
-        async function fetchTariffData() {
-            const retailer = document.getElementById('retailer-select').value;
-            const plan = document.getElementById('plan-select').value;
-            const region = document.getElementById('region-select').value;
-
-            if (!retailer || !plan || !region) {
-                document.getElementById('fetch-status').innerHTML =
-                    '<div class="error-message">Please select all fields</div>';
-                return;
-            }
-
-            const statusEl = document.getElementById('fetch-status');
-            statusEl.innerHTML =
-                '<div style="color: #4f46e5;">Applying tariff selection…</div>';
-
-            try {
-                await startElecTariffs();
-
-                if (typeof applySelectedTariffFromModal !== 'function') {
-                    throw new Error('Tariff helpers not ready');
-                }
-
-                const applied = applySelectedTariffFromModal();
-
-                if (!applied) {
-                    statusEl.innerHTML =
-                        '<div class="error-message">Unable to locate the selected tariff.</div>';
-                    return;
-                }
-
-                statusEl.innerHTML =
-                    '<div style="color: #10b981;">Tariff applied to rate inputs.</div>';
-                setTimeout(() => {
-                    closeTariffModal();
-                    statusEl.innerHTML = '';
-                }, 1500);
-            } catch (error) {
-                console.warn('Tariff modal fetch failed', error);
-                statusEl.innerHTML =
-                    '<div class="error-message">Unable to load tariffs from the shared dataset.</div>';
-            }
-        }
-
-        // Validation functions
-        function validateInputs() {
-            const errors = [];
-            
-            // Validate rates
-            const onPeakRate = parseFloat(document.getElementById('on-peak-rate').value);
-            const offPeakRate = parseFloat(document.getElementById('off-peak-rate').value);
-            
-            if (!onPeakRate || onPeakRate <= 0) {
-                errors.push('On-peak rate must be greater than 0');
-            }
-            
-            if (!offPeakRate || offPeakRate <= 0) {
-                errors.push('Off-peak rate must be greater than 0');
-            }
-            
-            // Validate equipment
-            const equipmentCards = document.querySelectorAll('.equipment-card');
-            if (equipmentCards.length === 0) {
-                errors.push('At least one equipment must be added');
-            }
-            
-            equipmentCards.forEach((card, index) => {
-                const power = parseFloat(card.querySelector('.equipment-power').value);
-                if (!power || power <= 0) {
-                    errors.push(`Equipment ${index + 1}: Power must be greater than 0`);
-                }
-                
-                // Validate time ranges
-                const timeRanges = card.querySelectorAll('.time-range');
-                timeRanges.forEach((range, rangeIndex) => {
-                    const inputs = range.querySelectorAll('.time-input');
-                    const start = inputs[0].value;
-                    const end = inputs[1].value;
-                    
-                    if (!start || !end) {
-                        errors.push(`Equipment ${index + 1}, Range ${rangeIndex + 1}: Both start and end times required`);
-                    }
-                });
-                
-                // Check if at least one day is selected
-                const activeDays = card.querySelectorAll('.day-btn.active');
-                if (activeDays.length === 0) {
-                    errors.push(`Equipment ${index + 1}: At least one day must be selected`);
-                }
-            });
-            
-            return errors;
-        }
-
-        // Main calculation function
-        function calculateCosts() {
-            const errors = validateInputs();
-            
-            // Clear previous errors
-            document.getElementById('equipment-errors').innerHTML = '';
-            document.getElementById('tariff-errors').innerHTML = '';
-            
-            if (errors.length > 0) {
-                document.getElementById('equipment-errors').innerHTML = 
-                    errors.map(error => `<div class="error-message">${error}</div>`).join('');
-                document.getElementById('results-container').style.display = 'none';
-                return;
-            }
-            
-            const flat = Number((document.getElementById('ratePerKwh') || document.getElementById('rate-per-kwh'))?.value || 0);
-            const on   = Number(document.getElementById('on-peak-rate')?.value || 0);
-            const off  = Number(document.getElementById('off-peak-rate')?.value || 0);
-            const sh   = Number(document.getElementById('shoulder-rate')?.value || 0);
-
-            const onPeakRate = (on || flat) / 100; // Convert c/kWh to $/kWh
-            const offPeakRate = (off || flat) / 100;
-            const shoulderRate = sh / 100;
-            
-            // Get tariff schedules
-            const onPeakSchedule = getTariffSchedule('on-peak');
-            const offPeakSchedule = getTariffSchedule('off-peak');
-            
-            let totalResults = {
-                dailyKwh: 0,
-                weeklyKwh: 0,
-                monthlyKwh: 0,
-                yearlyKwh: 0,
-                dailyCost: 0,
-                weeklyCost: 0,
-                monthlyCost: 0,
-                yearlyCost: 0,
-                onPeakHours: 0,
-                offPeakHours: 0,
-                ratesSnapshot: { flat, on, off, sh, shoulderRate }
-            };
-            
-            // Calculate for each equipment
-            document.querySelectorAll('.equipment-card').forEach(card => {
-                const power = parseFloat(card.querySelector('.equipment-power').value) / 1000; // Convert W to kW
-                const equipmentSchedule = getEquipmentSchedule(card);
-                const selectedDays = getSelectedDays(card);
-                
-                // Calculate total weekly hours for this equipment
-                let totalWeeklyOnPeakHours = 0;
-                let totalWeeklyOffPeakHours = 0;
-                
-                selectedDays.forEach(day => {
-                    const dayOnPeakSchedule = onPeakSchedule.filter(s => s.days.includes(day));
-                    const dayOffPeakSchedule = offPeakSchedule.filter(s => s.days.includes(day));
-                    
-                    // Normalize equipment schedule for this day
-                    let equipmentRanges = [];
-                    equipmentSchedule.forEach(range => {
-                        equipmentRanges = equipmentRanges.concat(normalizeTimeRange(range.start, range.end));
-                    });
-                    equipmentRanges = mergeOverlappingRanges(equipmentRanges);
-                    
-                    // Calculate on-peak overlap for this day
-                    dayOnPeakSchedule.forEach(tariffRange => {
-                        let tariffRanges = normalizeTimeRange(tariffRange.start, tariffRange.end);
-                        tariffRanges = mergeOverlappingRanges(tariffRanges);
-                        totalWeeklyOnPeakHours += calculateOverlap(equipmentRanges, tariffRanges);
-                    });
-                    
-                    // Calculate off-peak overlap for this day
-                    dayOffPeakSchedule.forEach(tariffRange => {
-                        let tariffRanges = normalizeTimeRange(tariffRange.start, tariffRange.end);
-                        tariffRanges = mergeOverlappingRanges(tariffRanges);
-                        totalWeeklyOffPeakHours += calculateOverlap(equipmentRanges, tariffRanges);
-                    });
-                });
-                
-                // Calculate daily averages
-                const dailyOnPeakHours = totalWeeklyOnPeakHours / 7;
-                const dailyOffPeakHours = totalWeeklyOffPeakHours / 7;
-                
-                // Calculate consumption and costs
-                const dailyKwh = power * (dailyOnPeakHours + dailyOffPeakHours);
-                const weeklyKwh = power * (totalWeeklyOnPeakHours + totalWeeklyOffPeakHours);
-                const monthlyKwh = weeklyKwh * (365.25 / 12 / 7); // More accurate monthly calculation
-                const yearlyKwh = weeklyKwh * (365.25 / 7); // More accurate yearly calculation
-                
-                const dailyCost = power * (dailyOnPeakHours * onPeakRate + dailyOffPeakHours * offPeakRate);
-                const weeklyCost = power * (totalWeeklyOnPeakHours * onPeakRate + totalWeeklyOffPeakHours * offPeakRate);
-                const monthlyCost = weeklyCost * (365.25 / 12 / 7);
-                const yearlyCost = weeklyCost * (365.25 / 7);
-                
-                // Store equipment results for later display (but don't show under each equipment)
-                const resultsContainer = card.querySelector('.equipment-results .results-grid');
-                resultsContainer.innerHTML = `
-                    <div class="result-item">
-                        <div class="result-label">On-Peak Hours/Day</div>
-                        <div class="result-value">${formatNumber(dailyOnPeakHours)}h</div>
-                    </div>
-                    <div class="result-item">
-                        <div class="result-label">Off-Peak Hours/Day</div>
-                        <div class="result-value">${formatNumber(dailyOffPeakHours)}h</div>
-                    </div>
-                    <div class="result-item">
-                        <div class="result-label">Daily kWh</div>
-                        <div class="result-value">${formatNumber(dailyKwh)}</div>
-                    </div>
-                    <div class="result-item">
-                        <div class="result-label">Weekly kWh</div>
-                        <div class="result-value">${formatNumber(weeklyKwh)}</div>
-                    </div>
-                    <div class="result-item">
-                        <div class="result-label">Monthly kWh</div>
-                        <div class="result-value">${formatNumber(monthlyKwh)}</div>
-                    </div>
-                    <div class="result-item">
-                        <div class="result-label">Yearly kWh</div>
-                        <div class="result-value">${formatNumber(yearlyKwh)}</div>
-                    </div>
-                    <div class="result-item">
-                        <div class="result-label">Daily Cost</div>
-                        <div class="result-value">$${formatNumber(dailyCost)}</div>
-                    </div>
-                    <div class="result-item">
-                        <div class="result-label">Weekly Cost</div>
-                        <div class="result-value">$${formatNumber(weeklyCost)}</div>
-                    </div>
-                    <div class="result-item">
-                        <div class="result-label">Monthly Cost</div>
-                        <div class="result-value">$${formatNumber(monthlyCost)}</div>
-                    </div>
-                    <div class="result-item">
-                        <div class="result-label">Yearly Cost</div>
-                        <div class="result-value">$${formatNumber(yearlyCost)}</div>
-                    </div>
-                `;
-                
-                // Keep equipment results hidden under each equipment card
-                card.querySelector('.equipment-results').style.display = 'none';
-                
-                // Add to totals
-                totalResults.dailyKwh += dailyKwh;
-                totalResults.weeklyKwh += weeklyKwh;
-                totalResults.monthlyKwh += monthlyKwh;
-                totalResults.yearlyKwh += yearlyKwh;
-                totalResults.dailyCost += dailyCost;
-                totalResults.weeklyCost += weeklyCost;
-                totalResults.monthlyCost += monthlyCost;
-                totalResults.yearlyCost += yearlyCost;
-                totalResults.onPeakHours += dailyOnPeakHours;
-                totalResults.offPeakHours += dailyOffPeakHours;
-            });
-            
-            // Display results
-            displayTotalResults(totalResults);
-
-            try {
-                HOA.pushToHarvest({
-                    source: 'electricity',
-                    ts: Date.now(),
-                    summary: {
-                        dailyKwh: totalResults?.dailyKwh ?? null,
-                        monthlyCost: totalResults?.monthlyCost ?? null,
-                        yearlyCost: totalResults?.yearlyCost ?? null
-                    },
-                    raw: totalResults || {}
-                });
-            } catch(e) { console.warn('Harvest export (electricity) failed', e); }
-        }
-
-        function getTariffSchedule(type) {
-            const container = document.getElementById(`${type}-ranges`);
-            const ranges = container.querySelectorAll('.time-range');
-            const schedule = [];
-            
-            ranges.forEach(range => {
-                const inputs = range.querySelectorAll('.time-input');
-                const start = inputs[0].value;
-                const end = inputs[1].value;
-                
-                if (start && end) {
-                    schedule.push({ start, end });
-                }
-            });
-            
-            // Get selected days for this tariff type
-            const tariffSection = container.closest('.tariff-type');
-            const selectedDays = [];
-            tariffSection.querySelectorAll('.day-btn.active').forEach(btn => {
-                selectedDays.push(parseInt(btn.dataset.day));
-            });
-            
-            return schedule.map(range => ({ ...range, days: selectedDays }));
-        }
-
-        function getEquipmentSchedule(card) {
-            const ranges = card.querySelectorAll('.equipment-ranges .time-range');
-            const schedule = [];
-            
-            ranges.forEach(range => {
-                const inputs = range.querySelectorAll('.time-input');
-                const start = inputs[0].value;
-                const end = inputs[1].value;
-                
-                if (start && end) {
-                    schedule.push({ start, end });
-                }
-            });
-            
-            return schedule;
-        }
-
-        function getSelectedDays(card) {
-            const selectedDays = [];
-            card.querySelectorAll('.day-btn.active').forEach(btn => {
-                selectedDays.push(parseInt(btn.dataset.day));
-            });
-            return selectedDays;
-        }
-
-        function formatNumber(num) {
-            if (roundingEnabled) {
-                return num.toFixed(2);
-            } else {
-                // Show up to 6 decimals, but trim trailing zeros (minimum 2 decimals)
-                let formatted = num.toFixed(6);
-                formatted = formatted.replace(/\.?0+$/, '');
-                if (!formatted.includes('.')) {
-                    formatted += '.00';
-                } else if (formatted.split('.')[1].length === 1) {
-                    formatted += '0';
-                }
-                return formatted;
-            }
-        }
-
-        function displayTotalResults(results) {
-            const resultsContainer = document.getElementById('results-container');
-            
-            // Collect all equipment results
-            let equipmentResultsHTML = '';
-            document.querySelectorAll('.equipment-card').forEach((card, index) => {
-                const name = card.querySelector('.equipment-name').value;
-                const power = card.querySelector('.equipment-power').value;
-                const resultsGrid = card.querySelector('.equipment-results .results-grid');
-                
-                if (resultsGrid) {
-                    equipmentResultsHTML += `
-                        <div class="results-section" style="margin-bottom: 24px;">
-                            <h3 class="section-title">🔌 ${name} (${power}W)</h3>
-                            <div class="results-grid">
-                                ${resultsGrid.innerHTML}
-                            </div>
-                        </div>
-                    `;
-                }
-            });
-            
-            resultsContainer.innerHTML = `
-                ${equipmentResultsHTML}
-                
-                <div class="results-section">
-                    <h2 class="section-title">📊 Total Usage & Cost Breakdown</h2>
-                    
-                    <div class="results-grid">
-                        <div class="result-item">
-                            <div class="result-label">On-Peak Hours/Day</div>
-                            <div class="result-value">${formatNumber(results.onPeakHours)}h</div>
-                        </div>
-                        <div class="result-item">
-                            <div class="result-label">Off-Peak Hours/Day</div>
-                            <div class="result-value">${formatNumber(results.offPeakHours)}h</div>
-                        </div>
-                        <div class="result-item">
-                            <div class="result-label">Daily kWh</div>
-                            <div class="result-value">${formatNumber(results.dailyKwh)}</div>
-                        </div>
-                        <div class="result-item">
-                            <div class="result-label">Weekly kWh</div>
-                            <div class="result-value">${formatNumber(results.weeklyKwh)}</div>
-                        </div>
-                        <div class="result-item">
-                            <div class="result-label">Monthly kWh</div>
-                            <div class="result-value">${formatNumber(results.monthlyKwh)}</div>
-                        </div>
-                        <div class="result-item">
-                            <div class="result-label">Yearly kWh</div>
-                            <div class="result-value">${formatNumber(results.yearlyKwh)}</div>
-                        </div>
-                        <div class="result-item">
-                            <div class="result-label">Daily Cost</div>
-                            <div class="result-value">$${formatNumber(results.dailyCost)}</div>
-                        </div>
-                        <div class="result-item">
-                            <div class="result-label">Weekly Cost</div>
-                            <div class="result-value">$${formatNumber(results.weeklyCost)}</div>
-                        </div>
-                        <div class="result-item">
-                            <div class="result-label">Monthly Cost</div>
-                            <div class="result-value">$${formatNumber(results.monthlyCost)}</div>
-                        </div>
-                        <div class="result-item">
-                            <div class="result-label">Yearly Cost</div>
-                            <div class="result-value">${formatNumber(results.yearlyCost)}</div>
-                        </div>
-                    </div>
-                    
-                    <div style="text-align: center; margin-top: 24px;">
-                        <button class="btn btn-primary" onclick="downloadPDF()">
-                            📄 Download Results as PDF
-                        </button>
-                    </div>
-                </div>
-            `;
-            
-            resultsContainer.style.display = 'block';
-        }
-
-        // PDF Generation
-        function downloadPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            
-            let yPosition = 20;
-            const pageHeight = doc.internal.pageSize.height;
-            const margin = 20;
-            
-            // Helper function to add new page if needed
-            function checkPageBreak(neededSpace) {
-                if (yPosition + neededSpace > pageHeight - margin) {
-                    doc.addPage();
-                    yPosition = 20;
-                }
-            }
-            
-            // Title
-            const config = window.elementSdk ? window.elementSdk.config : defaultConfig;
-            const title = config.app_title || defaultConfig.app_title;
-            doc.setFontSize(20);
-            doc.setFont(undefined, 'bold');
-            doc.text(title, margin, yPosition);
-            yPosition += 15;
-            
-            // Date
-            doc.setFontSize(12);
-            doc.setFont(undefined, 'normal');
-            doc.text(`Generated: ${new Date().toLocaleDateString()}`, margin, yPosition);
-            yPosition += 20;
-            
-            // Tariff Summary
-            checkPageBreak(30);
-            doc.setFontSize(16);
-            doc.setFont(undefined, 'bold');
-            doc.text('Tariff Summary', margin, yPosition);
-            yPosition += 10;
-            
-            doc.setFontSize(12);
-            doc.setFont(undefined, 'normal');
-            const onPeakRate = document.getElementById('on-peak-rate').value;
-            const offPeakRate = document.getElementById('off-peak-rate').value;
-            doc.text(`On-Peak Rate: ${onPeakRate} c/kWh`, margin, yPosition);
-            yPosition += 8;
-            doc.text(`Off-Peak Rate: ${offPeakRate} c/kWh`, margin, yPosition);
-            yPosition += 20;
-            
-            // Equipment Details
-            const equipmentCards = document.querySelectorAll('.equipment-card');
-            equipmentCards.forEach((card, index) => {
-                checkPageBreak(60);
-                
-                const name = card.querySelector('.equipment-name').value;
-                const power = card.querySelector('.equipment-power').value;
-                
-                doc.setFontSize(14);
-                doc.setFont(undefined, 'bold');
-                doc.text(`Equipment ${index + 1}: ${name}`, margin, yPosition);
-                yPosition += 10;
-                
-                doc.setFontSize(12);
-                doc.setFont(undefined, 'normal');
-                doc.text(`Power: ${power}W`, margin, yPosition);
-                yPosition += 8;
-                
-                // Equipment results
-                const results = card.querySelector('.equipment-results .results-grid');
-                if (results) {
-                    const resultItems = results.querySelectorAll('.result-item');
-                    resultItems.forEach(item => {
-                        const label = item.querySelector('.result-label').textContent;
-                        const value = item.querySelector('.result-value').textContent;
-                        doc.text(`${label}: ${value}`, margin + 10, yPosition);
-                        yPosition += 6;
-                    });
-                }
-                yPosition += 10;
-            });
-            
-            // Total Results
-            checkPageBreak(80);
-            doc.setFontSize(16);
-            doc.setFont(undefined, 'bold');
-            doc.text('Total Usage & Cost Breakdown', margin, yPosition);
-            yPosition += 15;
-            
-            const totalResults = document.querySelector('#results-container .results-grid');
-            if (totalResults) {
-                const resultItems = totalResults.querySelectorAll('.result-item');
-                doc.setFontSize(12);
-                doc.setFont(undefined, 'normal');
-                
-                resultItems.forEach(item => {
-                    checkPageBreak(8);
-                    const label = item.querySelector('.result-label').textContent;
-                    const value = item.querySelector('.result-value').textContent;
-                    doc.text(`${label}: ${value}`, margin, yPosition);
-                    yPosition += 8;
-                });
-            }
-            
-            // Footer
-            const footerText = config.footer_text || defaultConfig.footer_text;
-            doc.setFontSize(10);
-            doc.text(footerText, margin, pageHeight - 10);
-            
-            doc.save('ElectricityCostCalculatorResults.pdf');
-        }
-
-        // Event Listeners
-        document.getElementById('add-equipment-btn').addEventListener('click', addEquipment);
-        document.getElementById('calculate-btn').addEventListener('click', calculateCosts);
-        document.getElementById('fetch-tariffs-btn').addEventListener('click', openTariffModal);
-
-        document.getElementById('rounding-toggle').addEventListener('click', function() {
-            this.classList.toggle('active');
-            roundingEnabled = this.classList.contains('active');
-            
-            // If results are visible, recalculate to update the display
-            const resultsContainer = document.getElementById('results-container');
-            if (resultsContainer.style.display !== 'none') {
-                calculateCosts();
-            }
-        });
-
-        // Add event listeners for tariff day buttons
-        document.querySelectorAll('.tariff-type .day-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                this.classList.toggle('active');
-            });
-        });
-
-        // Initialize with one equipment
-        addEquipment();
-    </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99881531a63cf0c8',t:'MTc2MjEzMzE3OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
-  <script src="../../shared/js/hoa-calcs.js" data-preview-src="shared/js/hoa-calcs.js"></script>
-  <script>
-  (function ensureHOA(){
-    if (window.HOA && typeof window.HOA.pushToHarvest === 'function') return;
-    var defaults = [
-      'https://raw.githubusercontent.com/HydroOasis/Hydro-Oasis-Calculators/main/',
-      'https://cdn.jsdelivr.net/gh/HydroOasis/Hydro-Oasis-Calculators@main/',
-      'https://rawcdn.githack.com/HydroOasis/Hydro-Oasis-Calculators/main/'
-    ];
-
-    function gatherBases(){
-      if (Array.isArray(window.__HOA_PREVIEW_BASES__) && window.__HOA_PREVIEW_BASES__.length) {
-        return window.__HOA_PREVIEW_BASES__;
-      }
-      return defaults;
-    }
-
-    function toSrc(base){
-      return base.replace(/\/+$/, '/') + 'shared/js/hoa-calcs.js';
-    }
-
-    var seen = {};
-    var sources = gatherBases().map(toSrc).filter(function(src){
-      if (seen[src]) return false;
-      seen[src] = true;
-      return true;
-    });
-
-    defaults.map(toSrc).forEach(function(src){
-      if (!seen[src]) {
-        seen[src] = true;
-        sources.push(src);
-      }
-    });
-
-    function loadNext(){
-      if (window.HOA && typeof window.HOA.pushToHarvest === 'function') return;
-      if (!sources.length) {
-        console.error('Failed to load HOA shared utilities from all preview sources.');
-        return;
-      }
-      var src = sources.shift();
-      var script = document.createElement('script');
-      script.src = src;
-      script.onload = function(){
-        if (!window.HOA || typeof window.HOA.pushToHarvest !== 'function') {
-          console.error('HOA still not available after loading', src);
-          loadNext();
-        }
-      };
-      script.onerror = function(){
-        console.error('Failed to load HOA from', src);
-        loadNext();
-      };
-      document.head.appendChild(script);
-    }
-
-    loadNext();
-  })();
-  </script>
-  <script>
-  (function injectPreviewHOA(){
-    if (window.HOA && typeof window.HOA.fetchJSON === 'function') return;
-    console.warn('[Electricity] Falling back to inline HOA utilities for preview.');
-    window.HOA = (() => {
-      const isPreview = /github\.io|raw\.githubusercontent\.com|htmlpreview/i.test(location.href);
-      const DEFAULT_CONTEXT = { owner: 'HydroOasis', repo: 'Hydro-Oasis-Calculators', branch: 'main' };
-
-      const normalizeBranch = branch => branch
-        ? String(branch)
-            .replace(/^refs\/?heads\//i, '')
-            .replace(/^heads\//i, '')
-            .replace(/^origin\//i, '')
-        : branch;
-
-      function computeBases(){
-        if (!isPreview) return [];
-        if (Array.isArray(window.__HOA_PREVIEW_BASES__) && window.__HOA_PREVIEW_BASES__.length) {
-          return window.__HOA_PREVIEW_BASES__;
-        }
-        const ctx = window.__HOA_PREVIEW_CTX__ || DEFAULT_CONTEXT;
-        const branch = normalizeBranch(ctx.branch) || DEFAULT_CONTEXT.branch;
-        const bases = [
-          'https://raw.githubusercontent.com/' + ctx.owner + '/' + ctx.repo + '/' + branch + '/'
-        ];
-        if (branch.indexOf('/') === -1) {
-          bases.push('https://cdn.jsdelivr.net/gh/' + ctx.owner + '/' + ctx.repo + '@' + branch + '/');
-        }
-        bases.push('https://rawcdn.githack.com/' + ctx.owner + '/' + ctx.repo + '/' + branch + '/');
-        window.__HOA_PREVIEW_BASES__ = Array.from(new Set(bases));
-        return window.__HOA_PREVIEW_BASES__;
-      }
-
-      const PREVIEW_BASES = computeBases();
-
-      const DATA = {
-        waterProviders: '../../data/water_providers.json',
-        elecTariffs:    '../../data/electricity_tariffs.json',
-        nutrientPresets:'../../data/nutrient_presets.json',
-        recVent:        '../../Recommendations/ventilation.md',
-        recDehum:       '../../Recommendations/dehumidification.md'
-      };
-
-      const toRepoPath = path => path.replace(/^\/+/, '').replace(/^(\.\.\/)+/, '');
-
-      async function tryFetchJSON(targets){
-        let lastErr;
-        for (const target of targets){
-          try {
-            const res = await fetch(target, { cache: 'no-cache' });
-            if (!res.ok) throw new Error(`Fetch failed ${res.status} for ${target}`);
-            return await res.json();
-          } catch(err){
-            lastErr = err;
-          }
-        }
-        throw lastErr || new Error('Unable to fetch JSON');
-      }
-
-      async function tryFetchText(targets){
-        let lastErr;
-        for (const target of targets){
-          try {
-            const res = await fetch(target, { cache: 'no-cache' });
-            if (!res.ok) throw new Error(`Fetch failed ${res.status} for ${target}`);
-            return await res.text();
-          } catch(err){
-            lastErr = err;
-          }
-        }
-        throw lastErr || new Error('Unable to fetch text');
-      }
-
-      function buildFetchTargets(path){
-        const targets = [];
-        if (!isPreview) {
-          targets.push(path);
-          return targets;
-        }
-        const repoPath = toRepoPath(path);
-        PREVIEW_BASES.forEach(function(base){ targets.push(base + repoPath); });
-        targets.push(path);
-        return targets;
-      }
-
-      async function fetchJSON(path){
-        return tryFetchJSON(buildFetchTargets(path));
-      }
-
-      async function fetchText(path){
-        return tryFetchText(buildFetchTargets(path));
-      }
-
-      const HARVEST_KEY = 'hoa.harvest.payloads.v1';
-
-      function pushToHarvest(payload){
-        try{
-          const arr = JSON.parse(localStorage.getItem(HARVEST_KEY) || '[]');
-          arr.unshift(payload);
-          localStorage.setItem(HARVEST_KEY, JSON.stringify(arr.slice(0, 25)));
-          window.dispatchEvent(new CustomEvent('hoa-harvest-updated'));
-        }catch(e){ console.warn('pushToHarvest error', e); }
-      }
-
-      function getHarvestPayloads(){
-        try{ return JSON.parse(localStorage.getItem(HARVEST_KEY) || '[]'); }
-        catch{ return []; }
-      }
-
-      return {
-        DATA,
-        fetchJSON,
-        fetchText,
-        pushToHarvest,
-        getHarvestPayloads,
-        buildFetchTargets,
-        previewBases: PREVIEW_BASES.slice ? PREVIEW_BASES.slice() : []
-      };
-    })();
-  })();
-  </script>
-<script>
-/* ===== CEA calc core (drop-in) ===== */
-const CEA = (() => {
-  const BUS = document.createElement('div');
-  const on  = (evt, fn) => BUS.addEventListener(evt, fn);
-  const emit = (evt, detail) => BUS.dispatchEvent(new CustomEvent(evt,{detail}));
-
-  function getRunId() {
-    const k = 'cea.runId';
-    let id = localStorage.getItem(k);
-    if (!id) { id = 'RUN-' + Math.random().toString(36).slice(2,8).toUpperCase(); localStorage.setItem(k, id); }
-    return id;
+    background:transparent;
   }
-  function save(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch{} }
-  function load(key, fallback=null) { try { const v = localStorage.getItem(key); return v? JSON.parse(v): fallback; } catch{ return fallback; } }
+  #ecalc *{ margin:0; padding:0; box-sizing:border-box; }
 
-  return { on, emit, getRunId, save, load };
+  #ecalc .container{
+    width:100%; max-width:1100px; margin:18px auto; padding:20px;
+    background:var(--card); border:1px solid var(--card-border); border-radius:16px;
+    box-shadow:0 6px 20px rgba(0,0,0,.06);
+    position:relative; overflow:hidden;
+  }
+  #ecalc .container>*{ position:relative; z-index:2; }
+  #ecalc .wm-img{ position:absolute; right:-28px; bottom:-28px; width:260px; opacity:.06; pointer-events:none; user-select:none; z-index:0; filter:saturate(.95) contrast(.95); }
+  @media (min-width:768px){ #ecalc .wm-img{ width:320px; } }
+
+  #ecalc .header{ text-align:center; padding:30px 16px 22px; margin:0 0 16px; }
+  #ecalc .header h1{ margin:0 0 6px; font-size:clamp(26px,3.2vw,36px); font-weight:800; color:var(--heading); line-height:1.2; font-family:'Inter',system-ui,sans-serif; }
+  #ecalc .header .subtitle{ font-size:14px; font-weight:500; color:#456E62; }
+  #ecalc .muted{ font-size:.9rem; color:#6B7C77; }
+
+  #ecalc .section{ background:#fff; border:1px solid var(--sec-border); border-radius:12px; padding:16px; margin-bottom:16px; }
+  #ecalc .section-title{ display:flex; align-items:center; gap:8px; margin:2px 0 10px; font-size:18px; font-weight:800; color:var(--heading); font-family:'Inter',system-ui,sans-serif; }
+
+  #ecalc .form-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:14px; margin-bottom:10px; position:relative; z-index:1; }
+  #ecalc .form-group{ display:flex; flex-direction:column; }
+  #ecalc .form-group label{ font-weight:700; color:var(--heading); margin-bottom:6px; font-size:.95em; }
+  #ecalc .form-group input, #ecalc .form-group select{
+    padding:12px; border:1px solid #D1D1D1; border-radius:10px; font-size:16px; background:#fff; color:#31473a;
+    transition: box-shadow .12s ease, border-color .12s ease;
+  }
+  #ecalc .form-group input:focus, #ecalc .form-group select:focus{ outline:none; border-color:var(--heading); box-shadow:0 0 0 3px rgba(45,92,78,.18); }
+
+  /* ===== Toggle (clear enabled state) ===== */
+  #ecalc .toggle-container{ display:flex; align-items:center; gap:10px; }
+  #ecalc .toggle{
+    position:relative; width:52px; height:28px; border-radius:14px; cursor:pointer;
+    background:#cbd5e1; border:1px solid #94a3b8;
+    transition:background-color .15s ease, transform .06s ease, border-color .15s ease;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,.04);
+  }
+  #ecalc .toggle:active{ transform:scale(.98); }
+  #ecalc .toggle.active{
+    background:#16a34a; border-color:#0f8a3a;
+    box-shadow:0 0 0 3px rgba(22,163,74,.18) inset;
+  }
+  #ecalc .toggle-slider{
+    position:absolute; top:3px; left:3px; width:22px; height:22px; background:#fff;
+    border-radius:50%; transition:transform .15s ease; box-shadow:0 1px 2px rgba(0,0,0,.2);
+  }
+  #ecalc .toggle.active .toggle-slider{ transform:translateX(24px); }
+  #ecalc .toggles-row{ display:flex; flex-wrap:wrap; gap:16px; align-items:center; margin-top:8px; }
+
+  /* Buttons */
+  #ecalc .btn{ display:inline-flex; align-items:center; justify-content:center; padding:12px 18px; border:1px solid transparent; border-radius:12px; font-size:16px; font-weight:700; cursor:pointer; transition:.15s; gap:8px; text-align:center; white-space:nowrap; font-family:'Inter',system-ui,sans-serif; box-shadow:0 1px 0 rgba(0,0,0,.03); }
+  #ecalc .btn:hover{ filter:brightness(1.03); }
+  #ecalc .btn:active{ transform:translateY(1px); }
+  #ecalc .btn-primary{ background:var(--btn); color:var(--btn-text); border-color:var(--btn); }
+  #ecalc .btn-primary:hover{ background:var(--btn-hover); border-color:var(--btn-hover); }
+  #ecalc .btn-secondary{ background:#f3f5f1; color:#1f3b33; border-color:#d9e2de; }
+  #ecalc .btn-secondary:hover{ background:#e8eee9; }
+  #ecalc .btn-success{ background:#10b981; color:#fff; border-color:#10b981; }
+  #ecalc .btn-success:hover{ background:#059669; border-color:#059669; }
+  #ecalc .btn-danger{ background:#ef4444; color:#fff; border-color:#ef4444; }
+  #ecalc .btn-danger:hover{ background:#dc2626; border-color:#dc2626; }
+
+  /* Shared “×” chip */
+  #ecalc .btn-x, #ecalc .remove-day-group{
+    background:#ef4444; color:#fff; border:none; border-radius:10px; padding:6px 10px; font-size:14px; cursor:pointer;
+    display:inline-flex; align-items:center; justify-content:center; line-height:1; transition: transform .1s ease, filter .15s ease, background-color .15s ease;
+  }
+  #ecalc .btn-x:hover, #ecalc .remove-day-group:hover{ background:#dc2626; }
+  #ecalc .btn-x:active, #ecalc .remove-day-group:active{ transform:scale(.96); }
+
+  /* ===== Time ranges & day selectors ===== */
+  #ecalc .time-range{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:10px; padding:12px; background:#fcfaf3; border-radius:8px; border:1px solid #e3e2d7; }
+  #ecalc .time-row{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; width:100%; min-width:0; }
+  #ecalc .time-input{ padding:10px 12px; border:1px solid #c4c8b8; border-radius:8px; font-size:14px; background:#fff; color:#31473a; transition: box-shadow .12s ease, border-color .12s ease; min-width:110px; }
+  #ecalc .time-input:focus{ outline:none; border-color:var(--heading); box-shadow:0 0 0 3px rgba(45,92,78,.18); }
+
+  #ecalc .day-range-group{
+    border:1px dashed #e3e2d7; border-radius:10px; padding:12px; margin-bottom:12px; background:#fffef8; position:relative;
+    overflow:hidden; /* keep children inside rounded corners */
+  }
+  #ecalc .days-row{ display:flex; align-items:center; gap:8px; justify-content:space-between; flex-wrap:wrap; width:100%; }
+
+  /* Desktop: 7 even columns that NEVER overflow */
+  #ecalc .days-selector{
+    display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:8px; flex:1; width:100%; min-width:0;
+  }
+  #ecalc .day-btn{
+    display:flex; align-items:center; justify-content:center; width:100%;
+    height:44px; line-height:1; white-space:nowrap;
+    padding:0 10px; border:1px solid #c4c8b8; background:#fff; border-radius:8px;
+    cursor:pointer; font-size:14px; font-weight:700; color:#31473a;
+    transition: background-color .12s ease, border-color .12s ease, transform .06s ease;
+    text-align:center; overflow:hidden; text-overflow:ellipsis;
+  }
+  #ecalc .day-btn:hover{ background:#f3f7f5; border-color:#b8c2b5; }
+  #ecalc .day-btn:active{ transform:scale(.98); }
+  #ecalc .day-btn.active{ background:var(--btn); color:#fff; border-color:var(--btn); }
+
+  /* Hide the literal "to" when All Day is toggled on */
+  #ecalc .time-range[data-all-day="1"] .time-row .to,
+  #ecalc .time-range[data-allday="1"] .time-row .to,
+  #ecalc .time-row .toggle.active ~ .to{ display:none; }
+
+  /* Per-equipment card */
+  #ecalc .equipment-card{ position:relative; border:1px solid var(--sec-border); border-radius:12px; padding:14px; margin-top:12px; background:#fff; }
+  #ecalc .equipment-card > .remove-btn{ position:absolute; top:10px; right:10px; }
+  #ecalc .equipment-header{ display:flex; align-items:center; justify-content:space-between; }
+  #ecalc .equipment-title{ font-weight:800; color:#2f3e39; font-family:'Inter',system-ui; }
+
+  #ecalc .results-section{ border:1px solid var(--sec-border); border-radius:12px; padding:12px; background:#fff; margin-top:14px; }
+  #ecalc .results-section .section-title{ display:flex; align-items:center; gap:8px; margin:0 0 8px; background:var(--sec-head-bg); color:var(--sec-head-text); padding:8px 10px; border-radius:9px; font-weight:800; font-size:14px; font-family:'Inter',system-ui,sans-serif; }
+  #ecalc .results-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; margin-top:8px; }
+  #ecalc .result-item{ background:var(--tile-bg); border:1px solid var(--tile-border); border-radius:10px; padding:10px 12px; text-align:center; box-shadow:0 2px 6px rgba(0,0,0,.03); }
+  #ecalc .result-label{ font-size:12px; color:var(--tile-label); font-weight:700; letter-spacing:.2px; }
+  #ecalc .result-value{ margin-top:4px; font-size:18px; font-weight:800; color:var(--tile-value); }
+
+  #ecalc .error-message{ color:var(--err); background:#fef2f2; border:1px solid var(--err); padding:12px; border-radius:8px; margin-top:10px; font-size:14px; font-weight:700; text-align:left; }
+
+  #ecalc .modal{ position:fixed; inset:0; background:rgba(0,0,0,.5); display:none; align-items:center; justify-content:center; z-index:1000; }
+  #ecalc .modal-content{ background:#fff; padding:24px; border-radius:12px; max-width:560px; width:90%; max-height:80%; overflow-y:auto; border:1px solid var(--card-border); position:relative; z-index:1001; box-shadow:0 6px 20px rgba(0,0,0,.12); }
+  #ecalc .modal-header{ display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+  #ecalc .modal-title{ font-size:1.15rem; font-weight:800; color:var(--heading); font-family:'Inter',system-ui,sans-serif; }
+  #ecalc .close-btn{ background:none; border:none; font-size:24px; cursor:pointer; color:var(--text); }
+  #ecalc .modal.show{ display:flex; }
+  #ecalc .close-btn:hover{ filter:brightness(1.2); }
+  #ecalc .close-btn:active{ transform:scale(.96); }
+
+  /* ======== Mobile polish (match Harvest calc) ======== */
+  @media (max-width:768px){
+    #ecalc{ padding-left:16px; padding-right:16px; }
+    #ecalc .container{ max-width:680px; margin:14px auto; padding:14px; border-radius:14px; }
+    #ecalc .header{ padding:18px 8px 10px; }
+    #ecalc .header h1{ font-size:clamp(22px,5.2vw,28px); }
+    #ecalc .header .subtitle{ font-size:13px; }
+    #ecalc .section{ padding:14px; margin-bottom:14px; }
+    #ecalc .form-grid{ grid-template-columns:1fr; gap:10px; }
+    #ecalc .time-range{ flex-direction:column; align-items:stretch; gap:8px; }
+    #ecalc .time-row{ gap:8px; }
+    #ecalc .time-row span{ order:2; }
+    #ecalc .time-input{ width:100%; font-size:16px; }
+    #ecalc .toggles-row{ gap:12px; }
+    #ecalc .btn{ padding:12px 14px; font-size:15px; width:100%; }
+    #ecalc .group-actions{ flex-direction:column; }
+    #ecalc .results-grid{ grid-template-columns:1fr 1fr; gap:8px; }
+
+    /* 3 equal columns; zero min width to avoid overflow */
+    #ecalc .days-selector{ grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
+    #ecalc .day-btn{ height:48px; font-size:16px; }
+
+    #ecalc .remove-day-group{ margin-left:auto; }
+    #ecalc .wm-img{ display:none; }
+    #ho-watermark{ display:none; }
+
+    /* sticky CTA like Harvest calc */
+    #ecalc .cta-row{ position:sticky; bottom:8px; z-index:20; background:transparent; padding-top:6px; }
+    #ecalc .cta-row .btn{ border-radius:14px; }
+
+    /* friendlier modal on phones */
+    #ecalc .modal-content{ width:94%; padding:16px; border-radius:14px; }
+  }
+
+  #ho-watermark{ position:fixed; right:16px; bottom:12px; background:rgba(45,92,78,.08); color:#2D5C4E; border:1px solid #E7E5DC; border-radius:10px; padding:6px 10px; font:600 12px/1 'Inter',system-ui,sans-serif; backdrop-filter:blur(2px); z-index:9999; pointer-events:none; }
+  @view-transition { navigation:auto; }
+</style>
+
+</head>
+<body>
+<div id="ecalc">
+  <div class="container">
+    <img class="wm-img" src="https://cdn.shopify.com/s/files/1/0709/5261/6094/files/Cactus_Mascot.png?v=1750645317" alt="">
+    <div class="header">
+      <h1 id="app-title">Electricity Cost Calculator</h1>
+      <p class="subtitle">Calculate your energy usage and cost breakdown</p>
+    </div>
+
+    <!-- ========== Rate Configuration ========== -->
+    <div class="section">
+      <h2 class="section-title">⚡ Rate Configuration</h2>
+      <p class="muted" id="tariff-meta-line" style="margin-bottom:8px;display:none;"></p>
+
+      <div class="form-grid" id="rate-grid">
+        <div class="form-group">
+          <label for="on-peak-rate">On-Peak Rate (c/kWh)</label>
+          <input type="number" id="on-peak-rate" min="0" step="0.0001" value="25.5" placeholder="e.g. 38.52">
+        </div>
+        <div class="form-group">
+          <label for="off-peak-rate">Off-Peak Rate (c/kWh)</label>
+          <input type="number" id="off-peak-rate" min="0" step="0.0001" value="15.2" placeholder="e.g. 19.26">
+        </div>
+        <!-- Shoulder rate slot injected when enabled -->
+      </div>
+
+      <div class="toggles-row">
+        <div class="toggle-container">
+          <span>Round to 2 decimals</span>
+          <div class="toggle active" id="rounding-toggle"><div class="toggle-slider"></div></div>
+        </div>
+
+        <div class="toggle-container" title="Enable a Shoulder period with its own rate and schedule">
+          <span>Enable Shoulder</span>
+          <div class="toggle" id="shoulder-toggle"><div class="toggle-slider"></div></div>
+        </div>
+      </div>
+
+      <button class="btn btn-secondary" id="fetch-tariffs-btn" style="margin-top:16px;">📋 Select Tariff</button>
+      <span id="selected-plan-title" class="muted" style="margin-left:10px;display:none;"></span>
+    </div>
+
+    <!-- ========== Tariff Schedule ========== -->
+    <div class="section" id="tariff-schedule">
+      <h2 class="section-title" id="tariff-schedule-title">📅 Tariff Schedule</h2>
+
+      <!-- ON-PEAK -->
+      <div class="tariff-type" data-type="on-peak" id="on-peak-block">
+        <h3 id="on-peak-heading" style="color:#dc2626;margin-bottom:16px;">On-Peak Times</h3>
+
+        <div class="tariff-groups" id="on-peak-groups">
+          <div class="day-range-group">
+            <div class="days-row">
+              <div class="days-selector">
+                <button class="day-btn active" data-day="1">Mon</button>
+                <button class="day-btn active" data-day="2">Tue</button>
+                <button class="day-btn active" data-day="3">Wed</button>
+                <button class="day-btn active" data-day="4">Thu</button>
+                <button class="day-btn active" data-day="5">Fri</button>
+                <button class="day-btn" data-day="6">Sat</button>
+                <button class="day-btn" data-day="0">Sun</button>
+              </div>
+              <button class="remove-day-group" onclick="removeDayRange(this)" title="Remove this day range">×</button>
+            </div>
+
+            <div class="tariff-ranges">
+              <div class="time-range">
+                <div class="time-row">
+                  <input type="time" class="time-input" value="15:00">
+                  <span>to</span>
+                  <input type="time" class="time-input" value="21:00">
+                  <!-- HOA All-Day toggle -->
+                  <div class="toggle-container" style="margin-left:auto;">
+                    <span>All Day</span>
+                    <div class="toggle all-day-toggle"><div class="toggle-slider"></div></div>
+                  </div>
+                  <button class="btn-x tr-remove" onclick="removeTimeRange(this)" title="Remove time range" style="display:none;">×</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="group-actions" style="display:flex;gap:8px;margin-top:10px;">
+              <button class="btn btn-secondary" onclick="addTimeRangeToGroup(this)">+ Add Time Range</button>
+              <button class="btn btn-secondary outline" onclick="addDayRange('on-peak-groups')">+ Add Day Range</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- OFF-PEAK -->
+      <div class="tariff-type" data-type="off-peak" id="off-peak-block" style="margin-top:24px;">
+        <h3 id="off-peak-heading" style="color:#059669;margin-bottom:16px;">Off-Peak Times</h3>
+
+        <div class="tariff-groups" id="off-peak-groups">
+          <div class="day-range-group">
+            <div class="days-row">
+              <div class="days-selector">
+                <button class="day-btn active" data-day="1">Mon</button>
+                <button class="day-btn active" data-day="2">Tue</button>
+                <button class="day-btn active" data-day="3">Wed</button>
+                <button class="day-btn active" data-day="4">Thu</button>
+                <button class="day-btn active" data-day="5">Fri</button>
+                <button class="day-btn active" data-day="6">Sat</button>
+                <button class="day-btn active" data-day="0">Sun</button>
+              </div>
+              <button class="remove-day-group" onclick="removeDayRange(this)" title="Remove this day range">×</button>
+            </div>
+
+            <div class="tariff-ranges">
+              <div class="time-range">
+                <div class="time-row">
+                  <input type="time" class="time-input" value="21:00">
+                  <span>to</span>
+                  <input type="time" class="time-input" value="15:00">
+                  <div class="toggle-container" style="margin-left:auto;">
+                    <span>All Day</span>
+                    <div class="toggle all-day-toggle"><div class="toggle-slider"></div></div>
+                  </div>
+                  <button class="btn-x tr-remove" onclick="removeTimeRange(this)" title="Remove time range" style="display:none;">×</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="group-actions" style="display:flex;gap:8px;margin-top:10px;">
+              <button class="btn btn-secondary" onclick="addTimeRangeToGroup(this)">+ Add Time Range</button>
+              <button class="btn btn-secondary outline" onclick="addDayRange('off-peak-groups')">+ Add Day Range</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SHOULDER dynamically injected -->
+    </div>
+
+    <div id="tariff-errors"></div>
+
+    <!-- ========== Equipment ========== -->
+    <div class="section">
+      <h2 class="section-title">🔌 Equipment</h2>
+
+      <div id="equipment-list"></div>
+      <div id="equipment-errors"></div>
+
+      <button class="btn btn-primary" id="add-equipment-btn" style="display:block;margin:16px auto 0;">
+        + Add Equipment
+      </button>
+    </div>
+
+    <!-- Calculate (sticky on mobile) -->
+    <div class="cta-row" style="text-align:center;margin:24px 0 8px;">
+      <button class="btn btn-success" id="calculate-btn" style="font-size:18px;padding:16px 32px;max-width:680px; width:100%;">🧮 Calculate Costs</button>
+    </div>
+
+    <!-- Results -->
+    <div id="results-container" style="display:none;"></div>
+  </div>
+
+  <!-- Tariff Modal -->
+  <div class="modal" id="tariff-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Select Tariff</h3>
+        <button class="close-btn" onclick="closeTariffModal()">×</button>
+      </div>
+
+      <div class="form-group" style="margin-bottom:10px;">
+        <label for="retailer-select">Retailer</label>
+        <select id="retailer-select"><option value="">Select Retailer</option></select>
+      </div>
+
+      <div class="form-group" style="margin-bottom:10px;">
+        <label for="plan-select">Plan</label>
+        <select id="plan-select"><option value="">Select Plan</option></select>
+      </div>
+
+      <div class="form-group" style="margin-bottom:10px;">
+        <label for="region-select">State/Network</label>
+        <select id="region-select"><option value="">Select Region</option></select>
+      </div>
+
+      <div style="display:flex;gap:12px;margin-top:18px;flex-wrap:wrap;">
+        <button class="btn btn-primary" style="flex:1 1 180px;" onclick="applySelectedTariff()">Apply Selected Plan</button>
+        <button class="btn" style="flex:1 1 120px;" onclick="closeTariffModal()">Close</button>
+      </div>
+
+      <div id="fetch-status" style="margin-top:16px;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- (Cloudflare anti-bot iframe preserved) -->
+<script>
+(function(){
+  function c(){
+    var b=a.contentDocument||a.contentWindow.document;
+    if(b){
+      var d=b.createElement('script');
+      d.innerHTML="window.__CF$cv$params={r:'99881531a63cf0c8',t:'MTc2MjEzMzE3OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";
+      b.getElementsByTagName('head')[0].appendChild(d)
+    }
+  }
+  if(document.body){
+    var a=document.createElement('iframe');
+    a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';
+    document.body.appendChild(a);
+    if('loading'!==document.readyState) c();
+    else if(window.addEventListener) document.addEventListener('DOMContentLoaded',c);
+    else{
+      var e=document.onreadystatechange||function(){};
+      document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}
+    }
+  }
 })();
 </script>
-  <script>
-async function initElecTariffs(){
-  const $region   = document.getElementById('region-select');
-  const $retailer = document.getElementById('retailer-select');
-  const $plan     = document.getElementById('plan-select');
 
-  if (!$region || !$retailer || !$plan) {
-    console.warn('[Elec] Tariff selectors not found in modal.');
-    return;
-  }
+<div id="ho-watermark">Hydro Oasis • Electricity Cost Calculator</div>
 
-  // Resolve a deterministic tariffs URL right now (no async race)
-  const isPreview = /github\.io|raw\.githubusercontent\.com|htmlpreview/i.test(location.href);
-  const previewBases = (window.HOA && Array.isArray(HOA.previewBases) && HOA.previewBases.length)
-    ? HOA.previewBases
-    : (Array.isArray(window.__HOA_PREVIEW_BASES__) ? window.__HOA_PREVIEW_BASES__ : []);
-  const previewCtx = (window.HOA && HOA.previewContext) || window.__HOA_PREVIEW_CTX__ || { owner: 'HydroOasis', repo: 'Hydro-Oasis-Calculators', branch: 'main' };
+<script>
+/* ========= Config ========= */
+const defaultConfig = { app_title: "Electricity Cost Calculator", footer_text: "Hydro Oasis • Electricity Cost Calculator" };
+let roundingEnabled = true;
+let shoulderEnabled = false;
 
-  function normalizeBranch(branch){
-    if (!branch) return branch;
-    return String(branch)
-      .replace(/^refs\/?heads\//i, '')
-      .replace(/^heads\//i, '')
-      .replace(/^origin\//i, '');
-  }
+/* ========= External tariffs ========= */
+const TARIFFS_URL = "https://cdn.shopify.com/s/files/1/0709/5261/6094/files/Electricity_Tariffs.json?v=1763176275";
+let tariffsData = null;
+const regionLabels = { vic:"VIC", tas:"TAS", citipower:"VIC – CitiPower", powercor:"VIC – Powercor", jemena:"VIC – Jemena", ausnet:"VIC – AusNet", united:"VIC – United Energy" };
 
-  function buildBase(ctx, kind){
-    if (!ctx) return null;
-    var branch = normalizeBranch(ctx.branch || previewCtx.branch) || 'main';
-    if (kind === 'raw') {
-      return 'https://raw.githubusercontent.com/' + ctx.owner + '/' + ctx.repo + '/' + branch + '/';
-    }
-    if (kind === 'cdn') {
-      if (branch.indexOf('/') !== -1) return null;
-      return 'https://cdn.jsdelivr.net/gh/' + ctx.owner + '/' + ctx.repo + '@' + branch + '/';
-    }
-    if (kind === 'githack') {
-      return 'https://rawcdn.githack.com/' + ctx.owner + '/' + ctx.repo + '/' + branch + '/';
-    }
-    return null;
-  }
-
-  function findBase(pattern, fallbackKind){
-    const match = previewBases.find(function(base){ return pattern.test(base); });
-    if (match) return match;
-    return buildBase(previewCtx, fallbackKind);
-  }
-
-  function join(base, path){
-    if (!base) return null;
-    return base.replace(/\/+$/, '/') + path.replace(/^\/+/, '');
-  }
-
-  const RAW = join(findBase(/raw\.githubusercontent\.com/, 'raw'), 'data/electricity_tariffs.json');
-  const CDN_BASE = findBase(/cdn\.jsdelivr\.net/, 'cdn');
-  const CDN = CDN_BASE ? join(CDN_BASE, 'data/electricity_tariffs.json') : null;
-  const GITHACK_BASE = findBase(/rawcdn\.githack\.com/, 'githack');
-  const GITHACK = GITHACK_BASE ? join(GITHACK_BASE, 'data/electricity_tariffs.json') : null;
-  const LOCAL = '../../data/electricity_tariffs.json';
-  const url = (window.HOA && HOA.DATA && HOA.DATA.elecTariffs) ||
-              (isPreview ? RAW : LOCAL);
-  console.log('[Elec] Tariffs URL resolved →', url);
-
-  const embeddedTariffs = (() => {
-    const node = document.getElementById('electricity-tariffs-fallback');
-    if (!node) return null;
-    try {
-      const parsed = JSON.parse(node.textContent || node.innerText || '[]');
-      return Array.isArray(parsed) ? parsed : null;
-    } catch(err) {
-      console.error('[Elec] Failed to parse embedded tariffs fallback', err);
-      return null;
-    }
-  })();
-
-  let tariffs = [];
-  let lastError;
-  try {
-    // Use HOA.fetchJSON if available, else bare fetch
-    const fetcher = (window.HOA && HOA.fetchJSON) ? HOA.fetchJSON : (async u => {
-      const r = await fetch(u, { cache: 'no-cache' });
-      if (!r.ok) throw new Error('Fetch failed '+r.status+' for '+u);
-      return r.json();
-    });
-    tariffs = await fetcher(url);
-    // If preview + RAW unexpectedly fails, try CDN once
-  } catch(e1){
-    lastError = e1;
-    if (isPreview) {
-      if (CDN) {
-        try {
-          console.warn('[Elec] RAW failed, trying CDN once…');
-          const r2 = await fetch(CDN, { cache: 'no-cache' });
-          if (!r2.ok) throw new Error('CDN fetch failed '+r2.status);
-          tariffs = await r2.json();
-        } catch(e2){
-          lastError = e2;
-          if (GITHACK) {
-            try {
-              console.warn('[Elec] CDN failed, trying githack…');
-              const r3 = await fetch(GITHACK, { cache: 'no-cache' });
-              if (!r3.ok) throw new Error('githack fetch failed '+r3.status);
-              tariffs = await r3.json();
-            } catch(e3){
-              lastError = e3;
-              console.error('Tariffs fetch failed (preview RAW/CDN/githack).', e1, e2, e3);
-            }
-          } else {
-            console.error('Tariffs fetch failed (preview RAW/CDN).', e1, e2);
-          }
-        }
-      } else if (GITHACK) {
-        try {
-          console.warn('[Elec] RAW failed, trying githack…');
-          const r3 = await fetch(GITHACK, { cache: 'no-cache' });
-          if (!r3.ok) throw new Error('githack fetch failed '+r3.status);
-          tariffs = await r3.json();
-        } catch(e3){
-          lastError = e3;
-          console.error('Tariffs fetch failed (preview RAW/githack).', e1, e3);
-        }
+function validateTariffsSchema(json){
+  if (!json || typeof json !== "object") throw new Error("Top-level JSON must be an object.");
+  if (!json.retailers || typeof json.retailers !== "object") throw new Error("Invalid JSON structure: expected { retailers: { ... } }");
+  Object.entries(json.retailers).forEach(([key, retailer])=>{
+    if (!retailer.displayName) throw new Error(`Retailer "${key}" missing displayName`);
+    if (!retailer.plans || typeof retailer.plans !== "object") throw new Error(`Retailer "${key}" missing plans`);
+    Object.entries(retailer.plans).forEach(([pid, plan])=>{
+      if (!plan.title) throw new Error(`Plan "${pid}" missing title`);
+      if (!plan.byRegion || typeof plan.byRegion !== "object") throw new Error(`Plan "${pid}" missing byRegion`);
+      Object.entries(plan.byRegion).forEach(([rid, rates])=>{
+        if (typeof rates.on !== "number" || typeof rates.off !== "number") throw new Error(`Plan "${pid}" region "${rid}" rates must have numeric "on" and "off"`);
+        if (rates.shoulder != null && typeof rates.shoulder !== "number") throw new Error(`Plan "${pid}" region "${rid}" "shoulder" must be numeric when provided`);
+      });
+      if (!plan.windows || typeof plan.windows !== "object") throw new Error(`Plan "${pid}" missing windows`);
+      ["on","off"].forEach(bucket=>{
+        if (!Array.isArray(plan.windows[bucket])) throw new Error(`Plan "${pid}" windows.${bucket} must be an array`);
+        plan.windows[bucket].forEach((w,i)=>{
+          if (!w.start || !w.end || !Array.isArray(w.days)) throw new Error(`Plan "${pid}" windows.${bucket}[${i}] must have start, end, days[]`);
+        });
+      });
+      if (plan.windows.shoulder){
+        if (!Array.isArray(plan.windows.shoulder)) throw new Error(`Plan "${pid}" windows.shoulder must be an array`);
+        plan.windows.shoulder.forEach((w,i)=>{
+          if (!w.start || !w.end || !Array.isArray(w.days)) throw new Error(`Plan "${pid}" windows.shoulder[${i}] must have start, end, days[]`);
+        });
       }
-    } else {
-      console.error('Tariffs fetch failed (LOCAL).', e1);
-    }
-  }
+    });
+  });
+}
 
-  if ((!Array.isArray(tariffs) || tariffs.length === 0) && embeddedTariffs && embeddedTariffs.length) {
-    console.warn('[Elec] Using embedded tariffs fallback for preview.');
-    tariffs = embeddedTariffs;
+async function fetchTariffsOnce(){
+  if (tariffsData) return tariffsData;
+  const status = document.getElementById("fetch-status");
+  try{
+    if (status) status.innerHTML = "Loading tariffs…";
+    const res = await fetch(TARIFFS_URL, { cache:"no-store" });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const json = await res.json();
+    validateTariffsSchema(json);
+    tariffsData = json;
+    if (status) status.innerHTML = "<span style='color:#10b981;'>Tariffs loaded.</span>";
+    return tariffsData;
+  }catch(err){
+    if (status) status.innerHTML = `<div class="error-message">Failed to load tariffs file at ${TARIFFS_URL}: ${err.message}</div>`;
+    throw err;
   }
+}
 
-  if (!Array.isArray(tariffs) || tariffs.length === 0) {
-    const $err = document.getElementById('elecFetchError');
-    if ($err) {
-      $err.textContent = 'Could not load electricity tariffs data.';
-      $err.style.display = 'block';
+/* ========= SDK init ========= */
+function initSDK(){
+  if (window.elementSdk){
+    window.elementSdk.init({
+      defaultConfig,
+      onConfigChange:(config)=>{
+        const t=document.getElementById('app-title');
+        if (t) t.textContent = config.app_title || defaultConfig.app_title;
+      }
+    });
+  }
+}
+
+/* ========= Shoulder UI ========= */
+function addShoulderRateInput(){
+  if (document.getElementById('shoulder-rate')) return;
+  const grid=document.getElementById('rate-grid');
+  const div=document.createElement('div');
+  div.className='form-group';
+  div.innerHTML = `
+    <label for="shoulder-rate">Shoulder Rate (c/kWh)</label>
+    <input type="number" id="shoulder-rate" min="0" step="0.0001" value="28" placeholder="e.g. 30.00">
+  `;
+  grid.appendChild(div);
+}
+function removeShoulderRateInput(){
+  const el=document.getElementById('shoulder-rate');
+  if (el) el.closest('.form-group').remove();
+}
+
+function addShoulderSection(){
+  if (document.getElementById('shoulder-block')) return;
+
+  let schedule = document.getElementById('tariff-schedule');
+  if (!schedule) {
+    const titleEl = document.getElementById('tariff-schedule-title');
+    schedule = titleEl ? titleEl.closest('.section') : null;
+  }
+  if (!schedule) return;
+
+  const block = document.createElement('div');
+  block.className = 'tariff-type';
+  block.dataset.type = 'shoulder';
+  block.id = 'shoulder-block';
+  block.style.marginTop = '24px';
+  block.innerHTML = `
+    <h3 id="shoulder-heading" style="color:#d97706;margin-bottom:16px;">Shoulder Times</h3>
+    <div class="tariff-groups" id="shoulder-groups">
+      <div class="day-range-group">
+        <div class="days-row">
+          <div class="days-selector">
+            <button class="day-btn active" data-day="1">Mon</button>
+            <button class="day-btn active" data-day="2">Tue</button>
+            <button class="day-btn active" data-day="3">Wed</button>
+            <button class="day-btn active" data-day="4">Thu</button>
+            <button class="day-btn active" data-day="5">Fri</button>
+            <button class="day-btn" data-day="6">Sat</button>
+            <button class="day-btn" data-day="0">Sun</button>
+          </div>
+          <button class="remove-day-group" onclick="removeDayRange(this)" title="Remove this day range">×</button>
+        </div>
+        <div class="tariff-ranges"></div>
+        <div class="group-actions" style="display:flex;gap:8px;margin-top:10px;">
+          <button class="btn btn-secondary" onclick="addTimeRangeToGroup(this)">+ Add Time Range</button>
+          <button class="btn btn-secondary outline" onclick="addDayRange('shoulder-groups')">+ Add Day Range</button>
+        </div>
+      </div>
+    </div>`;
+  schedule.appendChild(block);
+  activateDayToggles(block);
+  refreshGroupButtons(block.querySelector('#shoulder-groups'));
+}
+function removeShoulderSection(){
+  const block=document.getElementById('shoulder-block');
+  if (block) block.remove();
+}
+function setShoulderUI(active){
+  shoulderEnabled = !!active;
+  const shToggle=document.getElementById('shoulder-toggle');
+  if (shToggle) shToggle.classList.toggle('active', shoulderEnabled);
+  if (shoulderEnabled){ addShoulderRateInput(); addShoulderSection(); }
+  else { removeShoulderRateInput(); removeShoulderSection(); }
+}
+
+/* ========= Day toggles ========= */
+function activateDayToggles(scope=document){
+  scope.querySelectorAll('.day-btn').forEach(btn=>{
+    btn.addEventListener('click', function(){ this.classList.toggle('active'); });
+  });
+}
+
+/* All-day helpers */
+function isAllDayRange(start, end){ return (start === '00:00' && (end === '23:59' || end === '00:00')); }
+function bindAllDayToggle(toggleEl){
+  const tr = toggleEl.closest('.time-range');
+  const [startEl, endEl] = tr.querySelectorAll('.time-input');
+
+  const setState = (on) => {
+    toggleEl.classList.toggle('active', on);
+    if (on){
+      startEl.value = '00:00';
+      endEl.value   = '00:00';
+      startEl.disabled = true;
+      endEl.disabled   = true;
+      tr.dataset.allDay = '1';
+    }else{
+      startEl.disabled = false;
+      endEl.disabled   = false;
+      tr.dataset.allDay = '';
     }
-    if (lastError) {
-      console.error('Unable to load tariffs data.', lastError);
-    }
-    alert('Unable to load tariffs data. Please try again later.');
+  };
+
+  const initiallyAllDay = isAllDayRange(startEl.value, endEl.value) || tr.dataset.allDay === '1';
+  setState(initiallyAllDay);
+
+  toggleEl.addEventListener('click', () => {
+    const nowOn = !toggleEl.classList.contains('active');
+    setState(nowOn);
+  });
+}
+function wireAllDayToggles(scope){ scope.querySelectorAll('.time-range .all-day-toggle').forEach(bindAllDayToggle); }
+
+/* Show/hide X only if >1 time range */
+function updateTimeRangeXs(container){
+  container.querySelectorAll('.tariff-ranges, .equipment-ranges').forEach(ranges=>{
+    const rows = ranges.querySelectorAll('.time-range .tr-remove');
+    const show = (ranges.querySelectorAll('.time-range').length > 1);
+    rows.forEach(btn => btn.style.display = show ? 'inline-flex' : 'none');
+  });
+}
+
+/* ========= Tariff Day Range Groups ========= */
+function addTimeRangeToGroup(btnOrGroup){
+  const group = btnOrGroup.closest ? btnOrGroup.closest('.day-range-group') : btnOrGroup;
+  const ranges = group.querySelector('.tariff-ranges');
+  const d = document.createElement('div');
+  d.className = 'time-range';
+  d.innerHTML = `
+    <div class="time-row">
+      <input type="time" class="time-input" value="09:00">
+      <span>to</span>
+      <input type="time" class="time-input" value="17:00">
+      <div class="toggle-container" style="margin-left:auto;">
+        <span>All Day</span>
+        <div class="toggle all-day-toggle"><div class="toggle-slider"></div></div>
+      </div>
+      <button class="btn-x tr-remove" onclick="removeTimeRange(this)" title="Remove time range" style="display:none;">×</button>
+    </div>`;
+  ranges.appendChild(d);
+  wireAllDayToggles(d);
+  updateTimeRangeXs(group);
+}
+function removeTimeRange(btn){
+  const group = btn.closest('.day-range-group');
+  btn.closest('.time-range').remove();
+  updateTimeRangeXs(group);
+}
+function addDayRange(groupsId){
+  const container=document.getElementById(groupsId);
+  const group=document.createElement('div');
+  group.className='day-range-group';
+  group.innerHTML=`
+    <div class="days-row">
+      <div class="days-selector">
+        <button class="day-btn active" data-day="1">Mon</button>
+        <button class="day-btn active" data-day="2">Tue</button>
+        <button class="day-btn active" data-day="3">Wed</button>
+        <button class="day-btn active" data-day="4">Thu</button>
+        <button class="day-btn active" data-day="5">Fri</button>
+        <button class="day-btn" data-day="6">Sat</button>
+        <button class="day-btn" data-day="0">Sun</button>
+      </div>
+      <button class="remove-day-group" onclick="removeDayRange(this)" title="Remove this day range">×</button>
+    </div>
+    <div class="tariff-ranges"></div>
+    <div class="group-actions" style="display:flex;gap:8px;margin-top:10px;">
+      <button class="btn btn-secondary" onclick="addTimeRangeToGroup(this)">+ Add Time Range</button>
+      <button class="btn btn-secondary outline" onclick="addDayRange('${groupsId}')">+ Add Day Range</button>
+    </div>`;
+  container.appendChild(group);
+  activateDayToggles(group);
+  addTimeRangeToGroup(group);
+  refreshGroupButtons(container);
+  updateTimeRangeXs(container);
+}
+function removeDayRange(xBtn){
+  const group=xBtn.closest('.day-range-group');
+  const container=group.parentElement;
+  group.remove();
+  if (!container.querySelector('.day-range-group')) addDayRange(container.id);
+  refreshGroupButtons(container);
+  updateTimeRangeXs(container);
+}
+function refreshGroupButtons(container){
+  const groups=[...container.querySelectorAll('.day-range-group')];
+  groups.forEach((g,i)=>{
+    const addDayBtn=g.querySelector('.group-actions .btn.outline');
+    const removeX=g.querySelector('.remove-day-group');
+    if (addDayBtn) addDayBtn.style.display=(i===groups.length-1)?'inline-block':'none';
+    if (removeX) removeX.style.visibility = (groups.length>1)?'visible':'hidden';
+  });
+}
+
+/* ========= Equipment numbering helpers ========= */
+function getUsedEquipmentIndices(){
+  return Array.from(document.querySelectorAll('.equipment-card'))
+    .map(c => parseInt(c.dataset.index,10))
+    .filter(n => Number.isInteger(n));
+}
+function getNextEquipmentIndex(){
+  const used = new Set(getUsedEquipmentIndices());
+  let i = 1; while (used.has(i)) i++; return i;
+}
+
+/* ========= Equipment blocks ========= */
+function addEquipment(){
+  const list = document.getElementById('equipment-list');
+  const index = getNextEquipmentIndex();
+  const gid = `equip-${index}-groups`;
+  const card=document.createElement('div');
+  card.className='equipment-card';
+  card.dataset.index = String(index);
+  const defaultName = `Equipment ${index}`;
+  card.innerHTML=`
+    <button class="remove-btn btn-x" onclick="removeEquipment(${index})" title="Remove equipment">×</button>
+    <div class="equipment-header">
+      <div class="equipment-title" id="equip-title-${index}">${defaultName}</div>
+    </div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Equipment Name</label>
+        <input type="text" class="equipment-name" placeholder="e.g., Air Conditioner" value="${defaultName}">
+      </div>
+      <div class="form-group">
+        <label>Power (W)</label>
+        <input type="number" class="equipment-power" min="0" step="0.1" placeholder="1500" value="1500">
+      </div>
+    </div>
+
+    <h4 style="margin:20px 0 12px 0; color:#4f46e5;">Operating Schedule</h4>
+
+    <div class="equipment-groups" id="${gid}">
+      <div class="day-range-group">
+        <div class="days-row">
+          <div class="days-selector">
+            <button class="day-btn active" data-day="1">Mon</button>
+            <button class="day-btn active" data-day="2">Tue</button>
+            <button class="day-btn active" data-day="3">Wed</button>
+            <button class="day-btn active" data-day="4">Thu</button>
+            <button class="day-btn active" data-day="5">Fri</button>
+            <button class="day-btn" data-day="6">Sat</button>
+            <button class="day-btn" data-day="0">Sun</button>
+          </div>
+          <button class="remove-day-group" onclick="removeEquipDayRange(this)" title="Remove day range">×</button>
+        </div>
+
+        <div class="equipment-ranges">
+          <div class="time-range">
+            <div class="time-row">
+              <input type="time" class="time-input" value="09:00"><span>to</span>
+              <input type="time" class="time-input" value="17:00">
+              <div class="toggle-container" style="margin-left:auto;">
+                <span>All Day</span>
+                <div class="toggle all-day-toggle"><div class="toggle-slider"></div></div>
+              </div>
+              <button class="btn-x tr-remove" onclick="removeEquipmentTimeRange(this)" title="Remove time range" style="display:none;">×</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="group-actions" style="display:flex;gap:8px;margin-top:10px;">
+          <button class="btn btn-secondary" onclick="addEquipmentTimeRange(this)">+ Add Time Range</button>
+          <button class="btn btn-secondary outline" onclick="addEquipDayRange('${gid}')">+ Add Day Range</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="equipment-results" style="display:none;margin-top:20px;padding:16px;background:#f8fafc;border-radius:8px;">
+      <div class="results-grid"></div>
+    </div>`;
+  list.appendChild(card);
+  activateDayToggles(card);
+  wireAllDayToggles(card);
+  refreshGroupButtons(card.querySelector('#'+gid));
+  updateTimeRangeXs(card);
+
+  const nameInput = card.querySelector('.equipment-name');
+  const titleEl = card.querySelector(`#equip-title-${index}`);
+  nameInput.addEventListener('input', () => {
+    titleEl.textContent = nameInput.value.trim() || defaultName;
+  });
+}
+function removeEquipment(index){
+  const el = document.querySelector(`.equipment-card[data-index="${index}"]`);
+  if (el) el.remove();
+}
+
+function addEquipmentTimeRange(btnOrGroup){
+  const group=btnOrGroup.closest ? btnOrGroup.closest('.day-range-group') : btnOrGroup;
+  const ranges=group.querySelector('.equipment-ranges');
+  const d=document.createElement('div');
+  d.className='time-range';
+  d.innerHTML=`
+    <div class="time-row">
+      <input type="time" class="time-input" value="09:00"><span>to</span>
+      <input type="time" class="time-input" value="17:00">
+      <div class="toggle-container" style="margin-left:auto;">
+        <span>All Day</span>
+        <div class="toggle all-day-toggle"><div class="toggle-slider"></div></div>
+      </div>
+      <button class="btn-x tr-remove" onclick="removeEquipmentTimeRange(this)" title="Remove time range" style="display:none;">×</button>
+    </div>`;
+  ranges.appendChild(d);
+  wireAllDayToggles(d);
+  updateTimeRangeXs(group);
+}
+function removeEquipmentTimeRange(btn){
+  const group = btn.closest('.day-range-group');
+  btn.parentElement.parentElement.remove();
+  updateTimeRangeXs(group);
+}
+function addEquipDayRange(groupsId){
+  const container=document.getElementById(groupsId);
+  const group=document.createElement('div');
+  group.className='day-range-group';
+  group.innerHTML=`
+    <div class="days-row">
+      <div class="days-selector">
+        <button class="day-btn active" data-day="1">Mon</button>
+        <button class="day-btn active" data-day="2">Tue</button>
+        <button class="day-btn active" data-day="3">Wed</button>
+        <button class="day-btn active" data-day="4">Thu</button>
+        <button class="day-btn active" data-day="5">Fri</button>
+        <button class="day-btn" data-day="6">Sat</button>
+        <button class="day-btn" data-day="0">Sun</button>
+      </div>
+      <button class="remove-day-group" onclick="removeEquipDayRange(this)" title="Remove day range">×</button>
+    </div>
+    <div class="equipment-ranges"></div>
+    <div class="group-actions" style="display:flex;gap:8px;margin-top:10px;">
+      <button class="btn btn-secondary" onclick="addEquipmentTimeRange(this)">+ Add Time Range</button>
+      <button class="btn btn-secondary outline" onclick="addEquipDayRange('${groupsId}')">+ Add Day Range</button>
+    </div>`;
+  container.appendChild(group);
+  activateDayToggles(group);
+  addEquipmentTimeRange(group);
+  refreshGroupButtons(container);
+  updateTimeRangeXs(container);
+}
+function removeEquipDayRange(btn){
+  const group=btn.closest('.day-range-group');
+  const container=group.parentElement;
+  group.remove();
+  if (!container.querySelector('.day-range-group')) addEquipDayRange(container.id);
+  refreshGroupButtons(container);
+  updateTimeRangeXs(container);
+}
+
+/* ========= Calc helpers ========= */
+function timeToMinutes(t){ const [h,m]=t.split(':').map(Number); return h*60+m; }
+function normalizeTimeRange(s,e){
+  const sm=timeToMinutes(s), em=timeToMinutes(e);
+  if (sm===0 && em===0) return [{start:0,end:1440}];
+  if (sm<=em) return [{start:sm,end:em}];
+  return [{start:sm,end:1440},{start:0,end:em}];
+}
+function mergeOverlapping(ranges){
+  if (!ranges.length) return [];
+  ranges.sort((a,b)=>a.start-b.start);
+  const out=[{...ranges[0]}];
+  for (let i=1;i<ranges.length;i++){
+    const cur=ranges[i], last=out[out.length-1];
+    if (cur.start<=last.end) last.end=Math.max(last.end,cur.end);
+    else out.push({...cur});
+  }
+  return out;
+}
+function overlapHours(r1,r2){
+  let tot=0;
+  for (const a of r1) for (const b of r2){
+    const st=Math.max(a.start,b.start), en=Math.min(a.end,b.end);
+    if (st<en) tot+=en-st;
+  }
+  return tot/60;
+}
+
+/* Build schedules from UI */
+function getTariffSchedule(kind){
+  const groupsId = (kind==='on-peak') ? 'on-peak-groups' : (kind==='off-peak') ? 'off-peak-groups' : (kind==='shoulder') ? 'shoulder-groups' : null;
+  const cont=document.getElementById(groupsId);
+  if (!cont) return [];
+  const groupEls=[...cont.querySelectorAll('.day-range-group')];
+  const out=[];
+  groupEls.forEach(g=>{
+    const days=[...g.querySelectorAll('.days-selector .day-btn.active')].map(b=>parseInt(b.dataset.day));
+    const ranges=[...g.querySelectorAll('.tariff-ranges .time-range')];
+    ranges.forEach(r=>{
+      const [s,e]=[...r.querySelectorAll('.time-input')].map(i=>i.value);
+      if (!s || !e) return;
+      out.push({ start:s, end:e, days, allDay:r.dataset.allDay==='1' });
+    });
+  });
+  return out;
+}
+
+function formatNumber(n){
+  if (roundingEnabled) return Number(n).toFixed(2);
+  let f=Number(n).toFixed(6).replace(/\.?0+$/,'');
+  if (!f.includes('.')) f+='.00';
+  else if (f.split('.')[1].length===1) f+='0';
+  return f;
+}
+
+function validateInputs(){
+  const errs=[];
+  const on=parseFloat(document.getElementById('on-peak-rate').value);
+  const off=parseFloat(document.getElementById('off-peak-rate').value);
+  if (!on || on<=0) errs.push('On-peak rate must be greater than 0');
+  if (!off|| off<=0) errs.push('Off-peak rate must be greater than 0');
+  if (shoulderEnabled){
+    const sh=parseFloat(document.getElementById('shoulder-rate').value);
+    if (!sh || sh<=0) errs.push('Shoulder rate must be greater than 0');
+    if (!document.getElementById('shoulder-block')) errs.push('Shoulder section missing.');
+  }
+  const cards=document.querySelectorAll('.equipment-card');
+  if (!cards.length) errs.push('At least one equipment must be added');
+  cards.forEach((c,idx)=>{
+    const p=parseFloat(c.querySelector('.equipment-power').value);
+    if (!p || p<=0) errs.push(`Equipment ${idx+1}: Power must be greater than 0`);
+    const trs=c.querySelectorAll('.time-range');
+    trs.forEach((r,ri)=>{
+      const [s,e]=[...r.querySelectorAll('.time-input')].map(i=>i.value);
+      if (!s || !e) errs.push(`Equipment ${idx+1}, Range ${ri+1}: Both start and end times required`);
+    });
+    if (!c.querySelector('.day-btn.active')) errs.push(`Equipment ${idx+1}: At least one day must be selected`);
+  });
+  return errs;
+}
+
+/* ========= Calculation & PDF ========= */
+function calculateCosts(){
+  const errors=validateInputs();
+  document.getElementById('equipment-errors').innerHTML='';
+  document.getElementById('tariff-errors').innerHTML='';
+  if (errors.length){
+    document.getElementById('equipment-errors').innerHTML=errors.map(e=>`<div class="error-message">${e}</div>`).join('');
+    document.getElementById('results-container').style.display='none';
     return;
   }
 
-  // Try to find existing rate inputs used by your calculator:
-  const $flat = document.getElementById('ratePerKwh') || document.getElementById('rate-per-kwh') || document.querySelector('[data-rate="flat"]');
-  const $on   = document.getElementById('on-peak-rate')  || document.querySelector('[data-rate="on"]');
-  const $off  = document.getElementById('off-peak-rate') || document.querySelector('[data-rate="off"]');
-  const $sh   = document.getElementById('shoulder-rate') || document.querySelector('[data-rate="shoulder"]');
+  const onRate=parseFloat(document.getElementById('on-peak-rate').value)/100;
+  const offRate=parseFloat(document.getElementById('off-peak-rate').value)/100;
+  const shRate=shoulderEnabled ? (parseFloat(document.getElementById('shoulder-rate').value)/100) : 0;
 
-  [$flat, $on, $off, $sh].filter(Boolean).forEach(el => {
-    el.addEventListener('input', () => {
-      el.dataset.userEdited = '1';
-    }, { once: false });
+  const onSched=getTariffSchedule('on-peak');
+  const offSched=getTariffSchedule('off-peak');
+  const shSched=shoulderEnabled ? getTariffSchedule('shoulder') : [];
+
+  let totals={ dailyKwh:0, weeklyKwh:0, monthlyKwh:0, yearlyKwh:0, dailyCost:0, weeklyCost:0, monthlyCost:0, yearlyCost:0, onPeakHours:0, offPeakHours:0, shoulderHours:0 };
+
+  document.querySelectorAll('.equipment-card').forEach(card=>{
+    const kW=parseFloat(card.querySelector('.equipment-power').value)/1000;
+    let weekOn=0, weekOff=0, weekSh=0;
+
+    const eqGroups=[...card.querySelectorAll('.equipment-groups .day-range-group')];
+    eqGroups.forEach(g=>{
+      const ranges=[...g.querySelectorAll('.equipment-ranges .time-range')].map(r=>{
+        const [s,e]=[...r.querySelectorAll('.time-input')].map(i=>i.value);
+        return {start:s,end:e};
+      });
+      let eqRanges=[];
+      ranges.forEach(r=>{ eqRanges = eqRanges.concat(normalizeTimeRange(r.start,r.end)); });
+      eqRanges=mergeOverlapping(eqRanges);
+
+      const days=[...g.querySelectorAll('.days-selector .day-btn.active')].map(b=>parseInt(b.dataset.day));
+      days.forEach(d=>{
+        const dayOn = onSched.filter(x=>x.days.includes(d)).flatMap(x=>normalizeTimeRange(x.start,x.end));
+        const dayOff = offSched.filter(x=>x.days.includes(d)).flatMap(x=>normalizeTimeRange(x.start,x.end));
+        const daySh = shSched.filter(x=>x.days.includes(d)).flatMap(x=>normalizeTimeRange(x.start,x.end));
+        weekOn += overlapHours(eqRanges, mergeOverlapping(dayOn));
+        weekOff += overlapHours(eqRanges, mergeOverlapping(dayOff));
+        weekSh += overlapHours(eqRanges, mergeOverlapping(daySh));
+      });
+    });
+
+    const dOn=weekOn/7, dOff=weekOff/7, dSh=weekSh/7;
+    const dKwh=kW*(dOn+dOff+dSh);
+    const wKwh=kW*(weekOn+weekOff+weekSh);
+    const mKwh=wKwh*(365.25/12/7);
+    const yKwh=wKwh*(365.25/7);
+
+    const dCost=kW*(dOn*onRate + dOff*offRate + dSh*shRate);
+    const wCost=kW*(weekOn*onRate + weekOff*offRate + weekSh*shRate);
+    const mCost=wCost*(365.25/12/7);
+    const yCost=wCost*(365.25/7);
+
+    const gResults=card.querySelector('.equipment-results .results-grid');
+    gResults.innerHTML=`
+      <div class="result-item"><div class="result-label">On-Peak Hours/Day</div><div class="result-value">${formatNumber(dOn)}h</div></div>
+      ${shoulderEnabled ? `<div class="result-item"><div class="result-label">Shoulder Hours/Day</div><div class="result-value">${formatNumber(dSh)}h</div></div>` : ``}
+      <div class="result-item"><div class="result-label">Off-Peak Hours/Day</div><div class="result-value">${formatNumber(dOff)}h</div></div>
+      <div class="result-item"><div class="result-label">Daily kWh</div><div class="result-value">${formatNumber(dKwh)}</div></div>
+      <div class="result-item"><div class="result-label">Weekly kWh</div><div class="result-value">${formatNumber(wKwh)}</div></div>
+      <div class="result-item"><div class="result-label">Monthly kWh</div><div class="result-value">${formatNumber(mKwh)}</div></div>
+      <div class="result-item"><div class="result-label">Yearly kWh</div><div class="result-value">${formatNumber(yKwh)}</div></div>
+      <div class="result-item"><div class="result-label">Daily Cost</div><div class="result-value">$${formatNumber(dCost)}</div></div>
+      <div class="result-item"><div class="result-label">Weekly Cost</div><div class="result-value">$${formatNumber(wCost)}</div></div>
+      <div class="result-item"><div class="result-label">Monthly Cost</div><div class="result-value">$${formatNumber(mCost)}</div></div>
+      <div class="result-item"><div class="result-label">Yearly Cost</div><div class="result-value">$${formatNumber(yCost)}</div></div>
+    `;
+    card.querySelector('.equipment-results').style.display='none';
+
+    totals.dailyKwh+=dKwh; totals.weeklyKwh+=wKwh; totals.monthlyKwh+=mKwh; totals.yearlyKwh+=yKwh;
+    totals.dailyCost+=dCost; totals.weeklyCost+=wCost; totals.monthlyCost+=mCost; totals.yearlyCost+=yCost;
+    totals.onPeakHours+=dOn; totals.offPeakHours+=dOff; totals.shoulderHours+=dSh;
   });
 
-  const $errBanner = document.getElementById('elecFetchError');
-  if ($errBanner) { $errBanner.style.display = 'none'; }
-
-  const previousRegion = $region.value;
-
-  function escapeHtml(str) {
-    if (str === null || str === undefined) {
-      return '';
-    }
-    return String(str)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;');
-  }
-
-  const regions = [...new Set(tariffs.map(t=>t.region).filter(Boolean))].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
-  $region.innerHTML = '<option value="">Select region…</option>' + regions.map(r=>`<option value="${escapeHtml(r)}">${escapeHtml(r)}</option>`).join('');
-  $region.disabled = regions.length === 0;
-  if (regions.includes(previousRegion)) {
-    $region.value = previousRegion;
-  }
-
-  $region.addEventListener('change', syncRetailers);
-  $retailer.addEventListener('change', syncPlans);
-  $plan.addEventListener('change', applyTariffToInputs);
-
-  function getTariffKey(t) {
-    const region = t.region || '';
-    const retailer = t.retailer || '';
-    const distributor = t.distributor || '';
-    const plan = t.plan || '';
-    return [region, retailer, distributor, plan].join('||');
-  }
-
-  function formatPlanLabel(t) {
-    if (t.distributor) {
-      return `${t.plan} — ${t.distributor}`;
-    }
-    return t.plan;
-  }
-
-  function syncRetailers(){
-    const subset = tariffs.filter(t=>!$region.value || t.region===$region.value);
-    const retailers = [...new Set(subset.map(t=>t.retailer).filter(Boolean))].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
-    const currentRetailer = $retailer.value;
-    $retailer.innerHTML = '<option value="">Select retailer…</option>' + retailers.map(r=>`<option value="${escapeHtml(r)}">${escapeHtml(r)}</option>`).join('');
-    $retailer.disabled = retailers.length===0;
-    if (retailers.includes(currentRetailer)) {
-      $retailer.value = currentRetailer;
-    } else if (retailers.length === 1) {
-      $retailer.value = retailers[0];
-    }
-    syncPlans();
-  }
-
-  function syncPlans(){
-    const subset = tariffs.filter(t=>(!$region.value || t.region===$region.value) && t.retailer===$retailer.value);
-    const seen = new Set();
-    const planOptions = [];
-
-    subset.forEach(t => {
-      if (!t.plan) return;
-      const key = getTariffKey(t);
-      if (seen.has(key)) return;
-      seen.add(key);
-      planOptions.push({ key, label: formatPlanLabel(t) });
-    });
-
-    planOptions.sort((a, b) => a.label.localeCompare(b.label, undefined, { numeric: true, sensitivity: 'base' }));
-
-    const currentPlanKey = $plan.value;
-    $plan.innerHTML = '<option value="">Select plan…</option>' + planOptions.map(opt=>`<option value="${escapeHtml(opt.key)}">${escapeHtml(opt.label)}</option>`).join('');
-    $plan.disabled = planOptions.length===0;
-
-    if (planOptions.length === 1) {
-      $plan.value = planOptions[0].key;
-      applyTariffToInputs();
-      return;
-    }
-
-    if (planOptions.some(opt => opt.key === currentPlanKey)) {
-      $plan.value = currentPlanKey;
-      applyTariffToInputs();
-    }
-  }
-
-  function applyTariffToInputs(){
-    const planKey = $plan.value;
-    if (!planKey) {
-      return false;
-    }
-
-    const t = tariffs.find(x => getTariffKey(x) === planKey);
-    console.log('[Elec] Applying tariff from JSON', t);
-    if (!t) return false;
-
-    const setRate = (el, value) => {
-      if (!el || el.dataset.userEdited) return;
-      if (value === undefined || value === null || value === '') return;
-      const num = Number(value);
-      if (!Number.isFinite(num)) return;
-      el.value = num;
-    };
-
-    if (t.type === 'flat') {
-      const flatVal = t.flat_c_per_kWh ?? t.on_c_per_kWh ?? t.onPeakRate ?? t.on ?? null;
-      setRate($flat, flatVal);
-      setRate($on, t.on_c_per_kWh ?? flatVal);
-      setRate($off, t.off_c_per_kWh ?? flatVal);
-      setRate($sh, t.shoulder_c_per_kWh);
-    } else {
-      setRate($flat, t.flat_c_per_kWh);
-      setRate($on, t.on_c_per_kWh ?? t.onPeakRate ?? t.on);
-      setRate($off, t.off_c_per_kWh ?? t.offPeakRate ?? t.off);
-      setRate($sh, t.shoulder_c_per_kWh ?? t.shoulder);
-    }
-
-    console.log('[Elec] Set rates → flat:', $flat?.value, 'on:', $on?.value, 'off:', $off?.value, 'shoulder:', $sh?.value);
-    return true;
-  }
-
-  applySelectedTariffFromModal = applyTariffToInputs;
-  syncRetailers();
-  try { applyTariffToInputs(); } catch(_) {}
+  displayTotals(totals);
 }
 
-let elecTariffsPromise = null;
+function displayTotals(t){
+  const results=document.getElementById('results-container');
+  let perEquipHTML='';
+  document.querySelectorAll('.equipment-card').forEach((card,idx)=>{
+    const name=card.querySelector('.equipment-name').value || `Equipment ${idx+1}`;
+    const power=card.querySelector('.equipment-power').value || '?';
+    perEquipHTML += `
+      <div class="results-section" style="margin-bottom:24px;">
+        <h3 class="section-title">🔌 ${name} (${power}W)</h3>
+        <div class="results-grid">${card.querySelector('.equipment-results .results-grid').innerHTML}</div>
+      </div>`;
+  });
 
-async function startElecTariffs() {
-  if (elecTariffsPromise) {
-    return elecTariffsPromise;
+  results.innerHTML = `
+    ${perEquipHTML}
+    <div class="results-section">
+      <h2 class="section-title">📊 Total Usage & Cost Breakdown</h2>
+      <div class="results-grid">
+        <div class="result-item"><div class="result-label">On-Peak Hours/Day</div><div class="result-value">${formatNumber(t.onPeakHours)}h</div></div>
+        ${shoulderEnabled ? `<div class="result-item"><div class="result-label">Shoulder Hours/Day</div><div class="result-value">${formatNumber(t.shoulderHours)}h</div></div>` : ``}
+        <div class="result-item"><div class="result-label">Off-Peak Hours/Day</div><div class="result-value">${formatNumber(t.offPeakHours)}h</div></div>
+        <div class="result-item"><div class="result-label">Daily kWh</div><div class="result-value">${formatNumber(t.dailyKwh)}</div></div>
+        <div class="result-item"><div class="result-label">Weekly kWh</div><div class="result-value">${formatNumber(t.weeklyKwh)}</div></div>
+        <div class="result-item"><div class="result-label">Monthly kWh</div><div class="result-value">${formatNumber(t.monthlyKwh)}</div></div>
+        <div class="result-item"><div class="result-label">Yearly kWh</div><div class="result-value">${formatNumber(t.yearlyKwh)}</div></div>
+        <div class="result-item"><div class="result-label">Daily Cost</div><div class="result-value">$${formatNumber(t.dailyCost)}</div></div>
+        <div class="result-item"><div class="result-label">Weekly Cost</div><div class="result-value">$${formatNumber(t.weeklyCost)}</div></div>
+        <div class="result-item"><div class="result-label">Monthly Cost</div><div class="result-value">$${formatNumber(t.monthlyCost)}</div></div>
+        <div class="result-item"><div class="result-label">Yearly Cost</div><div class="result-value">$${formatNumber(t.yearlyCost)}</div></div>
+      </div>
+      <div style="text-align:center;margin-top:24px;">
+        <button class="btn btn-primary" onclick="downloadPDF()">📄 Download Results as PDF</button>
+      </div>
+    </div>`;
+  results.style.display='block';
+}
+
+/* ========= PDF ========= */
+function downloadPDF(){
+  const { jsPDF }=window.jspdf;
+  const doc=new jsPDF();
+  let y=20, H=doc.internal.pageSize.height, M=20;
+  function br(h){ if (y+h>H-M){ doc.addPage(); y=20; } }
+
+  const title=(window.elementSdk?.config?.app_title)||defaultConfig.app_title;
+  doc.setFontSize(20); doc.setFont(undefined,'bold'); doc.text(title,M,y); y+=15;
+  doc.setFontSize(12); doc.setFont(undefined,'normal'); doc.text(`Generated: ${new Date().toLocaleDateString()}`,M,y); y+=12;
+
+  br(20);
+  doc.setFontSize(16); doc.setFont(undefined,'bold'); doc.text('Tariff Summary',M,y); y+=10;
+  const onRate=document.getElementById('on-peak-rate').value;
+  const offRate=document.getElementById('off-peak-rate').value;
+  const shRateEl=document.getElementById('shoulder-rate');
+  doc.setFontSize(12); doc.setFont(undefined,'normal');
+  doc.text(`On-Peak Rate: ${onRate} c/kWh`,M,y); y+=8;
+  if (shRateEl){ doc.text(`Shoulder Rate: ${shRateEl.value} c/kWh`,M,y); y+=8; }
+  doc.text(`Off-Peak Rate: ${offRate} c/kWh`,M,y); y+=14;
+
+  const cards=document.querySelectorAll('.equipment-card');
+  cards.forEach((card,idx)=>{
+    br(60);
+    const name=card.querySelector('.equipment-name').value;
+    const power=card.querySelector('.equipment-power').value;
+    doc.setFontSize(14); doc.setFont(undefined,'bold'); doc.text(`Equipment ${idx+1}: ${name}`,M,y); y+=10;
+    doc.setFontSize(12); doc.setFont(undefined,'normal'); doc.text(`Power: ${power}W`,M,y); y+=8;
+
+    const items=card.querySelectorAll('.equipment-results .results-grid .result-item');
+    items.forEach(it=>{
+      br(8);
+      const label=it.querySelector('.result-label').textContent;
+      const val=it.querySelector('.result-value').textContent;
+      doc.text(`${label}: ${val}`,M+10,y); y+=6;
+    });
+    y+=6;
+  });
+
+  br(80);
+  doc.setFontSize(16); doc.setFont(undefined,'bold'); doc.text('Total Usage & Cost Breakdown',M,y); y+=12;
+  const totalGrid=document.querySelector('#results-container .results-grid');
+  if (totalGrid){
+    totalGrid.querySelectorAll('.result-item').forEach(it=>{
+      br(8);
+      const label=it.querySelector('.result-label').textContent;
+      const val=it.querySelector('.result-value').textContent;
+      doc.setFontSize(12); doc.setFont(undefined,'normal');
+      doc.text(`${label}: ${val}`,M,y); y+=8;
+    });
   }
+  doc.setFontSize(10);
+  doc.text((window.elementSdk?.config?.footer_text)||defaultConfig.footer_text, M, H-10);
+  doc.save('ElectricityCostCalculatorResults.pdf');
+}
 
-  elecTariffsPromise = initElecTariffs()
-    .catch(err => {
-      console.warn('initElecTariffs failed', err);
-      elecTariffsPromise = null;
-      throw err;
+/* ========= Tariff modal + selects ========= */
+function openTariffModal(){ document.getElementById('tariff-modal').classList.add('show'); }
+function closeTariffModal(){ document.getElementById('tariff-modal').classList.remove('show'); }
+function fillRetailersSelect(){
+  const sel=document.getElementById('retailer-select');
+  sel.innerHTML=`<option value="">Select Retailer</option>`;
+  Object.entries(tariffsData.retailers).forEach(([key,r])=>{
+    const opt=document.createElement('option');
+    opt.value=key; opt.textContent=r.displayName||key; sel.appendChild(opt);
+  });
+}
+function fillPlansSelect(retailerKey){
+  const sel=document.getElementById('plan-select');
+  sel.innerHTML=`<option value="">Select Plan</option>`;
+  if (!retailerKey) return;
+  const plans=tariffsData.retailers[retailerKey]?.plans || {};
+  Object.entries(plans).forEach(([pid,p])=>{
+    const opt=document.createElement('option');
+    opt.value=pid; opt.textContent=p.title||pid; sel.appendChild(opt);
+  });
+}
+function fillRegionsSelect(retailerKey, planId){
+  const sel=document.getElementById('region-select');
+  sel.innerHTML=`<option value="">Select Region</option>`;
+  if (!retailerKey || !planId) return;
+  const byRegion=tariffsData.retailers[retailerKey]?.plans?.[planId]?.byRegion || {};
+  Object.keys(byRegion).forEach(rid=>{
+    const opt=document.createElement('option');
+    opt.value=rid; opt.textContent=regionLabels[rid] || rid.toUpperCase(); sel.appendChild(opt);
+  });
+}
+
+/* Group windows by day-signature so same-day sets share a UI group */
+function setWindows(groupsId, windowsArr){
+  const container=document.getElementById(groupsId);
+  if (!container) return;
+  container.innerHTML='';
+  if (!windowsArr || !windowsArr.length){ addDayRange(groupsId); return; }
+
+  const grouped = {};
+  windowsArr.forEach(w=>{
+    const sig = Array.isArray(w.days) ? [...w.days].sort((a,b)=>a-b).join(',') : '';
+    if (!grouped[sig]) grouped[sig] = { days:[...(w.days||[])], ranges:[] };
+    grouped[sig].ranges.push({start:w.start||'00:00', end:w.end||'00:00'});
+  });
+
+  Object.values(grouped).forEach(({days, ranges})=>{
+    addDayRange(groupsId);
+    const allGroups = container.querySelectorAll('.day-range-group');
+    const g = allGroups[allGroups.length-1];
+    g.querySelectorAll('.days-selector .day-btn').forEach(btn=>{
+      const d=parseInt(btn.dataset.day); btn.classList.toggle('active', days.includes(d));
     });
 
-  return elecTariffsPromise;
+    const rangesEl = g.querySelector('.tariff-ranges');
+    rangesEl.innerHTML='';
+    ranges.forEach(r=>{
+      const div=document.createElement('div');
+      div.className='time-range';
+      div.innerHTML=`
+        <div class="time-row">
+          <input type="time" class="time-input" value="${r.start}">
+          <span>to</span>
+          <input type="time" class="time-input" value="${r.end}">
+          <div class="toggle-container" style="margin-left:auto;">
+            <span>All Day</span>
+            <div class="toggle all-day-toggle"><div class="toggle-slider"></div></div>
+          </div>
+          <button class="btn-x tr-remove" onclick="removeTimeRange(this)" title="Remove time range" style="display:none;">×</button>
+        </div>`;
+      rangesEl.appendChild(div);
+      wireAllDayToggles(div);
+    });
+    updateTimeRangeXs(container);
+  });
+  refreshGroupButtons(container);
 }
-  </script>
+
+function applySelectedTariff(){
+  const rSel=document.getElementById('retailer-select').value;
+  const pSel=document.getElementById('plan-select').value;
+  const reg=document.getElementById('region-select').value;
+  const status=document.getElementById('fetch-status');
+
+  if (!rSel || !pSel || !reg){
+    status.innerHTML = `<div class="error-message">Please choose retailer, plan, and region.</div>`;
+    return;
+  }
+
+  const plan=tariffsData.retailers[rSel].plans[pSel];
+  const regionRates=plan.byRegion[reg];
+
+  document.getElementById('on-peak-rate').value = regionRates.on.toFixed(4);
+  document.getElementById('off-peak-rate').value = regionRates.off.toFixed(4);
+
+  const hasShoulder = typeof regionRates.shoulder==='number' && plan.windows.shoulder && plan.windows.shoulder.length;
+  if (hasShoulder){
+    if (!shoulderEnabled) setShoulderUI(true);
+    document.getElementById('shoulder-rate').value = regionRates.shoulder.toFixed(4);
+  }else{
+    setShoulderUI(false);
+  }
+
+  setWindows('on-peak-groups', plan.windows.on || []);
+  setWindows('off-peak-groups', plan.windows.off || []);
+  if (shoulderEnabled) setWindows('shoulder-groups', plan.windows.shoulder || []);
+
+  const title = `${tariffsData.retailers[rSel].displayName} – ${plan.title} (${regionLabels[reg] || reg.toUpperCase()})`;
+  const titleEl=document.getElementById('selected-plan-title');
+  titleEl.textContent=title; titleEl.style.display='inline';
+  closeTariffModal();
+}
+
+/* ========= Rounding toggle ========= */
+function setRoundingUI(active){
+  roundingEnabled = !!active;
+  const rt=document.getElementById('rounding-toggle');
+  if (rt) rt.classList.toggle('active', roundingEnabled);
+}
+
+/* ========= DOM Ready wiring ========= */
+document.addEventListener('DOMContentLoaded', ()=>{
+  initSDK();
+  activateDayToggles(document);
+
+  refreshGroupButtons(document.getElementById('on-peak-groups'));
+  refreshGroupButtons(document.getElementById('off-peak-groups'));
+  wireAllDayToggles(document);
+  updateTimeRangeXs(document);
+
+  const rt=document.getElementById('rounding-toggle');
+  if (rt) rt.addEventListener('click', ()=> setRoundingUI(!rt.classList.contains('active')));
+
+  const st=document.getElementById('shoulder-toggle');
+  if (st) st.addEventListener('click', ()=> setShoulderUI(!st.classList.contains('active')));
+
+  const fetchBtn=document.getElementById('fetch-tariffs-btn');
+  if (fetchBtn){
+    fetchBtn.addEventListener('click', async ()=>{
+      openTariffModal();
+      try{
+        await fetchTariffsOnce();
+        fillRetailersSelect();
+        document.getElementById('retailer-select').onchange = (e)=>{
+          fillPlansSelect(e.target.value);
+          document.getElementById('region-select').innerHTML = `<option value="">Select Region</option>`;
+        };
+        document.getElementById('plan-select').onchange = (e)=>{
+          const rKey=document.getElementById('retailer-select').value;
+          fillRegionsSelect(rKey, e.target.value);
+        };
+      }catch(e){/* error already shown */}
+    });
+  }
+
+  document.getElementById('add-equipment-btn').addEventListener('click', addEquipment);
+  document.getElementById('calculate-btn').addEventListener('click', calculateCosts);
+
+  setRoundingUI(true);
+  setShoulderUI(false);
+  addEquipment();
+});
+</script>
 </body>
 </html>
