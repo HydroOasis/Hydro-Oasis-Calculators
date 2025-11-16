@@ -266,6 +266,11 @@
         <div id="waterSavedWeeksList"></div>
       </div>
 
+      <div class="saved-weeks-actions">
+        <button class="btn btn-ghost" id="waterClearCacheBtn" type="button">🧹 Clear Water Cache</button>
+        <div class="help" id="waterClearCacheStatus"></div>
+      </div>
+
       <!-- Inputs -->
       <div class="sec-title"><span class="dot" aria-hidden="true"></span><span>Input Parameters</span></div>
       <div class="grid g-3" style="margin-bottom:6px;">
@@ -362,6 +367,7 @@
   const WATER_STAGE_LABELS = { vegetative: 'Vegetative', flowering: 'Flowering (Generative)' };
   const SAVED_WEEK_CALC_LABELS = { nutrient: 'Nutrients', water: 'Water', electricity: 'Electricity' };
   const SAVED_WEEK_STAGE_LABELS = { vegetative: 'Vegetative', flowering: 'Flowering' };
+  const SAVED_WEEK_STAGE_ORDER = { vegetative: 0, flowering: 1 };
   let waterSavedWeeksVisible = false;
 
   function applyWaterSavedWeeksVisibility(){
@@ -388,6 +394,52 @@
       window.localStorage.setItem(BRIDGE_STORAGE_KEY, JSON.stringify(existing));
     }catch(err){
       console.warn('Hydro Oasis bridge save skipped:', err);
+    }
+  }
+
+  function clearBridgeDataForCalculator(calculatorKey){
+    try{
+      if(typeof window === 'undefined' || !window.localStorage) return false;
+      const raw = window.localStorage.getItem(BRIDGE_STORAGE_KEY);
+      if(!raw) return false;
+      const data = JSON.parse(raw || '{}');
+      let changed = false;
+      if(data[calculatorKey]){
+        delete data[calculatorKey];
+        changed = true;
+      }
+      if(data.stageWeeks){
+        Object.keys(data.stageWeeks).forEach(stage=>{
+          const stageData = data.stageWeeks[stage];
+          if(!stageData) return;
+          Object.keys(stageData).forEach(weekKey=>{
+            const weekEntry = stageData[weekKey];
+            if(weekEntry && weekEntry[calculatorKey]){
+              delete weekEntry[calculatorKey];
+              changed = true;
+            }
+            if(weekEntry && Object.keys(weekEntry).length === 0){
+              delete stageData[weekKey];
+            }
+          });
+          if(Object.keys(stageData).length === 0){
+            delete data.stageWeeks[stage];
+          }
+        });
+        if(Object.keys(data.stageWeeks).length === 0){
+          delete data.stageWeeks;
+        }
+      }
+      if(!changed) return false;
+      if(Object.keys(data).length === 0){
+        window.localStorage.removeItem(BRIDGE_STORAGE_KEY);
+      }else{
+        window.localStorage.setItem(BRIDGE_STORAGE_KEY, JSON.stringify(data));
+      }
+      return true;
+    }catch(err){
+      console.warn('Hydro Oasis clear cache skipped:', err);
+      return false;
     }
   }
 
@@ -447,6 +499,34 @@
     }
   }
 
+  function getSavedWeeksForCalculator(calculatorKey){
+    const rows = [];
+    try{
+      if(typeof window === 'undefined' || !window.localStorage) return rows;
+      const data = JSON.parse(window.localStorage.getItem(BRIDGE_STORAGE_KEY) || '{}');
+      const stageWeeks = data?.stageWeeks || {};
+      Object.keys(stageWeeks).forEach(stage=>{
+        const stageData = stageWeeks[stage] || {};
+        Object.keys(stageData).forEach(weekKey=>{
+          const entry = stageData[weekKey]?.[calculatorKey];
+          const weekNumber = parseInt(weekKey, 10);
+          const weeklyCost = Number(entry?.weeklyCost);
+          if(Number.isFinite(weekNumber) && Number.isFinite(weeklyCost)){
+            rows.push({ stage, weekNumber, weeklyCost });
+          }
+        });
+      });
+      rows.sort((a,b)=>{
+        const stageDiff = (SAVED_WEEK_STAGE_ORDER[a.stage] ?? 99) - (SAVED_WEEK_STAGE_ORDER[b.stage] ?? 99);
+        if(stageDiff !== 0) return stageDiff;
+        return a.weekNumber - b.weekNumber;
+      });
+    }catch(err){
+      console.warn('Hydro Oasis saved weeks detail read skipped:', err);
+    }
+    return rows;
+  }
+
   function updateWaterSavedWeeksWidget(){
     const widget = $('waterSavedWeeks');
     const body = $('waterSavedWeeksList');
@@ -470,6 +550,25 @@
     });
     body.innerHTML = sections.join('');
     applyWaterSavedWeeksVisibility();
+  }
+
+  function handleWaterCacheClear(){
+    const status = $('waterClearCacheStatus');
+    if(status){
+      status.textContent = 'Clearing saved water data…';
+      status.style.color = '#6B7C77';
+    }
+    const cleared = clearBridgeDataForCalculator('water');
+    if(status){
+      if(cleared){
+        status.textContent = 'Water cache cleared.';
+        status.style.color = '#1f7a54';
+      }else{
+        status.textContent = 'No saved water data to clear.';
+        status.style.color = '#6B7C77';
+      }
+    }
+    updateWaterSavedWeeksWidget();
   }
 
   /* ========= Provider Data (External JSON + fallback) ========= */
@@ -782,6 +881,19 @@
     doc.text(`Monthly Total: ${formatCurrency(calculationResults.totals.monthly, R)}`, margin, y); y += line;
     doc.text(`Yearly Total: ${formatCurrency(calculationResults.totals.yearly, R)}`, margin, y);
 
+    const savedWeeks = getSavedWeeksForCalculator('water');
+    if(savedWeeks.length){
+      check(20);
+      doc.setFont('helvetica','bold'); doc.setFontSize(14);
+      doc.text('Saved Weeks for Harvest', margin, y); y += 10;
+      doc.setFont('helvetica','normal'); doc.setFontSize(12);
+      savedWeeks.forEach(week=>{
+        check(line);
+        doc.text(`${waterStageLabel(week.stage)} Week ${week.weekNumber}: ${formatCurrency(week.weeklyCost, R)} per week`, margin, y);
+        y += line;
+      });
+    }
+
     doc.save('WaterCostCalculatorResults.pdf');
   }
 
@@ -827,6 +939,8 @@
     els.downloadBtn.addEventListener('click', generatePDF);
     const saveBtn = $('waterWeekSaveBtn');
     if(saveBtn) saveBtn.addEventListener('click', handleWaterWeekSave);
+    const clearBtn = $('waterClearCacheBtn');
+    if(clearBtn) clearBtn.addEventListener('click', handleWaterCacheClear);
     const savedWeeksToggle = document.getElementById('waterSavedWeeksToggle');
     if(savedWeeksToggle){
       const toggleVisibility = ()=> setWaterSavedWeeksVisibility(!waterSavedWeeksVisible);
