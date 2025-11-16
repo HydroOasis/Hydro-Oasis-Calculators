@@ -1,13 +1,257 @@
-<!-- Nutrient Program Calculator (Shopify-embed safe) -->
-<link rel="stylesheet" href="../../shared/styles/calculators.css">
-<div id="npcalc">
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nutrient Program Calculator</title>
+  <!-- Nutrient Program Calculator (Shopify-embed safe) -->
+  <link rel="stylesheet" href="../../shared/styles/calculators.css" id="ho-shared-css-np">
+
+  <script type="application/json" id="ho-css-fallback-np">
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Inter:wght@400;500;600;700;800&display=swap');
+
+  #npcalc{
+    --bg:#FDFBF4; --text:#333; --heading:#2D5C4E;
+    --btn:#2D5C4E; --btn-hover:#A76DAB; --btn-text:#fff;
+    --card:#fff; --card-border:#E7E5DC; --icon:#2D5C4E; --err:#BE5C4C;
+    --sec-border:#D9E2DE; --sec-head-bg:#F3F7F5;
+    position:relative;
+    background:transparent;
+    color:var(--text);
+    font-family:'Nunito',system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial,sans-serif;
+    line-height:1.6;
+    padding-left:clamp(12px,4vw,24px);
+    padding-right:clamp(12px,4vw,24px);
+    padding-top:28px; padding-bottom:28px;
+    width:100%; max-width:100vw; overflow-x:hidden;
+  }
+  #npcalc *{ box-sizing:border-box; }
+  #npcalc .container{
+    width:100%;
+    max-width:1100px;
+    margin:0 auto;
+    padding:0;
+  }
+  #npcalc .calc-shell{
+    position:relative;
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:16px;
+    box-shadow:0 6px 20px rgba(0,0,0,.06);
+    padding:24px;
+    overflow:hidden;
+  }
+  #npcalc .mascot-watermark{
+    position:absolute; right:10px; bottom:10px;
+    width:min(140px,22%); opacity:.12; pointer-events:none;
+  }
+  #npcalc .calc-title{
+    font-family:'Inter',system-ui,sans-serif;
+    font-weight:800; letter-spacing:.2px; color:var(--heading);
+    text-align:center; margin:2px 0 4px;
+    font-size:clamp(24px,4.2vw,40px);
+  }
+  #npcalc .calc-subtitle{
+    text-align:center; color:#56645d; font-family:'Inter',system-ui,sans-serif;
+    font-weight:500; font-size:clamp(12px,2.6vw,14px); margin:0 0 18px;
+  }
+  #npcalc .config-section{ margin:8px 0 10px; text-align:center; }
+  #npcalc .config-section label{
+    display:block; font-weight:800; color:var(--heading); margin-bottom:8px; font-size:1.05em;
+  }
+  #npcalc .config-section select{
+    padding:12px 14px; font-size:1em; background:#fff; border:1px solid #c4c8b8; border-radius:10px; color:#31473a;
+    min-width:280px; max-width:100%; cursor:pointer;
+  }
+  #npcalc .config-section select:focus{ outline:none; border-color:var(--heading); box-shadow:0 0 0 3px rgba(45,92,78,.18); }
+  #npcalc .stages-container{ display:flex; flex-direction:column; gap:22px; margin-bottom:22px; }
+  #npcalc .stage{
+    background:#f7f5eb; padding:18px; border-radius:14px; box-shadow:0 2px 8px rgba(49,71,58,.08);
+  }
+  #npcalc .stage-header{ display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:14px; }
+  #npcalc .stage-title{ font-size:clamp(18px,3.8vw,24px); font-weight:800; color:var(--heading); margin:0; }
+  #npcalc .add-week-btn{
+    background:var(--btn) !important; color:#fff !important; border:none; padding:10px 16px; border-radius:20px;
+    font-weight:700; cursor:pointer; transition: background-color .12s ease, box-shadow .08s ease, transform .05s ease;
+    -webkit-appearance:none; appearance:none;
+  }
+  #npcalc .add-week-btn:hover,#npcalc .add-week-btn:focus-visible{
+    background:var(--btn-hover) !important; color:#fff !important; box-shadow:0 0 0 3px rgba(45,92,78,.18);
+  }
+  #npcalc .add-week-btn:active{ transform:translateY(1px); }
+  #npcalc .week-card{
+    background:#fcfaf3; border-radius:12px; padding:14px; margin-bottom:12px;
+    border:1px solid #e3e2d7; box-shadow:0 2px 6px rgba(49,71,58,.06);
+  }
+  #npcalc .week-header{ display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:10px; flex-wrap:wrap; }
+  #npcalc .week-title{ font-size:1.1em; font-weight:800; color:var(--heading); margin:0; }
+  #npcalc .week-controls{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  #npcalc .toggle-btn,#npcalc .remove-week-btn{
+    border:none; padding:8px 12px; border-radius:10px; font-weight:700; cursor:pointer; font-size:.9em;
+  }
+  #npcalc .toggle-btn{ background:#e3e2d7; color:var(--heading); }
+  #npcalc .toggle-btn:hover{ background:#d5d4c9; }
+  #npcalc .remove-week-btn{ background:#b54848; color:#fff; }
+  #npcalc .remove-week-btn:hover{ background:#a03d3d; }
+  #npcalc .week-body{ display:block; }
+  #npcalc .week-body.hidden{ display:none; }
+  #npcalc .product-row{
+    background:#fff; border:1px solid #dddcd2; border-radius:8px; padding:12px; margin-bottom:10px; box-shadow:0 2px 4px rgba(49,71,58,.06);
+  }
+  #npcalc .product-fields{ display:grid; grid-template-columns:1fr 1fr auto; gap:10px; align-items:end; }
+  #npcalc .field-group{ display:flex; flex-direction:column; }
+  #npcalc .field-group label{ font-weight:800; color:var(--heading); margin-bottom:6px; font-size:.95em; }
+  #npcalc .field-group input{
+    padding:10px 12px; font-size:1em; background:#fff; border:1px solid #c4c8b8; border-radius:8px; color:#31473a; width:100%;
+  }
+  #npcalc .remove-product-btn{
+    background:#b03d3c; color:#fff; border:none; padding:10px 12px; border-radius:8px; font-weight:700; cursor:pointer; white-space:nowrap;
+  }
+  #npcalc .add-product-btn{
+    background:transparent; color:var(--heading); border:2px dashed #c4c8b8; padding:10px 14px; border-radius:8px; font-weight:700; cursor:pointer; width:100%; margin-top:8px;
+  }
+  #npcalc .add-product-btn:hover{ border-color:var(--heading); background:rgba(53,88,74,.05); }
+  #npcalc .reservoir-section{
+    background:#f7f5eb; padding:18px; border-radius:14px; margin-bottom:20px; box-shadow:0 2px 8px rgba(49,71,58,.08);
+  }
+  #npcalc .reservoir-section label{ display:block; font-weight:800; color:var(--heading); margin-bottom:8px; font-size:1.05em; }
+  #npcalc .reservoir-section input{
+    padding:12px 14px; font-size:1.05em; background:#fff; border:1px solid #c4c8b8; border-radius:10px; color:#31473a; max-width:360px; width:100%;
+  }
+  #npcalc .calculate-btn,#npcalc .download-btn{
+    background:var(--btn); color:#fff; border:none; padding:14px 32px; border-radius:12px; font-weight:800; cursor:pointer;
+    font-size:1.05em; display:block; margin:22px auto; box-shadow:0 4px 12px rgba(53,88,74,.2);
+    transition:transform .05s ease, box-shadow .08s ease, background-color .12s ease;
+  }
+  #npcalc .calculate-btn:hover,#npcalc .download-btn:hover{ background:var(--btn-hover); color:#fff; }
+  #npcalc .calculate-btn:focus,#npcalc .download-btn:focus{ outline:none; box-shadow:0 0 0 3px rgba(45,92,78,.18); }
+  #npcalc .calculate-btn:active,#npcalc .download-btn:active{ transform:translateY(1px); box-shadow:inset 0 2px 6px rgba(0,0,0,.15), 0 1px 3px rgba(0,0,0,.06); }
+  #npcalc .error-message{ color:var(--err); font-weight:800; text-align:center; margin:14px 0; font-size:1.02em; }
+  #npcalc .results-section{ margin-top:22px; }
+  #npcalc .feed-chart-matrix{
+    overflow-x:auto; border-radius:10px; border:1px solid #c4c8b8; background:#fff;
+    -webkit-overflow-scrolling:touch; scroll-snap-type:x proximity; position:relative; max-width:100%;
+  }
+  #npcalc .feed-chart-matrix table{ width:100%; border-collapse:collapse; background:#fff; table-layout:fixed; }
+  #npcalc .feed-chart-matrix th,#npcalc .feed-chart-matrix td{ border:1px solid #c4c8b8; padding:10px; text-align:center; vertical-align:middle; }
+  #npcalc .feed-chart-matrix thead th{ position:sticky; top:0; z-index:8; background:var(--heading); color:#fff; font-weight:800; }
+  #npcalc .matrix-week-header{ min-width:110px; white-space:nowrap; }
+  #npcalc .matrix-nutrient-header{ text-align:left; min-width:200px; position:sticky; left:0; z-index:12; }
+  #npcalc .matrix-nutrient-name{ background:#f7f5eb; font-weight:700; text-align:left; color:var(--heading); min-width:200px; position:sticky; left:0; z-index:10; border-right:2px solid #c4c8b8; }
+  #npcalc .matrix-data-cell{ background:#fff; min-width:100px; scroll-snap-align:start; }
+  #npcalc .matrix-rate-value{ font-weight:800; color:#2D5C4E; font-size:.95em; line-height:1.2; }
+  #npcalc .matrix-empty-cell{ background:#f9f9f9; color:#999; font-style:italic; font-size:1.02em; }
+  #npcalc .mobile-feed-list{ display:none; }
+  #npcalc .week-summary{
+    background:#fff; border:1px solid #c4c8b8; border-radius:12px; padding:14px; margin-bottom:12px;
+  }
+  #npcalc .week-summary h3{
+    margin:0 0 10px; font-family:'Inter',system-ui,sans-serif; color:var(--heading);
+    font-size:1.05em; font-weight:800;
+  }
+  #npcalc .week-summary ul{ list-style:none; padding:0; margin:0; display:grid; gap:8px; }
+  #npcalc .week-summary li{ display:flex; justify-content:space-between; gap:12px; padding:8px 10px; border:1px solid #eceae0; border-radius:8px; background:#fcfaf3; }
+  #npcalc .week-summary .n-name{ font-weight:700; color:#2D5C4E; }
+  #npcalc .week-summary .n-val{ font-family:'Inter',system-ui,sans-serif; font-weight:800; }
+  #npcalc #ho-watermark{
+    position:fixed; right:12px; bottom:10px; background:rgba(45,92,78,.08); color:#2D5C4E;
+    border:1px solid #E7E5DC; border-radius:10px; padding:6px 10px; font:600 12px/1 'Inter',system-ui,sans-serif; backdrop-filter:blur(2px); z-index:50;
+  }
+  #npcalc button,#npcalc input,#npcalc select{ -webkit-tap-highlight-color:transparent; }
+  #npcalc .add-week-btn,#npcalc .remove-week-btn,#npcalc .toggle-btn,#npcalc .remove-product-btn,#npcalc .add-product-btn,#npcalc .calculate-btn,#npcalc .download-btn{
+    outline:none; box-shadow:none; filter:none; transform:none;
+  }
+  #npcalc .add-week-btn:focus,#npcalc .remove-week-btn:focus,#npcalc .toggle-btn:focus,#npcalc .remove-product-btn:focus,#npcalc .add-product-btn:focus,
+  #npcalc .calculate-btn:focus,#npcalc .download-btn:focus,#npcalc input:focus,#npcalc select:focus{
+    outline:none; box-shadow:0 0 0 3px rgba(45,92,78,.18); border-color:var(--heading);
+  }
+  #npcalc button:focus-visible,#npcalc input:focus-visible,#npcalc select:focus-visible{ outline:none; box-shadow:0 0 0 3px rgba(45,92,78,.18); }
+  @media (max-width:1024px){
+    #npcalc .container{ padding:0 6px; }
+  }
+  @media (max-width:820px){
+    #npcalc .product-fields{ grid-template-columns:1fr 1fr; }
+    #npcalc .remove-product-btn{ justify-self:start; }
+  }
+  @media (max-width:700px){
+    #npcalc .calc-shell{ padding:16px; }
+    #npcalc .config-section select{ min-width:0; width:100%; }
+    #npcalc .stage{ padding:14px; }
+    #npcalc .reservoir-section{ padding:14px; }
+    #npcalc .product-fields{ grid-template-columns:1fr; }
+    #npcalc .remove-product-btn{ width:100%; }
+    #npcalc .feed-chart-matrix thead th,
+    #npcalc .matrix-nutrient-header,
+    #npcalc .matrix-nutrient-name{ position:static; left:auto; top:auto; }
+    #npcalc .feed-chart-matrix{ display:none; }
+    #npcalc .mobile-feed-list{ display:block; }
+    #npcalc .matrix-data-cell{ min-width:84px; }
+  }
+  @media (max-width:480px){
+    #npcalc{ padding-left:12px; padding-right:12px; }
+    #npcalc .calculate-btn,#npcalc .download-btn{ width:100%; }
+    #npcalc .week-controls{ width:100%; }
+    #npcalc .toggle-btn,#npcalc .remove-week-btn{ flex:1 1 48%; text-align:center; }
+  }
+  #MainContent:has(#npcalc),
+  .shopify-section:has(#npcalc),
+  .page-width:has(#npcalc),
+  .template-page .page-width:has(#npcalc){
+    overflow-x:hidden;
+    max-width:100%;
+  }
+  </script>
+
+  <script data-css-link="ho-shared-css-np" data-css-payload="ho-css-fallback-np" data-inline-style="ho-inline-css-np">
+    (function(){
+      var current = document.currentScript;
+      if(!current) return;
+      var linkId = current.dataset.cssLink;
+      var payloadId = current.dataset.cssPayload;
+      var inlineId = current.dataset.inlineStyle;
+      function inject(){
+        if(document.getElementById(inlineId)) return;
+        var payload = document.getElementById(payloadId);
+        if(!payload) return;
+        var css = payload.textContent;
+        if(!css) return;
+        var style = document.createElement('style');
+        style.id = inlineId;
+        style.textContent = css;
+        document.head.appendChild(style);
+      }
+      var linkEl = document.getElementById(linkId);
+      if(!linkEl){
+        inject();
+        return;
+      }
+      linkEl.addEventListener('error', inject, { once:true });
+      function verify(){
+        try{
+          var sheet = linkEl.sheet;
+          if(!sheet || !sheet.cssRules || !sheet.cssRules.length){
+            inject();
+          }
+        }catch(err){
+          inject();
+        }
+      }
+      if(document.readyState === 'complete'){
+        setTimeout(verify, 0);
+      }else{
+        window.addEventListener('load', function(){ setTimeout(verify, 0); }, { once:true });
+      }
+      setTimeout(verify, 1500);
+    })();
+  </script>
+
   <!-- SDKs (auto-disabled locally to prevent 404 spam) -->
   <script>
     (function(){
       var isShopDomain = location.host.includes("myshopify") || location.host.includes("hydrooasis.com.au");
       if (isShopDomain) {
-        document.write('<script src="/_sdk/element_sdk.js"><\/script>');
-        document.write('<script src="/_sdk/data_sdk.js"><\/script>');
+        document.write('<script src="/_sdk/element_sdk.js"><\\/script>');
+        document.write('<script src="/_sdk/data_sdk.js"><\\/script>');
       } else {
         console.warn("SDK disabled (local environment detected)");
       }
@@ -17,8 +261,9 @@
   <!-- jsPDF + autotable -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
-
- 
+</head>
+<body>
+<div id="npcalc">
 
   <div class="container">
     <div class="calc-shell">
@@ -491,3 +736,5 @@
   })();
   </script>
 </div>
+</body>
+</html>

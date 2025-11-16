@@ -1,16 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Water Cost Calculator</title>
+  <link rel="stylesheet" href="../../shared/styles/calculators.css" id="ho-shared-css-water">
+
+  <script type="application/json" id="ho-css-fallback-water">
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Inter:wght@400;500;600;700;800&display=swap');
+
+  #nutri-calc .saved-weeks-widget,
+  #water-calc .saved-weeks-widget,
+  #ecalc .saved-weeks-widget{
+    background:#f8faf8;
+    border:1px dashed #d4e4dd;
+    border-radius:12px;
+    padding:12px 14px;
+    margin:12px 0;
+    font-size:14px;
+    color:#2f3e39;
+    position:relative;
+    z-index:1;
+  }
+  #nutri-calc .saved-weeks-widget .widget-title,
+  #water-calc .saved-weeks-widget .widget-title,
+  #ecalc .saved-weeks-widget .widget-title{
+    font-weight:700;
+    color:#2D5C4E;
+    display:flex;
+    align-items:center;
+    gap:6px;
+    margin-bottom:6px;
+  }
+  #nutri-calc .saved-weeks-widget ul,
+  #water-calc .saved-weeks-widget ul,
+  #ecalc .saved-weeks-widget ul{
+    list-style:none;
+    padding:0;
+    margin:0;
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+  }
+  #nutri-calc .saved-weeks-widget .sw-stage,
+  #water-calc .saved-weeks-widget .sw-stage,
+  #ecalc .saved-weeks-widget .sw-stage{ margin-top:6px; }
+  #nutri-calc .saved-weeks-widget .sw-stage-label,
+  #water-calc .saved-weeks-widget .sw-stage-label,
+  #ecalc .saved-weeks-widget .sw-stage-label{
+    font-weight:700;
+    color:#1f3b33;
+    margin-bottom:4px;
+  }
+  #nutri-calc .saved-weeks-widget .sw-week,
+  #water-calc .saved-weeks-widget .sw-week,
+  #ecalc .saved-weeks-widget .sw-week{
+    font-weight:600;
+    color:#1f3b33;
+    margin-right:6px;
+  }
+  #nutri-calc .saved-weeks-widget .sw-meta,
+  #water-calc .saved-weeks-widget .sw-meta,
+  #ecalc .saved-weeks-widget .sw-meta{
+    font-size:12px;
+    color:#52615b;
+  }
+  #nutri-calc .saved-weeks-widget .sw-empty,
+  #water-calc .saved-weeks-widget .sw-empty,
+  #ecalc .saved-weeks-widget .sw-empty{
+    font-size:13px;
+    color:#52615b;
+  }
+  #nutri-calc .saved-weeks-toggle,
+  #water-calc .saved-weeks-toggle,
+  #ecalc .saved-weeks-toggle,
+  #harvest-calc .saved-weeks-toggle{
+    display:flex;
+    justify-content:flex-end;
+    margin:10px 0 0;
+    color:#456E62;
+    font-size:14px;
+    gap:8px;
+  }
+  #nutri-calc .saved-weeks-toggle .toggle-container,
+  #water-calc .saved-weeks-toggle .toggle-container,
+  #ecalc .saved-weeks-toggle .toggle-container,
+  #harvest-calc .saved-weeks-toggle .toggle-container{
+    margin-left:auto;
+  }
+  #nutri-calc .saved-weeks-toggle span,
+  #water-calc .saved-weeks-toggle span,
+  #ecalc .saved-weeks-toggle span,
+  #harvest-calc .saved-weeks-toggle span{
+    font-weight:600;
+  }
+
+  :root{
+    --bg:#FDFBF4; --text:#333333; --heading:#2D5C4E;
+    --btn:#2D5C4E; --btn-hover:#A76DAB; --btn-text:#FFFFFF;
+    --card:#FFFFFF; --card-border:#E7E5DC; --icon:#2D5C4E; --err:#BE5C5C;
+    --sec-border:#D9E2DE; --sec-head-bg:#F3F7F5; --sec-head-text:#2D5C4E;
+    --tile-bg:#FFFFFF; --tile-border:#E7E5DC; --tile-label:#5C6F69; --tile-value:#2D5C4E;
+  }
+
+  #water-calc, #water-calc * { box-sizing:border-box; }
+  #water-calc{
+    background:var(--bg); color:var(--text); padding:40px 20px;
+    font-family:'Nunito', sans-serif; line-height:1.6;
+  }
+  #water-calc .wrap{ max-width:1100px; margin:0 auto; }
+  #water-calc .card{
+    background:var(--card); border:1px solid var(--card-border); border-radius:14px;
+    padding:28px 24px 34px; box-shadow:0 2px 8px rgba(49,71,58,.08);
+    position:relative; overflow:hidden; margin:18px 0;
+  }
+  #water-calc .wm-img{
+    position:absolute; right:14px; bottom:14px; width:min(160px,20%);
+    opacity:.12; pointer-events:none; user-select:none; z-index:0;
+    filter:saturate(.95) contrast(.95);
+  }
+  #water-calc .title-block{ text-align:center; margin:4px 0 6px; position:relative; z-index:1; }
+  #water-calc .title-block h1{
+    font-family:'Inter',system-ui,sans-serif; font-weight:800; letter-spacing:.2px;
+    color:var(--heading); margin:0; font-size:clamp(28px,4vw,40px);
+  }
+  #water-calc .subtitle{
+    text-align:center; color:#56645d; font-family:'Inter',system-ui,sans-serif;
+    font-weight:500; font-size:clamp(12px,2.1vw,14px); margin:0 0 16px;
+  }
+  #water-calc .sec-title{
+    color:var(--heading); font-weight:800; font-size:18px; display:flex;
+    align-items:center; gap:8px; margin:14px 0 12px; position:relative; z-index:1;
+  }
+  #water-calc .dot{ width:18px; height:18px; border-radius:4px; background:var(--icon); display:inline-block; }
+  #water-calc .grid{ display:grid; gap:14px; position:relative; z-index:1; }
+  #water-calc .g-3{ grid-template-columns: repeat(3,1fr); }
+  #water-calc .g-2{ grid-template-columns: repeat(2,1fr); }
+  @media (max-width:820px){ #water-calc .g-3, #water-calc .g-2{ grid-template-columns:1fr; } }
+  #water-calc label{ display:block; font-size:13px; color:#516A64; margin:2px 0 6px; }
+  #water-calc .input, #water-calc select{
+    width:100%; padding:12px 12px; border-radius:10px; border:1px solid #c4c8b8; background:#fff; font-size:16px;
+    appearance:none; -webkit-appearance:none; color:#31473a;
+  }
+  #water-calc .help{ font-size:12px; color:#6B7C77; margin-top:6px; }
+  #water-calc .error{ border-color:var(--err)!important; }
+  #water-calc .error-msg{ color:var(--err); font-size:12px; margin:8px 0; display:none; text-align:center; font-weight:800; }
+  #water-calc .error-msg.show{ display:block; }
+  #water-calc .btn{
+    background:var(--btn); color:var(--btn-text); border:1px solid var(--btn);
+    border-radius:12px; padding:14px 36px; font-weight:800; cursor:pointer; font-size:1.1em;
+    display:inline-block; box-shadow:0 4px 12px rgba(53,88,74,.2);
+    transition: transform .05s ease, box-shadow .08s ease, filter .08s ease, background-color .12s ease, border-color .12s ease;
+    user-select:none; -webkit-tap-highlight-color:transparent;
+    -webkit-text-fill-color: var(--btn-text);
+  }
+  #water-calc .btn:hover{
+    background:var(--btn-hover) !important; border-color:var(--btn-hover) !important;
+    color:var(--btn-text) !important; -webkit-text-fill-color:var(--btn-text) !important;
+  }
+  #water-calc .btn:focus{ outline:none; box-shadow:0 0 0 3px rgba(45,92,78,.18); }
+  #water-calc .btn:is(:active,.is-pressed){
+    transform: translateY(1px);
+    box-shadow: inset 0 2px 6px rgba(0,0,0,.15), 0 1px 3px rgba(0,0,0,.06);
+    filter: saturate(.98) brightness(.98);
+  }
+  #water-calc .center{ text-align:center; }
+  #water-calc .sec-card{
+    border:1px solid var(--sec-border); border-radius:12px; padding:12px; background:#fff; margin-top:14px;
+  }
+  #water-calc .sec-head{
+    display:flex; align-items:center; gap:8px; background:var(--sec-head-bg); color:var(--sec-head-text);
+    padding:8px 10px; border-radius:9px; font-weight:800; font-size:14px;
+  }
+  #water-calc .sec-head .icon{ font-size:16px; line-height:1; }
+  #water-calc .stats{
+    display:grid; grid-template-columns: repeat(5, minmax(120px,1fr)); gap:10px; padding:10px 6px 6px;
+  }
+  @media (max-width:980px){ #water-calc .stats{ grid-template-columns: repeat(2, minmax(140px,1fr)); } }
+  @media (max-width:560px){ #water-calc .stats{ grid-template-columns: 1fr; } }
+  #water-calc .stat{
+    background:var(--tile-bg); border:1px solid var(--tile-border); border-radius:10px; padding:10px 12px; text-align:center;
+    box-shadow:0 2px 6px rgba(0,0,0,.03);
+  }
+  #water-calc .stat .label{ font-size:12px; color:var(--tile-label); font-weight:700; letter-spacing:.2px; }
+  #water-calc .stat .value{ margin-top:4px; font-size:18px; font-weight:800; color:var(--tile-value); }
+  #ho-watermark{
+    position:fixed; right:16px; bottom:12px; background:rgba(45,92,78,.08); color:#2D5C4E;
+    border:1px solid #E7E5DC; border-radius:10px; padding:6px 10px; font:600 12px/1 'Inter',system-ui,sans-serif;
+    backdrop-filter:blur(2px); z-index:50; pointer-events:none; user-select:none;
+  }
+  #water-calc .btn, #water-calc .btn *{
+    color:var(--btn-text) !important; -webkit-text-fill-color:var(--btn-text) !important;
+  }
+  </script>
+
+  <script data-css-link="ho-shared-css-water" data-css-payload="ho-css-fallback-water" data-inline-style="ho-inline-css-water">
+    (function(){
+      var current = document.currentScript;
+      if(!current) return;
+      var linkId = current.dataset.cssLink;
+      var payloadId = current.dataset.cssPayload;
+      var inlineId = current.dataset.inlineStyle;
+      function inject(){
+        if(document.getElementById(inlineId)) return;
+        var payload = document.getElementById(payloadId);
+        if(!payload) return;
+        var css = payload.textContent;
+        if(!css) return;
+        var style = document.createElement('style');
+        style.id = inlineId;
+        style.textContent = css;
+        document.head.appendChild(style);
+      }
+      var linkEl = document.getElementById(linkId);
+      if(!linkEl){
+        inject();
+        return;
+      }
+      linkEl.addEventListener('error', inject, { once:true });
+      function verify(){
+        try{
+          var sheet = linkEl.sheet;
+          if(!sheet || !sheet.cssRules || !sheet.cssRules.length){
+            inject();
+          }
+        }catch(err){
+          inject();
+        }
+      }
+      if(document.readyState === 'complete'){
+        setTimeout(verify, 0);
+      }else{
+        window.addEventListener('load', function(){ setTimeout(verify, 0); }, { once:true });
+      }
+      setTimeout(verify, 1500);
+    })();
+  </script>
+
+  <!-- SDKs (kept consistent with your other calcs) -->
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
 <body>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Water Cost Calculator</title>
-  <link rel="stylesheet" href="../../shared/styles/calculators.css">
-
-<!-- SDKs (kept consistent with your other calcs) -->
-<script src="/_sdk/element_sdk.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
-<!-- Fonts -->
-
-
 
 <div id="water-calc">
   <div class="wrap">
@@ -622,3 +853,4 @@
   });
 </script>
 </body>
+</html>
