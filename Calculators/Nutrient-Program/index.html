@@ -654,11 +654,18 @@
   /* ===========================================================
      PDF EXPORT
   =========================================================== */
+  function getJsPdfCtor(){
+    const globalPdf = window.jspdf || window.jspPDF || window.jsPDF;
+    if(!globalPdf) return null;
+    return typeof globalPdf === 'function' ? globalPdf : globalPdf.jsPDF || null;
+  }
+
   async function downloadPDF(){
-    if (!calculationResults || !window.jspdf) return;
+    if (!calculationResults) return;
+    const JsPdf = getJsPdfCtor();
+    if(!JsPdf) return;
     try{
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF('landscape');
+      const doc = new JsPdf('landscape');
       const branding = window.hydroPdfBranding;
       const brandKit = branding?.decorate ? await branding.decorate(doc, {
         watermarkOpacity: 0.12,
