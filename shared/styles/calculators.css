@@ -230,6 +230,17 @@
   #harvest-calc .title-block{ text-align:center; margin:6px 0 10px; position:relative; z-index:1; }
   #harvest-calc .title-block h1{ color:var(--heading); font-weight:800; font-size:clamp(26px,3.2vw,36px); margin:0; letter-spacing:.3px; }
   #harvest-calc .subtitle{ color:#456E62; font-size:14px; }
+  #harvest-calc .info-banner{
+    background:#ecfeff;
+    border:1px solid #06b6d4;
+    color:#0f172a;
+    border-radius:12px;
+    padding:10px 14px;
+    font-size:14px;
+    line-height:1.4;
+    margin-top:12px;
+    text-align:left;
+  }
 
   /* Section titles */
   #harvest-calc .sec-title{ color:var(--heading); font-weight:800; font-size:18px; display:flex; align-items:center; gap:8px; margin:14px 0 12px; position:relative; z-index:1; }
