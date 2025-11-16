@@ -135,6 +135,35 @@
     return defaults;
   }
 
+  function loadSavedStageWeeks(){
+    const empty = { vegetative: [], flowering: [], totalCount: 0 };
+    try{
+      if(typeof window === 'undefined' || !window.localStorage) return empty;
+      const stored = JSON.parse(window.localStorage.getItem(BRIDGE_STORAGE_KEY) || '{}');
+      const stageWeeks = stored?.stageWeeks || {};
+      const parseStage = (stageKey)=>{
+        const weeksObj = stageWeeks[stageKey] || {};
+        return Object.keys(weeksObj).map(weekKey=>{
+          const weekNumber = parseInt(weekKey, 10);
+          if(!Number.isFinite(weekNumber)) return null;
+          const entry = weeksObj[weekKey] || {};
+          const nutrient = Number(entry?.nutrient?.weeklyCost);
+          const water = Number(entry?.water?.weeklyCost);
+          const electricity = Number(entry?.electricity?.weeklyCost);
+          const hasValue = [nutrient, water, electricity].some(v=>Number.isFinite(v));
+          if(!hasValue) return null;
+          return { weekNumber, nutrient, water, electricity };
+        }).filter(Boolean).sort((a,b)=>a.weekNumber - b.weekNumber);
+      };
+      empty.vegetative = parseStage('vegetative');
+      empty.flowering = parseStage('flowering');
+      empty.totalCount = empty.vegetative.length + empty.flowering.length;
+    }catch(err){
+      console.warn('Hydro Oasis stage week load skipped:', err);
+    }
+    return empty;
+  }
+
   function getWeekDefaults(){
     const prefills = loadBridgePrefills();
     if(!prefills.hasValues) return null;
@@ -145,9 +174,22 @@
     };
   }
 
-  function updatePrefillNotice(){
+  function updatePrefillNotice(savedStageWeeks){
     const banner = $('prefill-notice');
     if(!banner) return;
+    const saved = savedStageWeeks || loadSavedStageWeeks();
+    if(saved.totalCount > 0){
+      const bits = [];
+      if(saved.vegetative.length){
+        bits.push(`Vegetative: ${saved.vegetative.map(w=>`Week ${w.weekNumber}`).join(', ')}`);
+      }
+      if(saved.flowering.length){
+        bits.push(`Flowering: ${saved.flowering.map(w=>`Week ${w.weekNumber}`).join(', ')}`);
+      }
+      banner.innerHTML = `<strong>Auto-filled from saved calculators:</strong> ${bits.join(' • ')}<br><span style="font-size:12px;">These weeks were saved from the Nutrient, Water, and Electricity calculators.</span>`;
+      banner.style.display = 'block';
+      return;
+    }
     const prefills = loadBridgePrefills();
     if(!prefills.hasValues){
       banner.style.display = 'none';
@@ -165,12 +207,13 @@
   /* ========= Weeks CRUD ========= */
   function addWeek(section, initialValues){
     const weekId = `week-${weekCounter++}`;
-    const defaults = initialValues || getWeekDefaults();
+    const defaults = (initialValues ?? getWeekDefaults()) || {};
     const weekData = {
       id: weekId,
       nutrient: Number.isFinite(defaults?.nutrient) ? defaults.nutrient : 0,
       water: Number.isFinite(defaults?.water) ? defaults.water : 0,
-      electricity: Number.isFinite(defaults?.electricity) ? defaults.electricity : 0
+      electricity: Number.isFinite(defaults?.electricity) ? defaults.electricity : 0,
+      weekNumber: Number.isFinite(initialValues?.weekNumber) ? initialValues.weekNumber : null
     };
 
     if(section==='vegetative'){ vegetativeWeeks.push(weekData); renderWeeks('vegetative'); }
@@ -206,10 +249,13 @@
       return;
     }
 
-    container.innerHTML = weeks.map((week, i)=>`
+    container.innerHTML = weeks.map((week, i)=>{
+      const weekLabel = Number.isFinite(week.weekNumber) ? week.weekNumber : (i+1);
+      const prefix = section==='vegetative'?'Veg':'Flower';
+      return `
       <div class="week-card">
         <div class="week-head">
-          <div class="week-title">${section==='vegetative'?'Veg':'Flower'} – Week ${i+1}</div>
+          <div class="week-title">${prefix} – Week ${weekLabel}</div>
           <button class="btn remove" type="button" onclick="removeWeek('${section}','${week.id}')">Remove</button>
         </div>
 
@@ -231,7 +277,7 @@
           </div>
         </div>
       </div>
-    `).join('');
+    `;}).join('');
   }
 
   /* ========= Validation & Calculation ========= */
@@ -416,14 +462,42 @@
       }
     }catch(e){ console.warn('Element SDK init skipped:', e); }
 
-    updatePrefillNotice();
-    const prefills = loadBridgePrefills();
-    if(prefills.hasValues){
-      addWeek('vegetative');
-      addWeek('flowering');
+    const savedWeeks = loadSavedStageWeeks();
+    updatePrefillNotice(savedWeeks);
+    if(savedWeeks.totalCount > 0){
+      if(savedWeeks.vegetative.length){
+        savedWeeks.vegetative.forEach(week=>{
+          addWeek('vegetative', {
+            nutrient: Number.isFinite(week.nutrient) ? week.nutrient : 0,
+            water: Number.isFinite(week.water) ? week.water : 0,
+            electricity: Number.isFinite(week.electricity) ? week.electricity : 0,
+            weekNumber: week.weekNumber
+          });
+        });
+      }else{
+        renderWeeks('vegetative');
+      }
+      if(savedWeeks.flowering.length){
+        savedWeeks.flowering.forEach(week=>{
+          addWeek('flowering', {
+            nutrient: Number.isFinite(week.nutrient) ? week.nutrient : 0,
+            water: Number.isFinite(week.water) ? week.water : 0,
+            electricity: Number.isFinite(week.electricity) ? week.electricity : 0,
+            weekNumber: week.weekNumber
+          });
+        });
+      }else{
+        renderWeeks('flowering');
+      }
     }else{
-      renderWeeks('vegetative');
-      renderWeeks('flowering');
+      const prefills = loadBridgePrefills();
+      if(prefills.hasValues){
+        addWeek('vegetative');
+        addWeek('flowering');
+      }else{
+        renderWeeks('vegetative');
+        renderWeeks('flowering');
+      }
     }
 
     // Wire PDF

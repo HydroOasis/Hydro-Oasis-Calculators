@@ -63,6 +63,28 @@
       <!-- ================= Results container (new layout) ================= -->
       <div id="resultsContainer" style="position:relative; z-index:1;"></div>
 
+      <div id="nutrientWeekSave" class="week-save" style="display:none; margin-top:14px;">
+        <div class="sec-title"><span class="dot" aria-hidden="true"></span><span>Send this week to the Harvest calculator</span></div>
+        <div class="grid g-3" style="gap:12px;">
+          <div>
+            <label for="nutrientWeekStage">Stage</label>
+            <select id="nutrientWeekStage" class="input">
+              <option value="vegetative">Vegetative</option>
+              <option value="flowering">Generative (Flowering)</option>
+            </select>
+          </div>
+          <div>
+            <label for="nutrientWeekNumber">Week Number</label>
+            <input id="nutrientWeekNumber" type="number" class="input" min="1" step="1" placeholder="e.g., 4">
+            <div class="help">Choose the exact veg/flower week this cost represents.</div>
+          </div>
+          <div class="center" style="align-self:end;">
+            <button id="nutrientWeekSaveBtn" class="btn btn-ghost" type="button">Save Week for Harvest</button>
+            <div id="nutrientWeekStatus" class="help" style="margin-top:6px;"></div>
+          </div>
+        </div>
+      </div>
+
       <!-- PDF -->
       <div class="center" style="margin-top:12px;">
         <button id="downloadBtn" class="btn" type="button" style="display:none;">Download Results (PDF)</button>
@@ -80,6 +102,8 @@
   };
 
   const BRIDGE_STORAGE_KEY = 'hoCalcBridge';
+  const NUTRIENT_STAGE_LABELS = { vegetative: 'Vegetative', flowering: 'Flowering (Generative)' };
+  let latestWeeklyTotal = null;
   function saveBridgeData(calculator, payload){
     try{
       if(typeof window === 'undefined' || !window.localStorage) return;
@@ -88,6 +112,71 @@
       window.localStorage.setItem(BRIDGE_STORAGE_KEY, JSON.stringify(existing));
     }catch(err){
       console.warn('Hydro Oasis bridge save skipped:', err);
+    }
+  }
+
+  function nutrientNormalizeStage(stage){
+    return (stage === 'flowering' || stage === 'generative') ? 'flowering' : 'vegetative';
+  }
+  function nutrientStageLabel(stage){
+    return NUTRIENT_STAGE_LABELS[nutrientNormalizeStage(stage)] || NUTRIENT_STAGE_LABELS.vegetative;
+  }
+  function saveNutrientWeekSnapshot(stage, weekNumber, weeklyCost){
+    if(!(weekNumber > 0) || !Number.isFinite(weeklyCost)) return false;
+    try{
+      if(typeof window === 'undefined' || !window.localStorage) return false;
+      const data = JSON.parse(window.localStorage.getItem(BRIDGE_STORAGE_KEY) || '{}');
+      if(!data.stageWeeks) data.stageWeeks = { vegetative:{}, flowering:{} };
+      const normalizedStage = nutrientNormalizeStage(stage);
+      if(!data.stageWeeks[normalizedStage]) data.stageWeeks[normalizedStage] = {};
+      const weekKey = String(weekNumber);
+      const existingWeek = data.stageWeeks[normalizedStage][weekKey] || {};
+      existingWeek.nutrient = { weeklyCost, updatedAt: Date.now() };
+      data.stageWeeks[normalizedStage][weekKey] = existingWeek;
+      window.localStorage.setItem(BRIDGE_STORAGE_KEY, JSON.stringify(data));
+      return true;
+    }catch(err){
+      console.warn('Hydro Oasis week save skipped:', err);
+      return false;
+    }
+  }
+
+  function resetNutrientWeekPanel(){
+    const panel = $('nutrientWeekSave');
+    if(panel) panel.style.display = 'none';
+    const status = $('nutrientWeekStatus');
+    if(status){ status.textContent=''; status.style.color = '#6B7C77'; }
+  }
+
+  function showNutrientWeekPanel(){
+    const panel = $('nutrientWeekSave');
+    if(panel) panel.style.display = 'block';
+    const status = $('nutrientWeekStatus');
+    if(status){ status.textContent=''; status.style.color = '#6B7C77'; }
+  }
+
+  function handleNutrientWeekSave(){
+    const status = $('nutrientWeekStatus');
+    if(status){ status.textContent=''; status.style.color = '#6B7C77'; }
+    if(!Number.isFinite(latestWeeklyTotal)){
+      if(status){ status.textContent = 'Run the calculator before saving.'; status.style.color = '#b91c1c'; }
+      return;
+    }
+    const stage = $('nutrientWeekStage')?.value || 'vegetative';
+    const weekNumber = parseInt($('nutrientWeekNumber')?.value, 10);
+    if(!(weekNumber > 0)){
+      if(status){ status.textContent = 'Enter a valid week number (1 or higher).'; status.style.color = '#b91c1c'; }
+      return;
+    }
+    const ok = saveNutrientWeekSnapshot(stage, weekNumber, latestWeeklyTotal);
+    if(status){
+      if(ok){
+        status.textContent = `Saved ${nutrientStageLabel(stage)} week ${weekNumber} for Harvest.`;
+        status.style.color = '#1f7a54';
+      }else{
+        status.textContent = 'Unable to save this week. Please try again.';
+        status.style.color = '#b91c1c';
+      }
     }
   }
 
@@ -206,6 +295,8 @@
     const resultsHost = $('resultsContainer');
     resultsHost.innerHTML = '';
     $('downloadBtn').style.display = 'none';
+    latestWeeklyTotal = null;
+    resetNutrientWeekPanel();
     if(error) return;
 
     const numPlants = parseFloat($('numPlants').value);
@@ -283,6 +374,8 @@
       monthlyCost: totalMonth,
       yearlyCost: totalYear
     });
+    latestWeeklyTotal = totalWeek;
+    showNutrientWeekPanel();
     $('downloadBtn').style.display = 'inline-block';
   }
 
@@ -356,10 +449,12 @@
     const addBtn = document.getElementById('addNutrientBtn');
     const calcBtn = document.getElementById('calculateBtn');
     const dlBtn = document.getElementById('downloadBtn');
+    const saveBtn = document.getElementById('nutrientWeekSaveBtn');
 
     if (addBtn) addBtn.addEventListener('click', addNutrientCard);
     if (calcBtn) calcBtn.addEventListener('click', calculate);
     if (dlBtn) dlBtn.addEventListener('click', downloadPDF);
+    if (saveBtn) saveBtn.addEventListener('click', handleNutrientWeekSave);
   });
 </script>
 
