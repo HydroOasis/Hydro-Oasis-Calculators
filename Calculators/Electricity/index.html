@@ -1149,11 +1149,17 @@ function displayTotals(t){
 }
 
 /* ========= PDF ========= */
+function getJsPdfCtor(){
+  const globalPdf=window.jspdf || window.jspPDF || window.jsPDF;
+  if(!globalPdf) return null;
+  return typeof globalPdf==='function'?globalPdf:(globalPdf.jsPDF||null);
+}
+
 async function downloadPDF(){
-  if(!window.jspdf) return;
+  const JsPdf=getJsPdfCtor();
+  if(!JsPdf) return;
   try{
-    const { jsPDF }=window.jspdf;
-    const doc=new jsPDF();
+    const doc=new JsPdf();
     const branding = window.hydroPdfBranding;
     const brandKit = branding?.decorate ? await branding.decorate(doc, {
       watermarkOpacity: 0.12,
