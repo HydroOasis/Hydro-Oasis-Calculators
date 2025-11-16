@@ -230,6 +230,68 @@
   #harvest-calc .title-block{ text-align:center; margin:6px 0 10px; position:relative; z-index:1; }
   #harvest-calc .title-block h1{ color:var(--heading); font-weight:800; font-size:clamp(26px,3.2vw,36px); margin:0; letter-spacing:.3px; }
   #harvest-calc .subtitle{ color:#456E62; font-size:14px; }
+  #nutri-calc .saved-weeks-widget,
+  #water-calc .saved-weeks-widget,
+  #ecalc .saved-weeks-widget{
+    background:#f8faf8;
+    border:1px dashed #d4e4dd;
+    border-radius:12px;
+    padding:12px 14px;
+    margin:12px 0;
+    font-size:14px;
+    color:#2f3e39;
+    position:relative;
+    z-index:1;
+  }
+  #nutri-calc .saved-weeks-widget .widget-title,
+  #water-calc .saved-weeks-widget .widget-title,
+  #ecalc .saved-weeks-widget .widget-title{
+    font-weight:700;
+    color:#2D5C4E;
+    display:flex;
+    align-items:center;
+    gap:6px;
+    margin-bottom:6px;
+  }
+  #nutri-calc .saved-weeks-widget ul,
+  #water-calc .saved-weeks-widget ul,
+  #ecalc .saved-weeks-widget ul{
+    list-style:none;
+    padding:0;
+    margin:0;
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+  }
+  #nutri-calc .saved-weeks-widget .sw-stage,
+  #water-calc .saved-weeks-widget .sw-stage,
+  #ecalc .saved-weeks-widget .sw-stage{ margin-top:6px; }
+  #nutri-calc .saved-weeks-widget .sw-stage-label,
+  #water-calc .saved-weeks-widget .sw-stage-label,
+  #ecalc .saved-weeks-widget .sw-stage-label{
+    font-weight:700;
+    color:#1f3b33;
+    margin-bottom:4px;
+  }
+  #nutri-calc .saved-weeks-widget .sw-week,
+  #water-calc .saved-weeks-widget .sw-week,
+  #ecalc .saved-weeks-widget .sw-week{
+    font-weight:600;
+    color:#1f3b33;
+    margin-right:6px;
+  }
+  #nutri-calc .saved-weeks-widget .sw-meta,
+  #water-calc .saved-weeks-widget .sw-meta,
+  #ecalc .saved-weeks-widget .sw-meta{
+    font-size:12px;
+    color:#52615b;
+  }
+  #nutri-calc .saved-weeks-widget .sw-empty,
+  #water-calc .saved-weeks-widget .sw-empty,
+  #ecalc .saved-weeks-widget .sw-empty{
+    font-size:13px;
+    color:#52615b;
+  }
   #harvest-calc .info-banner{
     background:#ecfeff;
     border:1px solid #06b6d4;

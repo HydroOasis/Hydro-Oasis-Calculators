@@ -21,6 +21,11 @@
         <div class="subtitle">Estimate per-litre and time-based costs for your feed programme</div>
       </div>
 
+      <div id="nutrientSavedWeeks" class="saved-weeks-widget" style="display:none;">
+        <div class="widget-title">📘 Saved Weeks for Harvest</div>
+        <div id="nutrientSavedWeeksList"></div>
+      </div>
+
       <!-- Plant info -->
       <div class="sec-title"><span class="dot" aria-hidden="true"></span><span>Plant Information</span></div>
       <div class="grid g-3">
@@ -103,6 +108,8 @@
 
   const BRIDGE_STORAGE_KEY = 'hoCalcBridge';
   const NUTRIENT_STAGE_LABELS = { vegetative: 'Vegetative', flowering: 'Flowering (Generative)' };
+  const SAVED_WEEK_CALC_LABELS = { nutrient: 'Nutrients', water: 'Water', electricity: 'Electricity' };
+  const SAVED_WEEK_STAGE_LABELS = { vegetative: 'Vegetative', flowering: 'Flowering' };
   let latestWeeklyTotal = null;
   function saveBridgeData(calculator, payload){
     try{
@@ -141,6 +148,60 @@
     }
   }
 
+  function getSavedWeeksSummary(){
+    const empty = { vegetative: [], flowering: [], totalCount: 0 };
+    try{
+      if(typeof window === 'undefined' || !window.localStorage) return empty;
+      const data = JSON.parse(window.localStorage.getItem(BRIDGE_STORAGE_KEY) || '{}');
+      const stageWeeks = data?.stageWeeks || {};
+      const parseStage = (stageKey)=>{
+        const stageData = stageWeeks[stageKey] || {};
+        return Object.keys(stageData).map(weekKey=>{
+          const weekNumber = parseInt(weekKey, 10);
+          if(!Number.isFinite(weekNumber)) return null;
+          const entry = stageData[weekKey] || {};
+          const calculators = Object.entries(SAVED_WEEK_CALC_LABELS).reduce((list,[calcKey,label])=>{
+            const value = Number(entry?.[calcKey]?.weeklyCost);
+            if(Number.isFinite(value)) list.push(label);
+            return list;
+          }, []);
+          if(calculators.length === 0) return null;
+          return { weekNumber, calculators };
+        }).filter(Boolean).sort((a,b)=>a.weekNumber - b.weekNumber);
+      };
+      const vegetative = parseStage('vegetative');
+      const flowering = parseStage('flowering');
+      return { vegetative, flowering, totalCount: vegetative.length + flowering.length };
+    }catch(err){
+      console.warn('Hydro Oasis saved weeks read skipped:', err);
+      return empty;
+    }
+  }
+
+  function updateNutrientSavedWeeksWidget(){
+    const widget = $('nutrientSavedWeeks');
+    const body = $('nutrientSavedWeeksList');
+    if(!widget || !body) return;
+    const summary = getSavedWeeksSummary();
+    widget.style.display = 'block';
+    if(summary.totalCount === 0){
+      body.innerHTML = '<div class="sw-empty">No weeks saved yet. Save a week after running the Nutrient, Water, or Electricity calculators.</div>';
+      return;
+    }
+    const sections = [];
+    ['vegetative','flowering'].forEach(stage=>{
+      if(summary[stage].length){
+        const label = SAVED_WEEK_STAGE_LABELS[stage] || stage;
+        const rows = summary[stage].map(week=>{
+          const calcList = week.calculators.join(', ');
+          return `<li><span class="sw-week">Week ${week.weekNumber}</span><span class="sw-meta">${calcList}</span></li>`;
+        }).join('');
+        sections.push(`<div class="sw-stage"><div class="sw-stage-label">${label}</div><ul>${rows}</ul></div>`);
+      }
+    });
+    body.innerHTML = sections.join('');
+  }
+
   function resetNutrientWeekPanel(){
     const panel = $('nutrientWeekSave');
     if(panel) panel.style.display = 'none';
@@ -173,6 +234,7 @@
       if(ok){
         status.textContent = `Saved ${nutrientStageLabel(stage)} week ${weekNumber} for Harvest.`;
         status.style.color = '#1f7a54';
+        updateNutrientSavedWeeksWidget();
       }else{
         status.textContent = 'Unable to save this week. Please try again.';
         status.style.color = '#b91c1c';
@@ -455,6 +517,12 @@
     if (calcBtn) calcBtn.addEventListener('click', calculate);
     if (dlBtn) dlBtn.addEventListener('click', downloadPDF);
     if (saveBtn) saveBtn.addEventListener('click', handleNutrientWeekSave);
+    updateNutrientSavedWeeksWidget();
+    if(typeof window !== 'undefined'){
+      window.addEventListener('storage', event=>{
+        if(event.key === BRIDGE_STORAGE_KEY) updateNutrientSavedWeeksWidget();
+      });
+    }
   });
 </script>
 

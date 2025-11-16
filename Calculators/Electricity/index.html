@@ -25,6 +25,11 @@
       <p class="subtitle">Calculate your energy usage and cost breakdown</p>
     </div>
 
+    <div id="electricSavedWeeks" class="saved-weeks-widget" style="display:none;">
+      <div class="widget-title">📘 Saved Weeks for Harvest</div>
+      <div id="electricSavedWeeksList"></div>
+    </div>
+
     <!-- ========== Rate Configuration ========== -->
     <div class="section">
       <h2 class="section-title">⚡ Rate Configuration</h2>
@@ -263,6 +268,8 @@ let shoulderEnabled = false;
 
 const BRIDGE_STORAGE_KEY = 'hoCalcBridge';
 const ELECTRIC_STAGE_LABELS = { vegetative: 'Vegetative', flowering: 'Flowering (Generative)' };
+const SAVED_WEEK_CALC_LABELS = { nutrient: 'Nutrients', water: 'Water', electricity: 'Electricity' };
+const SAVED_WEEK_STAGE_LABELS = { vegetative: 'Vegetative', flowering: 'Flowering' };
 function saveBridgeData(calculator, payload){
   try{
     if(typeof window === 'undefined' || !window.localStorage) return;
@@ -300,6 +307,60 @@ function saveElectricWeekSnapshot(stage, weekNumber, weeklyCost){
   }
 }
 
+function getSavedWeeksSummary(){
+  const empty = { vegetative: [], flowering: [], totalCount: 0 };
+  try{
+    if(typeof window === 'undefined' || !window.localStorage) return empty;
+    const data = JSON.parse(window.localStorage.getItem(BRIDGE_STORAGE_KEY) || '{}');
+    const stageWeeks = data?.stageWeeks || {};
+    const parseStage = (stageKey)=>{
+      const stageData = stageWeeks[stageKey] || {};
+      return Object.keys(stageData).map(weekKey=>{
+        const weekNumber = parseInt(weekKey, 10);
+        if(!Number.isFinite(weekNumber)) return null;
+        const entry = stageData[weekKey] || {};
+        const calculators = Object.entries(SAVED_WEEK_CALC_LABELS).reduce((list,[calcKey,label])=>{
+          const value = Number(entry?.[calcKey]?.weeklyCost);
+          if(Number.isFinite(value)) list.push(label);
+          return list;
+        }, []);
+        if(calculators.length === 0) return null;
+        return { weekNumber, calculators };
+      }).filter(Boolean).sort((a,b)=>a.weekNumber - b.weekNumber);
+    };
+    const vegetative = parseStage('vegetative');
+    const flowering = parseStage('flowering');
+    return { vegetative, flowering, totalCount: vegetative.length + flowering.length };
+  }catch(err){
+    console.warn('Hydro Oasis saved weeks read skipped:', err);
+    return empty;
+  }
+}
+
+function updateElectricSavedWeeksWidget(){
+  const widget = document.getElementById('electricSavedWeeks');
+  const body = document.getElementById('electricSavedWeeksList');
+  if(!widget || !body) return;
+  const summary = getSavedWeeksSummary();
+  widget.style.display = 'block';
+  if(summary.totalCount === 0){
+    body.innerHTML = '<div class="sw-empty">No weeks saved yet. Save a week after running the Nutrient, Water, or Electricity calculators.</div>';
+    return;
+  }
+  const sections = [];
+  ['vegetative','flowering'].forEach(stage=>{
+    if(summary[stage].length){
+      const label = SAVED_WEEK_STAGE_LABELS[stage] || stage;
+      const rows = summary[stage].map(week=>{
+        const calcList = week.calculators.join(', ');
+        return `<li><span class="sw-week">Week ${week.weekNumber}</span><span class="sw-meta">${calcList}</span></li>`;
+      }).join('');
+      sections.push(`<div class="sw-stage"><div class="sw-stage-label">${label}</div><ul>${rows}</ul></div>`);
+    }
+  });
+  body.innerHTML = sections.join('');
+}
+
 let latestElectricWeekTotal = null;
 function resetElectricWeekPanel(){
   const panel = document.getElementById('electricWeekPanel');
@@ -331,6 +392,7 @@ function handleElectricWeekSave(){
     if(ok){
       status.textContent = `Saved ${electricStageLabel(stage)} week ${weekNumber} for Harvest.`;
       status.style.color = '#1f7a54';
+      updateElectricSavedWeeksWidget();
     }else{
       status.textContent = 'Unable to save this week. Please try again.';
       status.style.color = '#b91c1c';
@@ -1174,6 +1236,12 @@ document.addEventListener('DOMContentLoaded', ()=>{
   document.getElementById('calculate-btn').addEventListener('click', calculateCosts);
   const weekBtn = document.getElementById('electricWeekSaveBtn');
   if(weekBtn) weekBtn.addEventListener('click', handleElectricWeekSave);
+  updateElectricSavedWeeksWidget();
+  if(typeof window !== 'undefined'){
+    window.addEventListener('storage', event=>{
+      if(event.key === BRIDGE_STORAGE_KEY) updateElectricSavedWeeksWidget();
+    });
+  }
 
   setRoundingUI(true);
   setShoulderUI(false);
