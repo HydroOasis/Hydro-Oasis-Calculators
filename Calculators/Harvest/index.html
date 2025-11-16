@@ -23,6 +23,7 @@
       <div class="title-block">
         <h1 id="page-title">Harvest Cost Calculator</h1>
         <div class="subtitle">Sum weekly inputs and see cost per gram, ounce, pound, and kilogram</div>
+        <div id="prefill-notice" class="info-banner" style="display:none;"></div>
       </div>
 
       <!-- Vegetative -->
@@ -91,6 +92,7 @@
   let floweringWeeks = [];
   let weekCounter = 0;
   let calculationResults = null;
+  const BRIDGE_STORAGE_KEY = 'hoCalcBridge';
 
   const $ = (id)=>document.getElementById(id);
 
@@ -117,10 +119,59 @@
     return '$' + (round ? n : (n.includes('.') ? (n.split('.')[1].length<2? Number(v).toFixed(2): n) : (n + '.00')));
   }
 
+  function loadBridgePrefills(){
+    const defaults = { nutrient:null, water:null, electricity:null, hasValues:false };
+    try{
+      if(typeof window === 'undefined' || !window.localStorage) return defaults;
+      const stored = JSON.parse(window.localStorage.getItem(BRIDGE_STORAGE_KEY) || '{}');
+      ['nutrient','water','electricity'].forEach(key=>{
+        const v = Number(stored?.[key]?.weeklyCost);
+        if(Number.isFinite(v)) defaults[key] = v;
+      });
+      defaults.hasValues = ['nutrient','water','electricity'].some(key=>Number.isFinite(defaults[key]));
+    }catch(err){
+      console.warn('Hydro Oasis bridge read skipped:', err);
+    }
+    return defaults;
+  }
+
+  function getWeekDefaults(){
+    const prefills = loadBridgePrefills();
+    if(!prefills.hasValues) return null;
+    return {
+      nutrient: Number.isFinite(prefills.nutrient) ? prefills.nutrient : 0,
+      water: Number.isFinite(prefills.water) ? prefills.water : 0,
+      electricity: Number.isFinite(prefills.electricity) ? prefills.electricity : 0
+    };
+  }
+
+  function updatePrefillNotice(){
+    const banner = $('prefill-notice');
+    if(!banner) return;
+    const prefills = loadBridgePrefills();
+    if(!prefills.hasValues){
+      banner.style.display = 'none';
+      banner.textContent = '';
+      return;
+    }
+    const parts = [];
+    if(Number.isFinite(prefills.nutrient)) parts.push(`Nutrients ${formatMoney(prefills.nutrient, true)}`);
+    if(Number.isFinite(prefills.water)) parts.push(`Water ${formatMoney(prefills.water, true)}`);
+    if(Number.isFinite(prefills.electricity)) parts.push(`Electricity ${formatMoney(prefills.electricity, true)}`);
+    banner.innerHTML = `<strong>Auto-filled from saved calculators:</strong> ${parts.join(' • ')}<br><span style="font-size:12px;">Re-run the individual calculators to refresh these defaults.</span>`;
+    banner.style.display = 'block';
+  }
+
   /* ========= Weeks CRUD ========= */
-  function addWeek(section){
+  function addWeek(section, initialValues){
     const weekId = `week-${weekCounter++}`;
-    const weekData = { id: weekId, nutrient:0, water:0, electricity:0 };
+    const defaults = initialValues || getWeekDefaults();
+    const weekData = {
+      id: weekId,
+      nutrient: Number.isFinite(defaults?.nutrient) ? defaults.nutrient : 0,
+      water: Number.isFinite(defaults?.water) ? defaults.water : 0,
+      electricity: Number.isFinite(defaults?.electricity) ? defaults.electricity : 0
+    };
 
     if(section==='vegetative'){ vegetativeWeeks.push(weekData); renderWeeks('vegetative'); }
     else { floweringWeeks.push(weekData); renderWeeks('flowering'); }
@@ -365,9 +416,15 @@
       }
     }catch(e){ console.warn('Element SDK init skipped:', e); }
 
-    // First render
-    renderWeeks('vegetative');
-    renderWeeks('flowering');
+    updatePrefillNotice();
+    const prefills = loadBridgePrefills();
+    if(prefills.hasValues){
+      addWeek('vegetative');
+      addWeek('flowering');
+    }else{
+      renderWeeks('vegetative');
+      renderWeeks('flowering');
+    }
 
     // Wire PDF
     $('downloadBtn').addEventListener('click', downloadPDF);

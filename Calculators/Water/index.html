@@ -91,6 +91,18 @@
     download_button_text: "Download Results (PDF)"
   };
 
+  const BRIDGE_STORAGE_KEY = 'hoCalcBridge';
+  function saveBridgeData(calculator, payload){
+    try{
+      if(typeof window === 'undefined' || !window.localStorage) return;
+      const existing = JSON.parse(window.localStorage.getItem(BRIDGE_STORAGE_KEY) || '{}');
+      existing[calculator] = { ...payload, updatedAt: Date.now() };
+      window.localStorage.setItem(BRIDGE_STORAGE_KEY, JSON.stringify(existing));
+    }catch(err){
+      console.warn('Hydro Oasis bridge save skipped:', err);
+    }
+  }
+
   /* ========= Provider Data (External JSON + fallback) ========= */
   // If this file is placed at Calculators/Water/index.html, this relative path is correct:
   const PROVIDERS_URL = "https://cdn.shopify.com/s/files/1/0709/5261/6094/files/Water_Providers.json?v=1762665123";
@@ -270,6 +282,13 @@
       totals:{ daily:totalDaily, weekly:totalWeekly, monthly:totalMonthly, yearly:totalYearly },
       round
     };
+
+    saveBridgeData('water', {
+      dailyCost: totalDaily,
+      weeklyCost: totalWeekly,
+      monthlyCost: totalMonthly,
+      yearlyCost: totalYearly
+    });
 
     renderResults();
     els.resultsCard.style.display = 'block';
