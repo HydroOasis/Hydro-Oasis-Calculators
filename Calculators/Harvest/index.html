@@ -23,11 +23,21 @@
       <div class="title-block">
         <h1 id="page-title">Harvest Cost Calculator</h1>
         <div class="subtitle">Sum weekly inputs and see cost per gram, ounce, pound, and kilogram</div>
-        <div id="prefill-notice" class="info-banner" style="display:none;"></div>
-        <div class="center" style="margin-top:10px;">
-          <button id="clear-cache-btn" class="btn btn-ghost" type="button">🧹 Clear Cache</button>
+        <div class="saved-weeks-toggle">
+          <div class="toggle-container">
+            <span>Show Harvest saved weeks & cache tools</span>
+            <div class="toggle" id="harvestSavedWeeksToggle" role="switch" aria-checked="false" tabindex="0">
+              <div class="toggle-slider"></div>
+            </div>
+          </div>
         </div>
-        <div id="clear-cache-status" class="help" style="text-align:center; margin-top:6px;"></div>
+        <div id="harvestSavedWeeksPanel" class="saved-weeks-panel" style="display:none;">
+          <div id="prefill-notice" class="info-banner" style="display:none;"></div>
+          <div class="center" style="margin-top:10px;">
+            <button id="clear-cache-btn" class="btn btn-ghost" type="button">🧹 Clear Cache</button>
+          </div>
+          <div id="clear-cache-status" class="help" style="text-align:center; margin-top:6px;"></div>
+        </div>
       </div>
 
       <!-- Vegetative -->
@@ -97,8 +107,24 @@
   let weekCounter = 0;
   let calculationResults = null;
   const BRIDGE_STORAGE_KEY = 'hoCalcBridge';
+  let harvestSavedWeeksVisible = false;
 
   const $ = (id)=>document.getElementById(id);
+
+  function applyHarvestSavedWeeksVisibility(){
+    const panel = $('harvestSavedWeeksPanel');
+    if(panel){ panel.style.display = harvestSavedWeeksVisible ? 'block' : 'none'; }
+    const toggle = $('harvestSavedWeeksToggle');
+    if(toggle){
+      toggle.classList.toggle('active', harvestSavedWeeksVisible);
+      toggle.setAttribute('aria-checked', harvestSavedWeeksVisible ? 'true' : 'false');
+    }
+  }
+
+  function setHarvestSavedWeeksVisibility(show){
+    harvestSavedWeeksVisible = !!show;
+    applyHarvestSavedWeeksVisibility();
+  }
 
   /* ========= UI Helpers (shared patterns) ========= */
   function makeSection(title, icon){
@@ -490,6 +516,19 @@
         });
       }
     }catch(e){ console.warn('Element SDK init skipped:', e); }
+
+    const savedWeeksToggle = $('harvestSavedWeeksToggle');
+    if(savedWeeksToggle){
+      const toggleVisibility = ()=> setHarvestSavedWeeksVisibility(!harvestSavedWeeksVisible);
+      savedWeeksToggle.addEventListener('click', (e)=>{ e.preventDefault(); toggleVisibility(); });
+      savedWeeksToggle.addEventListener('keydown', (e)=>{
+        if(e.key === 'Enter' || e.key === ' '){
+          e.preventDefault();
+          toggleVisibility();
+        }
+      });
+    }
+    setHarvestSavedWeeksVisibility(false);
 
     const savedWeeks = loadSavedStageWeeks();
     updatePrefillNotice(savedWeeks);

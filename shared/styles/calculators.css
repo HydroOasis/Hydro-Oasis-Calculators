@@ -292,6 +292,32 @@
     font-size:13px;
     color:#52615b;
   }
+  #nutri-calc .saved-weeks-toggle,
+  #water-calc .saved-weeks-toggle,
+  #ecalc .saved-weeks-toggle,
+  #harvest-calc .saved-weeks-toggle{
+    display:flex;
+    justify-content:flex-end;
+    margin:10px 0 0;
+    color:#456E62;
+    font-size:14px;
+    gap:8px;
+  }
+  #nutri-calc .saved-weeks-toggle .toggle-container,
+  #water-calc .saved-weeks-toggle .toggle-container,
+  #ecalc .saved-weeks-toggle .toggle-container,
+  #harvest-calc .saved-weeks-toggle .toggle-container{
+    margin-left:auto;
+  }
+  #nutri-calc .saved-weeks-toggle span,
+  #water-calc .saved-weeks-toggle span,
+  #ecalc .saved-weeks-toggle span,
+  #harvest-calc .saved-weeks-toggle span{
+    font-weight:600;
+  }
+  #harvest-calc .saved-weeks-panel{
+    margin-top:12px;
+  }
   #harvest-calc .info-banner{
     background:#ecfeff;
     border:1px solid #06b6d4;

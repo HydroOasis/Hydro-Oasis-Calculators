@@ -21,6 +21,15 @@
         <div class="subtitle">Estimate water cost per litre, per plant, and totals for your grow</div>
       </div>
 
+      <div class="saved-weeks-toggle">
+        <div class="toggle-container">
+          <span>Show Saved Weeks for Harvest</span>
+          <div class="toggle" id="waterSavedWeeksToggle" role="switch" aria-checked="false" tabindex="0">
+            <div class="toggle-slider"></div>
+          </div>
+        </div>
+      </div>
+
       <div id="waterSavedWeeks" class="saved-weeks-widget" style="display:none;">
         <div class="widget-title">📘 Saved Weeks for Harvest</div>
         <div id="waterSavedWeeksList"></div>
@@ -122,6 +131,24 @@
   const WATER_STAGE_LABELS = { vegetative: 'Vegetative', flowering: 'Flowering (Generative)' };
   const SAVED_WEEK_CALC_LABELS = { nutrient: 'Nutrients', water: 'Water', electricity: 'Electricity' };
   const SAVED_WEEK_STAGE_LABELS = { vegetative: 'Vegetative', flowering: 'Flowering' };
+  let waterSavedWeeksVisible = false;
+
+  function applyWaterSavedWeeksVisibility(){
+    const widget = document.getElementById('waterSavedWeeks');
+    if(widget){
+      widget.style.display = waterSavedWeeksVisible ? 'block' : 'none';
+    }
+    const toggle = document.getElementById('waterSavedWeeksToggle');
+    if(toggle){
+      toggle.classList.toggle('active', waterSavedWeeksVisible);
+      toggle.setAttribute('aria-checked', waterSavedWeeksVisible ? 'true' : 'false');
+    }
+  }
+
+  function setWaterSavedWeeksVisibility(show){
+    waterSavedWeeksVisible = !!show;
+    applyWaterSavedWeeksVisibility();
+  }
   function saveBridgeData(calculator, payload){
     try{
       if(typeof window === 'undefined' || !window.localStorage) return;
@@ -194,9 +221,9 @@
     const body = $('waterSavedWeeksList');
     if(!widget || !body) return;
     const summary = getSavedWeeksSummary();
-    widget.style.display = 'block';
     if(summary.totalCount === 0){
       body.innerHTML = '<div class="sw-empty">No weeks saved yet. Save a week after running the Nutrient, Water, or Electricity calculators.</div>';
+      applyWaterSavedWeeksVisibility();
       return;
     }
     const sections = [];
@@ -211,6 +238,7 @@
       }
     });
     body.innerHTML = sections.join('');
+    applyWaterSavedWeeksVisibility();
   }
 
   /* ========= Provider Data (External JSON + fallback) ========= */
@@ -568,6 +596,18 @@
     els.downloadBtn.addEventListener('click', generatePDF);
     const saveBtn = $('waterWeekSaveBtn');
     if(saveBtn) saveBtn.addEventListener('click', handleWaterWeekSave);
+    const savedWeeksToggle = document.getElementById('waterSavedWeeksToggle');
+    if(savedWeeksToggle){
+      const toggleVisibility = ()=> setWaterSavedWeeksVisibility(!waterSavedWeeksVisible);
+      savedWeeksToggle.addEventListener('click', (e)=>{ e.preventDefault(); toggleVisibility(); });
+      savedWeeksToggle.addEventListener('keydown', (e)=>{
+        if(e.key === 'Enter' || e.key === ' '){
+          e.preventDefault();
+          toggleVisibility();
+        }
+      });
+    }
+    setWaterSavedWeeksVisibility(false);
     updateWaterSavedWeeksWidget();
     if(typeof window !== 'undefined'){
       window.addEventListener('storage', event=>{
