@@ -39,6 +39,11 @@
       <div id="electricSavedWeeksList"></div>
     </div>
 
+    <div class="saved-weeks-actions">
+      <button class="btn btn-secondary" id="electricClearCacheBtn" type="button">🧹 Clear Electricity Cache</button>
+      <div class="help" id="electricClearCacheStatus"></div>
+    </div>
+
     <!-- ========== Rate Configuration ========== -->
     <div class="section">
       <h2 class="section-title">⚡ Rate Configuration</h2>
@@ -280,6 +285,7 @@ const BRIDGE_STORAGE_KEY = 'hoCalcBridge';
 const ELECTRIC_STAGE_LABELS = { vegetative: 'Vegetative', flowering: 'Flowering (Generative)' };
 const SAVED_WEEK_CALC_LABELS = { nutrient: 'Nutrients', water: 'Water', electricity: 'Electricity' };
 const SAVED_WEEK_STAGE_LABELS = { vegetative: 'Vegetative', flowering: 'Flowering' };
+const SAVED_WEEK_STAGE_ORDER = { vegetative: 0, flowering: 1 };
 
 function applyElectricSavedWeeksVisibility(){
   const widget = document.getElementById('electricSavedWeeks');
@@ -305,6 +311,52 @@ function saveBridgeData(calculator, payload){
     window.localStorage.setItem(BRIDGE_STORAGE_KEY, JSON.stringify(existing));
   }catch(err){
     console.warn('Hydro Oasis bridge save skipped:', err);
+  }
+}
+
+function clearBridgeDataForCalculator(calculatorKey){
+  try{
+    if(typeof window === 'undefined' || !window.localStorage) return false;
+    const raw = window.localStorage.getItem(BRIDGE_STORAGE_KEY);
+    if(!raw) return false;
+    const data = JSON.parse(raw || '{}');
+    let changed = false;
+    if(data[calculatorKey]){
+      delete data[calculatorKey];
+      changed = true;
+    }
+    if(data.stageWeeks){
+      Object.keys(data.stageWeeks).forEach(stage=>{
+        const stageData = data.stageWeeks[stage];
+        if(!stageData) return;
+        Object.keys(stageData).forEach(weekKey=>{
+          const weekEntry = stageData[weekKey];
+          if(weekEntry && weekEntry[calculatorKey]){
+            delete weekEntry[calculatorKey];
+            changed = true;
+          }
+          if(weekEntry && Object.keys(weekEntry).length === 0){
+            delete stageData[weekKey];
+          }
+        });
+        if(Object.keys(stageData).length === 0){
+          delete data.stageWeeks[stage];
+        }
+      });
+      if(Object.keys(data.stageWeeks).length === 0){
+        delete data.stageWeeks;
+      }
+    }
+    if(!changed) return false;
+    if(Object.keys(data).length === 0){
+      window.localStorage.removeItem(BRIDGE_STORAGE_KEY);
+    }else{
+      window.localStorage.setItem(BRIDGE_STORAGE_KEY, JSON.stringify(data));
+    }
+    return true;
+  }catch(err){
+    console.warn('Hydro Oasis clear cache skipped:', err);
+    return false;
   }
 }
 
@@ -364,6 +416,34 @@ function getSavedWeeksSummary(){
   }
 }
 
+function getSavedWeeksForCalculator(calculatorKey){
+  const rows = [];
+  try{
+    if(typeof window === 'undefined' || !window.localStorage) return rows;
+    const data = JSON.parse(window.localStorage.getItem(BRIDGE_STORAGE_KEY) || '{}');
+    const stageWeeks = data?.stageWeeks || {};
+    Object.keys(stageWeeks).forEach(stage=>{
+      const stageData = stageWeeks[stage] || {};
+      Object.keys(stageData).forEach(weekKey=>{
+        const entry = stageData[weekKey]?.[calculatorKey];
+        const weekNumber = parseInt(weekKey, 10);
+        const weeklyCost = Number(entry?.weeklyCost);
+        if(Number.isFinite(weekNumber) && Number.isFinite(weeklyCost)){
+          rows.push({ stage, weekNumber, weeklyCost });
+        }
+      });
+    });
+    rows.sort((a,b)=>{
+      const stageDiff = (SAVED_WEEK_STAGE_ORDER[a.stage] ?? 99) - (SAVED_WEEK_STAGE_ORDER[b.stage] ?? 99);
+      if(stageDiff !== 0) return stageDiff;
+      return a.weekNumber - b.weekNumber;
+    });
+  }catch(err){
+    console.warn('Hydro Oasis saved weeks detail read skipped:', err);
+  }
+  return rows;
+}
+
 function updateElectricSavedWeeksWidget(){
   const widget = document.getElementById('electricSavedWeeks');
   const body = document.getElementById('electricSavedWeeksList');
@@ -387,6 +467,25 @@ function updateElectricSavedWeeksWidget(){
   });
   body.innerHTML = sections.join('');
   applyElectricSavedWeeksVisibility();
+}
+
+function handleElectricCacheClear(){
+  const status = document.getElementById('electricClearCacheStatus');
+  if(status){
+    status.textContent = 'Clearing saved electricity data…';
+    status.style.color = '#6B7C77';
+  }
+  const cleared = clearBridgeDataForCalculator('electricity');
+  if(status){
+    if(cleared){
+      status.textContent = 'Electricity cache cleared.';
+      status.style.color = '#1f7a54';
+    }else{
+      status.textContent = 'No saved electricity data to clear.';
+      status.style.color = '#6B7C77';
+    }
+  }
+  updateElectricSavedWeeksWidget();
 }
 
 let latestElectricWeekTotal = null;
@@ -1100,6 +1199,18 @@ function downloadPDF(){
       doc.text(`${label}: ${val}`,M,y); y+=8;
     });
   }
+  const savedWeeks = getSavedWeeksForCalculator('electricity');
+  if(savedWeeks.length){
+    br(20);
+    doc.setFontSize(16); doc.setFont(undefined,'bold');
+    doc.text('Saved Weeks for Harvest',M,y); y+=10;
+    doc.setFontSize(12); doc.setFont(undefined,'normal');
+    savedWeeks.forEach(week=>{
+      br(8);
+      doc.text(`${electricStageLabel(week.stage)} Week ${week.weekNumber}: $${formatNumber(week.weeklyCost)} per week`, M, y);
+      y+=8;
+    });
+  }
   doc.setFontSize(10);
   doc.text((window.elementSdk?.config?.footer_text)||defaultConfig.footer_text, M, H-10);
   doc.save('ElectricityCostCalculatorResults.pdf');
@@ -1264,6 +1375,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
   document.getElementById('calculate-btn').addEventListener('click', calculateCosts);
   const weekBtn = document.getElementById('electricWeekSaveBtn');
   if(weekBtn) weekBtn.addEventListener('click', handleElectricWeekSave);
+  const clearBtn = document.getElementById('electricClearCacheBtn');
+  if(clearBtn) clearBtn.addEventListener('click', handleElectricCacheClear);
   const savedWeeksToggle = document.getElementById('electricSavedWeeksToggle');
   if(savedWeeksToggle){
     const toggleVisibility = ()=> setElectricSavedWeeksVisibility(!electricSavedWeeksVisible);
