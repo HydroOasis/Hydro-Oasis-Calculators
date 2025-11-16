@@ -21,6 +21,11 @@
         <div class="subtitle">Estimate water cost per litre, per plant, and totals for your grow</div>
       </div>
 
+      <div id="waterSavedWeeks" class="saved-weeks-widget" style="display:none;">
+        <div class="widget-title">📘 Saved Weeks for Harvest</div>
+        <div id="waterSavedWeeksList"></div>
+      </div>
+
       <!-- Inputs -->
       <div class="sec-title"><span class="dot" aria-hidden="true"></span><span>Input Parameters</span></div>
       <div class="grid g-3" style="margin-bottom:6px;">
@@ -115,6 +120,8 @@
 
   const BRIDGE_STORAGE_KEY = 'hoCalcBridge';
   const WATER_STAGE_LABELS = { vegetative: 'Vegetative', flowering: 'Flowering (Generative)' };
+  const SAVED_WEEK_CALC_LABELS = { nutrient: 'Nutrients', water: 'Water', electricity: 'Electricity' };
+  const SAVED_WEEK_STAGE_LABELS = { vegetative: 'Vegetative', flowering: 'Flowering' };
   function saveBridgeData(calculator, payload){
     try{
       if(typeof window === 'undefined' || !window.localStorage) return;
@@ -150,6 +157,60 @@
       console.warn('Hydro Oasis week save skipped:', err);
       return false;
     }
+  }
+
+  function getSavedWeeksSummary(){
+    const empty = { vegetative: [], flowering: [], totalCount: 0 };
+    try{
+      if(typeof window === 'undefined' || !window.localStorage) return empty;
+      const data = JSON.parse(window.localStorage.getItem(BRIDGE_STORAGE_KEY) || '{}');
+      const stageWeeks = data?.stageWeeks || {};
+      const parseStage = (stageKey)=>{
+        const stageData = stageWeeks[stageKey] || {};
+        return Object.keys(stageData).map(weekKey=>{
+          const weekNumber = parseInt(weekKey, 10);
+          if(!Number.isFinite(weekNumber)) return null;
+          const entry = stageData[weekKey] || {};
+          const calculators = Object.entries(SAVED_WEEK_CALC_LABELS).reduce((list, [calcKey, label])=>{
+            const value = Number(entry?.[calcKey]?.weeklyCost);
+            if(Number.isFinite(value)) list.push(label);
+            return list;
+          }, []);
+          if(calculators.length === 0) return null;
+          return { weekNumber, calculators };
+        }).filter(Boolean).sort((a,b)=>a.weekNumber - b.weekNumber);
+      };
+      const vegetative = parseStage('vegetative');
+      const flowering = parseStage('flowering');
+      return { vegetative, flowering, totalCount: vegetative.length + flowering.length };
+    }catch(err){
+      console.warn('Hydro Oasis saved weeks read skipped:', err);
+      return empty;
+    }
+  }
+
+  function updateWaterSavedWeeksWidget(){
+    const widget = $('waterSavedWeeks');
+    const body = $('waterSavedWeeksList');
+    if(!widget || !body) return;
+    const summary = getSavedWeeksSummary();
+    widget.style.display = 'block';
+    if(summary.totalCount === 0){
+      body.innerHTML = '<div class="sw-empty">No weeks saved yet. Save a week after running the Nutrient, Water, or Electricity calculators.</div>';
+      return;
+    }
+    const sections = [];
+    ['vegetative','flowering'].forEach(stage=>{
+      if(summary[stage].length){
+        const label = SAVED_WEEK_STAGE_LABELS[stage] || stage;
+        const rows = summary[stage].map(week=>{
+          const calcList = week.calculators.join(', ');
+          return `<li><span class="sw-week">Week ${week.weekNumber}</span><span class="sw-meta">${calcList}</span></li>`;
+        }).join('');
+        sections.push(`<div class="sw-stage"><div class="sw-stage-label">${label}</div><ul>${rows}</ul></div>`);
+      }
+    });
+    body.innerHTML = sections.join('');
   }
 
   /* ========= Provider Data (External JSON + fallback) ========= */
@@ -239,6 +300,7 @@
       if(ok){
         status.textContent = `Saved ${waterStageLabel(stage)} week ${weekNumber} for Harvest.`;
         status.style.color = '#1f7a54';
+        updateWaterSavedWeeksWidget();
       }else{
         status.textContent = 'Unable to save this week. Please try again.';
         status.style.color = '#b91c1c';
@@ -506,6 +568,12 @@
     els.downloadBtn.addEventListener('click', generatePDF);
     const saveBtn = $('waterWeekSaveBtn');
     if(saveBtn) saveBtn.addEventListener('click', handleWaterWeekSave);
+    updateWaterSavedWeeksWidget();
+    if(typeof window !== 'undefined'){
+      window.addEventListener('storage', event=>{
+        if(event.key === BRIDGE_STORAGE_KEY) updateWaterSavedWeeksWidget();
+      });
+    }
 
     // Enter to calculate
     ['numPlants','waterPerPlant','waterFrequency','waterCost'].forEach(id=>{
