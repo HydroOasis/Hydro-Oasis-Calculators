@@ -10,6 +10,7 @@
 <script src="/_sdk/element_sdk.js"></script>
 <script src="/_sdk/data_sdk.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="../../shared/pdf-branding.js"></script>
 
 
 </head>
@@ -437,55 +438,75 @@
   }
 
   /* ========= PDF ========= */
-  function downloadPDF(){
-    if(!calculationResults) return;
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
+  async function downloadPDF(){
+    if(!calculationResults || !window.jspdf) return;
+    try{
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      const branding = window.hydroPdfBranding;
+      const brandKit = branding?.decorate ? await branding.decorate(doc, {
+        watermarkOpacity: 0.12,
+        watermarkWidth: 38,
+        mascotHeight: 18,
+        contentGap: 10
+      }) : null;
 
-    const R = calculationResults.round;
-    let y = 30, line = 8, margin = 18, pageH = doc.internal.pageSize.height;
-    const check = need => { if(y+need > pageH - margin){ doc.addPage(); y = 30; } };
+      const R = calculationResults.round;
+      const margin = 18;
+      const baseY = brandKit?.contentStart ?? 30;
+      let y = baseY;
+      let pageH = doc.internal.pageSize.height;
+      const line = 8;
+      const goToNewPage = ()=>{
+        doc.addPage();
+        pageH = doc.internal.pageSize.height;
+        y = baseY;
+      };
+      const check = need => { if(y + need > pageH - margin){ goToNewPage(); } };
 
-    // Title
-    const title = ($('page-title')?.textContent) || defaultConfig.page_title;
-    doc.setFont('helvetica','bold'); doc.setFontSize(22);
-    const w = doc.getTextWidth(title);
-    doc.text(title, (doc.internal.pageSize.width - w)/2, y); y += 16;
+      // Title
+      const title = ($('page-title')?.textContent) || defaultConfig.page_title;
+      doc.setFont('helvetica','bold'); doc.setFontSize(22);
+      const w = doc.getTextWidth(title);
+      doc.text(title, (doc.internal.pageSize.width - w)/2, y); y += 16;
 
-    // Harvest info
-    doc.setFont('helvetica','bold'); doc.setFontSize(14);
-    doc.text('Harvest Output', margin, y); y += 10;
-    doc.setFont('helvetica','normal'); doc.setFontSize(12);
-    doc.text(`Harvest Weight: ${calculationResults.harvestWeight} g`, margin, y); y += 12;
-
-    // Absolute totals
-    check(40);
-    doc.setFont('helvetica','bold'); doc.setFontSize(14);
-    doc.text('Total Cost', margin, y); y += 10;
-    doc.setFont('helvetica','normal'); doc.setFontSize(12);
-    doc.text(`Nutrients: ${formatMoney(calculationResults.totals.totalNutrient, R)}`, margin, y); y += line;
-    doc.text(`Water: ${formatMoney(calculationResults.totals.totalWater, R)}`, margin, y); y += line;
-    doc.text(`Electricity: ${formatMoney(calculationResults.totals.totalElectricity, R)}`, margin, y); y += line;
-    doc.text(`All Inputs: ${formatMoney(calculationResults.totals.totalCost, R)}`, margin, y); y += 12;
-
-    // Helper
-    function writeSection(h, p){
-      check(50);
+      // Harvest info
       doc.setFont('helvetica','bold'); doc.setFontSize(14);
-      doc.text(h, margin, y); y += 10;
+      doc.text('Harvest Output', margin, y); y += 10;
       doc.setFont('helvetica','normal'); doc.setFontSize(12);
-      doc.text(`Per Gram: ${formatMoney(p.gram, R)}`, margin, y); y += line;
-      doc.text(`Per Ounce: ${formatMoney(p.ounce, R)}`, margin, y); y += line;
-      doc.text(`Per Pound: ${formatMoney(p.pound, R)}`, margin, y); y += line;
-      doc.text(`Per Kilogram: ${formatMoney(p.kilogram, R)}`, margin, y); y += 12;
+      doc.text(`Harvest Weight: ${calculationResults.harvestWeight} g`, margin, y); y += 12;
+
+      // Absolute totals
+      check(40);
+      doc.setFont('helvetica','bold'); doc.setFontSize(14);
+      doc.text('Total Cost', margin, y); y += 10;
+      doc.setFont('helvetica','normal'); doc.setFontSize(12);
+      doc.text(`Nutrients: ${formatMoney(calculationResults.totals.totalNutrient, R)}`, margin, y); y += line;
+      doc.text(`Water: ${formatMoney(calculationResults.totals.totalWater, R)}`, margin, y); y += line;
+      doc.text(`Electricity: ${formatMoney(calculationResults.totals.totalElectricity, R)}`, margin, y); y += line;
+      doc.text(`All Inputs: ${formatMoney(calculationResults.totals.totalCost, R)}`, margin, y); y += 12;
+
+      // Helper
+      function writeSection(h, p){
+        check(50);
+        doc.setFont('helvetica','bold'); doc.setFontSize(14);
+        doc.text(h, margin, y); y += 10;
+        doc.setFont('helvetica','normal'); doc.setFontSize(12);
+        doc.text(`Per Gram: ${formatMoney(p.gram, R)}`, margin, y); y += line;
+        doc.text(`Per Ounce: ${formatMoney(p.ounce, R)}`, margin, y); y += line;
+        doc.text(`Per Pound: ${formatMoney(p.pound, R)}`, margin, y); y += line;
+        doc.text(`Per Kilogram: ${formatMoney(p.kilogram, R)}`, margin, y); y += 12;
+      }
+
+      writeSection('Nutrient Cost', calculationResults.parts.nutrient);
+      writeSection('Water Cost', calculationResults.parts.water);
+      writeSection('Electricity Cost', calculationResults.parts.electricity);
+      writeSection('Total Cost (per weight)', calculationResults.parts.total);
+
+      doc.save('HarvestCostCalculatorResults.pdf');
+    }catch(err){
+      console.error('Failed to generate Harvest PDF', err);
     }
-
-    writeSection('Nutrient Cost', calculationResults.parts.nutrient);
-    writeSection('Water Cost', calculationResults.parts.water);
-    writeSection('Electricity Cost', calculationResults.parts.electricity);
-    writeSection('Total Cost (per weight)', calculationResults.parts.total);
-
-    doc.save('HarvestCostCalculatorResults.pdf');
   }
 
   /* ========= elementSdk wiring ========= */

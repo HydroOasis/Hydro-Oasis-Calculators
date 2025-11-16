@@ -12,6 +12,7 @@
 
   <!-- jsPDF -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="../../shared/pdf-branding.js"></script>
 
 
 
@@ -1148,71 +1149,90 @@ function displayTotals(t){
 }
 
 /* ========= PDF ========= */
-function downloadPDF(){
-  const { jsPDF }=window.jspdf;
-  const doc=new jsPDF();
-  let y=20, H=doc.internal.pageSize.height, M=20;
-  function br(h){ if (y+h>H-M){ doc.addPage(); y=20; } }
+async function downloadPDF(){
+  if(!window.jspdf) return;
+  try{
+    const { jsPDF }=window.jspdf;
+    const doc=new jsPDF();
+    const branding = window.hydroPdfBranding;
+    const brandKit = branding?.decorate ? await branding.decorate(doc, {
+      watermarkOpacity: 0.12,
+      watermarkWidth: 38,
+      mascotHeight: 18,
+      contentGap: 10
+    }) : null;
+    let y=brandKit?.contentStart ?? 24;
+    let H=doc.internal.pageSize.height;
+    const M=20;
+    const goToNewPage = ()=>{
+      doc.addPage();
+      H=doc.internal.pageSize.height;
+      y=brandKit?.contentStart ?? 24;
+    };
+    function br(h){ if (y+h>H-M){ goToNewPage(); } }
 
-  const title=(window.elementSdk?.config?.app_title)||defaultConfig.app_title;
-  doc.setFontSize(20); doc.setFont(undefined,'bold'); doc.text(title,M,y); y+=15;
-  doc.setFontSize(12); doc.setFont(undefined,'normal'); doc.text(`Generated: ${new Date().toLocaleDateString()}`,M,y); y+=12;
+    const title=(window.elementSdk?.config?.app_title)||defaultConfig.app_title;
+    doc.setFontSize(20); doc.setFont(undefined,'bold'); doc.text(title,M,y); y+=15;
+    doc.setFontSize(12); doc.setFont(undefined,'normal'); doc.text(`Generated: ${new Date().toLocaleDateString()}`,M,y); y+=12;
 
-  br(20);
-  doc.setFontSize(16); doc.setFont(undefined,'bold'); doc.text('Tariff Summary',M,y); y+=10;
-  const onRate=document.getElementById('on-peak-rate').value;
-  const offRate=document.getElementById('off-peak-rate').value;
-  const shRateEl=document.getElementById('shoulder-rate');
-  doc.setFontSize(12); doc.setFont(undefined,'normal');
-  doc.text(`On-Peak Rate: ${onRate} c/kWh`,M,y); y+=8;
-  if (shRateEl){ doc.text(`Shoulder Rate: ${shRateEl.value} c/kWh`,M,y); y+=8; }
-  doc.text(`Off-Peak Rate: ${offRate} c/kWh`,M,y); y+=14;
-
-  const cards=document.querySelectorAll('.equipment-card');
-  cards.forEach((card,idx)=>{
-    br(60);
-    const name=card.querySelector('.equipment-name').value;
-    const power=card.querySelector('.equipment-power').value;
-    doc.setFontSize(14); doc.setFont(undefined,'bold'); doc.text(`Equipment ${idx+1}: ${name}`,M,y); y+=10;
-    doc.setFontSize(12); doc.setFont(undefined,'normal'); doc.text(`Power: ${power}W`,M,y); y+=8;
-
-    const items=card.querySelectorAll('.equipment-results .results-grid .result-item');
-    items.forEach(it=>{
-      br(8);
-      const label=it.querySelector('.result-label').textContent;
-      const val=it.querySelector('.result-value').textContent;
-      doc.text(`${label}: ${val}`,M+10,y); y+=6;
-    });
-    y+=6;
-  });
-
-  br(80);
-  doc.setFontSize(16); doc.setFont(undefined,'bold'); doc.text('Total Usage & Cost Breakdown',M,y); y+=12;
-  const totalGrid=document.querySelector('#results-container .results-grid');
-  if (totalGrid){
-    totalGrid.querySelectorAll('.result-item').forEach(it=>{
-      br(8);
-      const label=it.querySelector('.result-label').textContent;
-      const val=it.querySelector('.result-value').textContent;
-      doc.setFontSize(12); doc.setFont(undefined,'normal');
-      doc.text(`${label}: ${val}`,M,y); y+=8;
-    });
-  }
-  const savedWeeks = getSavedWeeksForCalculator('electricity');
-  if(savedWeeks.length){
     br(20);
-    doc.setFontSize(16); doc.setFont(undefined,'bold');
-    doc.text('Saved Weeks for Harvest',M,y); y+=10;
+    doc.setFontSize(16); doc.setFont(undefined,'bold'); doc.text('Tariff Summary',M,y); y+=10;
+    const onRate=document.getElementById('on-peak-rate').value;
+    const offRate=document.getElementById('off-peak-rate').value;
+    const shRateEl=document.getElementById('shoulder-rate');
     doc.setFontSize(12); doc.setFont(undefined,'normal');
-    savedWeeks.forEach(week=>{
-      br(8);
-      doc.text(`${electricStageLabel(week.stage)} Week ${week.weekNumber}: $${formatNumber(week.weeklyCost)} per week`, M, y);
-      y+=8;
+    doc.text(`On-Peak Rate: ${onRate} c/kWh`,M,y); y+=8;
+    if (shRateEl){ doc.text(`Shoulder Rate: ${shRateEl.value} c/kWh`,M,y); y+=8; }
+    doc.text(`Off-Peak Rate: ${offRate} c/kWh`,M,y); y+=14;
+
+    const cards=document.querySelectorAll('.equipment-card');
+    cards.forEach((card,idx)=>{
+      br(60);
+      const name=card.querySelector('.equipment-name').value;
+      const power=card.querySelector('.equipment-power').value;
+      doc.setFontSize(14); doc.setFont(undefined,'bold'); doc.text(`Equipment ${idx+1}: ${name}`,M,y); y+=10;
+      doc.setFontSize(12); doc.setFont(undefined,'normal'); doc.text(`Power: ${power}W`,M,y); y+=8;
+
+      const items=card.querySelectorAll('.equipment-results .results-grid .result-item');
+      items.forEach(it=>{
+        br(8);
+        const label=it.querySelector('.result-label').textContent;
+        const val=it.querySelector('.result-value').textContent;
+        doc.text(`${label}: ${val}`,M+10,y); y+=6;
+      });
+      y+=6;
     });
+
+    br(80);
+    doc.setFontSize(16); doc.setFont(undefined,'bold'); doc.text('Total Usage & Cost Breakdown',M,y); y+=12;
+    const totalGrid=document.querySelector('#results-container .results-grid');
+    if (totalGrid){
+      totalGrid.querySelectorAll('.result-item').forEach(it=>{
+        br(8);
+        const label=it.querySelector('.result-label').textContent;
+        const val=it.querySelector('.result-value').textContent;
+        doc.setFontSize(12); doc.setFont(undefined,'normal');
+        doc.text(`${label}: ${val}`,M,y); y+=8;
+      });
+    }
+    const savedWeeks = getSavedWeeksForCalculator('electricity');
+    if(savedWeeks.length){
+      br(20);
+      doc.setFontSize(16); doc.setFont(undefined,'bold');
+      doc.text('Saved Weeks for Harvest',M,y); y+=10;
+      doc.setFontSize(12); doc.setFont(undefined,'normal');
+      savedWeeks.forEach(week=>{
+        br(8);
+        doc.text(`${electricStageLabel(week.stage)} Week ${week.weekNumber}: $${formatNumber(week.weeklyCost)} per week`, M, y);
+        y+=8;
+      });
+    }
+    doc.setFontSize(10);
+    doc.text((window.elementSdk?.config?.footer_text)||defaultConfig.footer_text, M, H-10);
+    doc.save('ElectricityCostCalculatorResults.pdf');
+  }catch(err){
+    console.error('Failed to generate Electricity PDF', err);
   }
-  doc.setFontSize(10);
-  doc.text((window.elementSdk?.config?.footer_text)||defaultConfig.footer_text, M, H-10);
-  doc.save('ElectricityCostCalculatorResults.pdf');
 }
 
 /* ========= Tariff modal + selects ========= */

@@ -238,6 +238,7 @@
   <script src="/_sdk/element_sdk.js"></script>
   <script src="/_sdk/data_sdk.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="../../shared/pdf-branding.js"></script>
 </head>
 <body>
 
@@ -797,61 +798,82 @@
     $('downloadBtn').style.display = 'inline-block';
   }
 
-  function downloadPDF(){
-    if(!calculationResults) return;
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    let y = 30, margin = 18, line = 8, pageH = doc.internal.pageSize.height;
-    const check = (need)=>{ if(y+need > pageH - margin){ doc.addPage(); y = 30; } };
+  async function downloadPDF(){
+    if(!calculationResults || !window.jspdf) return;
+    try{
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      const branding = window.hydroPdfBranding;
+      const brandKit = branding?.decorate ? await branding.decorate(doc, {
+        watermarkOpacity: 0.12,
+        watermarkWidth: 38,
+        mascotHeight: 18,
+        contentGap: 10
+      }) : null;
+      let y = brandKit?.contentStart ?? 30;
+      const margin = 18;
+      const line = 8;
+      let pageH = doc.internal.pageSize.height;
+      const resetY = ()=>{ y = brandKit?.contentStart ?? 30; };
+      const check = (need)=>{
+        if(y + need > pageH - margin){
+          doc.addPage();
+          pageH = doc.internal.pageSize.height;
+          resetY();
+        }
+      };
 
-    doc.setFont('helvetica','bold'); doc.setFontSize(22);
-    const w = doc.getTextWidth(calculationResults.title);
-    doc.text(calculationResults.title, (doc.internal.pageSize.width - w)/2, y); y += 16;
+      doc.setFont('helvetica','bold'); doc.setFontSize(22);
+      const w = doc.getTextWidth(calculationResults.title);
+      doc.text(calculationResults.title, (doc.internal.pageSize.width - w)/2, y); y += 16;
 
-    doc.setFont('helvetica','bold'); doc.setFontSize(14);
-    doc.text('Plant Information', margin, y); y += 10;
-    doc.setFont('helvetica','normal'); doc.setFontSize(12);
-    doc.text(`Number of Plants: ${calculationResults.numPlants}`, margin, y); y += line;
-    doc.text(`Water per Plant: ${calculationResults.waterPerPlant} L`, margin, y); y += line;
-    doc.text(`Watering Frequency: ${calculationResults.wateringFreq} days/week`, margin, y); y += 14;
-
-    calculationResults.nutrients.forEach(n=>{
-      check(60);
-      doc.setFont('helvetica','bold'); doc.setFontSize(13);
-      doc.text(`${n.name} – Cost Breakdown`, margin, y); y += 9;
-      doc.setFont('helvetica','normal'); doc.setFontSize(11);
-      doc.text(`Per Litre: ${formatCurrency(n.costPerLitre, calculationResults.roundResults)}`, margin, y); y += line;
-      doc.text(`Per Day: ${formatCurrency(n.dailyCost, calculationResults.roundResults)}`, margin, y); y += line;
-      doc.text(`Per Week: ${formatCurrency(n.weeklyCost, calculationResults.roundResults)}`, margin, y); y += line;
-      doc.text(`Per Month: ${formatCurrency(n.monthlyCost, calculationResults.roundResults)}`, margin, y); y += line;
-      doc.text(`Per Year: ${formatCurrency(n.yearlyCost, calculationResults.roundResults)}`, margin, y); y += 10;
-    });
-
-    check(60);
-    doc.setFont('helvetica','bold'); doc.setFontSize(14);
-    doc.text('Total Cost Breakdown', margin, y); y += 10;
-    doc.setFont('helvetica','normal'); doc.setFontSize(12);
-    const T = calculationResults.totals, R = calculationResults.roundResults;
-    doc.text(`Total Per Litre: ${formatCurrency(T.costPerLitre,R)}`, margin, y); y += line;
-    doc.text(`Total Per Day: ${formatCurrency(T.dailyCost,R)}`, margin, y); y += line;
-    doc.text(`Total Per Week: ${formatCurrency(T.weeklyCost,R)}`, margin, y); y += line;
-    doc.text(`Total Per Month: ${formatCurrency(T.monthlyCost,R)}`, margin, y); y += line;
-    doc.text(`Total Per Year: ${formatCurrency(T.yearlyCost,R)}`, margin, y);
-
-    const savedWeeks = getSavedWeeksForCalculator('nutrient');
-    if(savedWeeks.length){
-      check(20);
       doc.setFont('helvetica','bold'); doc.setFontSize(14);
-      doc.text('Saved Weeks for Harvest', margin, y); y += 10;
+      doc.text('Plant Information', margin, y); y += 10;
       doc.setFont('helvetica','normal'); doc.setFontSize(12);
-      savedWeeks.forEach(week=>{
-        check(line);
-        doc.text(`${nutrientStageLabel(week.stage)} Week ${week.weekNumber}: ${formatCurrency(week.weeklyCost, calculationResults.roundResults)} per week`, margin, y);
-        y += line;
-      });
-    }
+      doc.text(`Number of Plants: ${calculationResults.numPlants}`, margin, y); y += line;
+      doc.text(`Water per Plant: ${calculationResults.waterPerPlant} L`, margin, y); y += line;
+      doc.text(`Watering Frequency: ${calculationResults.wateringFreq} days/week`, margin, y); y += 14;
 
-    doc.save('NutrientCostCalculatorResults.pdf');
+      calculationResults.nutrients.forEach(n=>{
+        check(60);
+        doc.setFont('helvetica','bold'); doc.setFontSize(13);
+        doc.text(`${n.name} – Cost Breakdown`, margin, y); y += 9;
+        doc.setFont('helvetica','normal'); doc.setFontSize(11);
+        doc.text(`Per Litre: ${formatCurrency(n.costPerLitre, calculationResults.roundResults)}`, margin, y); y += line;
+        doc.text(`Per Day: ${formatCurrency(n.dailyCost, calculationResults.roundResults)}`, margin, y); y += line;
+        doc.text(`Per Week: ${formatCurrency(n.weeklyCost, calculationResults.roundResults)}`, margin, y); y += line;
+        doc.text(`Per Month: ${formatCurrency(n.monthlyCost, calculationResults.roundResults)}`, margin, y); y += line;
+        doc.text(`Per Year: ${formatCurrency(n.yearlyCost, calculationResults.roundResults)}`, margin, y); y += 10;
+      });
+
+      check(60);
+      doc.setFont('helvetica','bold'); doc.setFontSize(14);
+      doc.text('Total Cost Breakdown', margin, y); y += 10;
+      doc.setFont('helvetica','normal'); doc.setFontSize(12);
+      const T = calculationResults.totals, R = calculationResults.roundResults;
+      doc.text(`Total Per Litre: ${formatCurrency(T.costPerLitre,R)}`, margin, y); y += line;
+      doc.text(`Total Per Day: ${formatCurrency(T.dailyCost,R)}`, margin, y); y += line;
+      doc.text(`Total Per Week: ${formatCurrency(T.weeklyCost,R)}`, margin, y); y += line;
+      doc.text(`Total Per Month: ${formatCurrency(T.monthlyCost,R)}`, margin, y); y += line;
+      doc.text(`Total Per Year: ${formatCurrency(T.yearlyCost,R)}`, margin, y);
+
+      const savedWeeks = getSavedWeeksForCalculator('nutrient');
+      if(savedWeeks.length){
+        check(20);
+        doc.setFont('helvetica','bold'); doc.setFontSize(14);
+        doc.text('Saved Weeks for Harvest', margin, y); y += 10;
+        doc.setFont('helvetica','normal'); doc.setFontSize(12);
+        savedWeeks.forEach(week=>{
+          check(line);
+          doc.text(`${nutrientStageLabel(week.stage)} Week ${week.weekNumber}: ${formatCurrency(week.weeklyCost, calculationResults.roundResults)} per week`, margin, y);
+          y += line;
+        });
+      }
+
+      doc.save('NutrientCostCalculatorResults.pdf');
+    }catch(err){
+      console.error('Failed to generate Nutrient PDF', err);
+    }
   }
 
   document.addEventListener('DOMContentLoaded', ()=>{
