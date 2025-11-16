@@ -73,6 +73,28 @@
       <img class="wm-img" src="https://cdn.shopify.com/s/files/1/0709/5261/6094/files/Cactus_Mascot.png?v=1750645317" alt="" aria-hidden="true" decoding="async" loading="lazy">
       <div id="resultsContainer"></div>
 
+      <div id="waterWeekPanel" class="week-save" style="display:none; margin-top:16px;">
+        <div class="sec-title"><span class="dot" aria-hidden="true"></span><span>Send this week to the Harvest calculator</span></div>
+        <div class="grid g-3" style="gap:12px;">
+          <div>
+            <label for="waterWeekStage">Stage</label>
+            <select id="waterWeekStage" class="input">
+              <option value="vegetative">Vegetative</option>
+              <option value="flowering">Generative (Flowering)</option>
+            </select>
+          </div>
+          <div>
+            <label for="waterWeekNumber">Week Number</label>
+            <input id="waterWeekNumber" type="number" class="input" min="1" step="1" placeholder="e.g., 4">
+            <div class="help">Match the exact veg/flower week in your grow.</div>
+          </div>
+          <div class="center" style="align-self:end;">
+            <button id="waterWeekSaveBtn" class="btn btn-ghost" type="button">Save Week for Harvest</button>
+            <div id="waterWeekStatus" class="help" style="margin-top:6px;"></div>
+          </div>
+        </div>
+      </div>
+
       <div class="center" style="margin-top:12px;">
         <button id="downloadBtn" class="btn" type="button" style="display:none;">Download Results (PDF)</button>
       </div>
@@ -92,6 +114,7 @@
   };
 
   const BRIDGE_STORAGE_KEY = 'hoCalcBridge';
+  const WATER_STAGE_LABELS = { vegetative: 'Vegetative', flowering: 'Flowering (Generative)' };
   function saveBridgeData(calculator, payload){
     try{
       if(typeof window === 'undefined' || !window.localStorage) return;
@@ -100,6 +123,32 @@
       window.localStorage.setItem(BRIDGE_STORAGE_KEY, JSON.stringify(existing));
     }catch(err){
       console.warn('Hydro Oasis bridge save skipped:', err);
+    }
+  }
+
+  function waterNormalizeStage(stage){
+    return (stage === 'flowering' || stage === 'generative') ? 'flowering' : 'vegetative';
+  }
+  function waterStageLabel(stage){
+    return WATER_STAGE_LABELS[waterNormalizeStage(stage)] || WATER_STAGE_LABELS.vegetative;
+  }
+  function saveWaterWeekSnapshot(stage, weekNumber, weeklyCost){
+    if(!(weekNumber > 0) || !Number.isFinite(weeklyCost)) return false;
+    try{
+      if(typeof window === 'undefined' || !window.localStorage) return false;
+      const data = JSON.parse(window.localStorage.getItem(BRIDGE_STORAGE_KEY) || '{}');
+      if(!data.stageWeeks) data.stageWeeks = { vegetative:{}, flowering:{} };
+      const normalizedStage = waterNormalizeStage(stage);
+      if(!data.stageWeeks[normalizedStage]) data.stageWeeks[normalizedStage] = {};
+      const weekKey = String(weekNumber);
+      const existingWeek = data.stageWeeks[normalizedStage][weekKey] || {};
+      existingWeek.water = { weeklyCost, updatedAt: Date.now() };
+      data.stageWeeks[normalizedStage][weekKey] = existingWeek;
+      window.localStorage.setItem(BRIDGE_STORAGE_KEY, JSON.stringify(data));
+      return true;
+    }catch(err){
+      console.warn('Hydro Oasis week save skipped:', err);
+      return false;
     }
   }
 
@@ -156,6 +205,46 @@
   };
 
   let calculationResults = null;
+  let latestWaterWeekTotal = null;
+
+  function resetWaterWeekPanel(){
+    const panel = $('waterWeekPanel');
+    if(panel) panel.style.display = 'none';
+    const status = $('waterWeekStatus');
+    if(status){ status.textContent=''; status.style.color = '#6B7C77'; }
+  }
+
+  function showWaterWeekPanel(){
+    const panel = $('waterWeekPanel');
+    if(panel) panel.style.display = 'block';
+    const status = $('waterWeekStatus');
+    if(status){ status.textContent=''; status.style.color = '#6B7C77'; }
+  }
+
+  function handleWaterWeekSave(){
+    const status = $('waterWeekStatus');
+    if(status){ status.textContent=''; status.style.color = '#6B7C77'; }
+    if(!Number.isFinite(latestWaterWeekTotal)){
+      if(status){ status.textContent = 'Calculate your water cost first.'; status.style.color = '#b91c1c'; }
+      return;
+    }
+    const stage = $('waterWeekStage')?.value || 'vegetative';
+    const weekNumber = parseInt($('waterWeekNumber')?.value, 10);
+    if(!(weekNumber > 0)){
+      if(status){ status.textContent = 'Enter a valid week number (1 or higher).'; status.style.color = '#b91c1c'; }
+      return;
+    }
+    const ok = saveWaterWeekSnapshot(stage, weekNumber, latestWaterWeekTotal);
+    if(status){
+      if(ok){
+        status.textContent = `Saved ${waterStageLabel(stage)} week ${weekNumber} for Harvest.`;
+        status.style.color = '#1f7a54';
+      }else{
+        status.textContent = 'Unable to save this week. Please try again.';
+        status.style.color = '#b91c1c';
+      }
+    }
+  }
 
   /* ========= UI Helpers ========= */
   function makeSection(title, icon){
@@ -255,6 +344,8 @@
       els.resultsCard.style.display = 'none';
       els.downloadBtn.style.display = 'none';
       calculationResults = null;
+      latestWaterWeekTotal = null;
+      resetWaterWeekPanel();
       return;
     }
 
@@ -289,10 +380,12 @@
       monthlyCost: totalMonthly,
       yearlyCost: totalYearly
     });
+    latestWaterWeekTotal = totalWeekly;
 
     renderResults();
     els.resultsCard.style.display = 'block';
     els.downloadBtn.style.display  = 'inline-block';
+    showWaterWeekPanel();
   }
 
   /* ========= Render results ========= */
@@ -411,6 +504,8 @@
     els.waterProvider.addEventListener('change', handleProviderSelection);
     els.calculateBtn.addEventListener('click', (e)=>{ e.preventDefault(); calculate(); e.currentTarget.blur(); });
     els.downloadBtn.addEventListener('click', generatePDF);
+    const saveBtn = $('waterWeekSaveBtn');
+    if(saveBtn) saveBtn.addEventListener('click', handleWaterWeekSave);
 
     // Enter to calculate
     ['numPlants','waterPerPlant','waterFrequency','waterCost'].forEach(id=>{
