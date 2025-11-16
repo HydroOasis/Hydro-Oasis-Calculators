@@ -261,6 +261,7 @@
   <!-- jsPDF + autotable -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+  <script src="../../shared/pdf-branding.js"></script>
 </head>
 <body>
 <div id="npcalc">
@@ -653,45 +654,59 @@
   /* ===========================================================
      PDF EXPORT
   =========================================================== */
-  function downloadPDF(){
+  async function downloadPDF(){
     if (!calculationResults || !window.jspdf) return;
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF('landscape');
+    try{
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF('landscape');
+      const branding = window.hydroPdfBranding;
+      const brandKit = branding?.decorate ? await branding.decorate(doc, {
+        watermarkOpacity: 0.12,
+        watermarkWidth: 40,
+        mascotHeight: 16,
+        logoWidth: 48,
+        startY: 8,
+        contentGap: 8
+      }) : null;
 
-    const title = "Nutrient Program Calculator";
-    const subtitle = "Build a week-by-week feed chart with per-reservoir totals, then export to PDF.";
+      const title = "Nutrient Program Calculator";
+      const subtitle = "Build a week-by-week feed chart with per-reservoir totals, then export to PDF.";
 
-    doc.setFontSize(20); doc.setFont(undefined,'bold');
-    doc.text(title,148,16,{align:'center'});
-    doc.setFontSize(11); doc.setFont(undefined,'normal');
-    doc.text(subtitle,148,24,{align:'center'});
-    doc.text(`Reservoir Size: ${calculationResults.reservoirSize} L`,148,32,{align:'center'});
+      const centerX = doc.internal.pageSize.getWidth() / 2;
+      let y = brandKit?.contentStart ?? 26;
+      doc.setFontSize(20); doc.setFont(undefined,'bold');
+      doc.text(title,centerX,y,{align:'center'}); y+=8;
+      doc.setFontSize(11); doc.setFont(undefined,'normal');
+      doc.text(subtitle,centerX,y,{align:'center'}); y+=8;
+      doc.text(`Reservoir Size: ${calculationResults.reservoirSize} L`,centerX,y,{align:'center'}); y+=10;
 
-    let y=42;
-    if(calculationResults.gridData?.allWeeks?.length){
-      doc.setFontSize(16); doc.setFont(undefined,'bold');
-      doc.text('Complete Feed Chart (ml per reservoir)',14,y); y+=8;
+      if(calculationResults.gridData?.allWeeks?.length){
+        doc.setFontSize(16); doc.setFont(undefined,'bold');
+        doc.text('Complete Feed Chart (ml per reservoir)',14,y); y+=8;
 
-      const grid = calculationResults.gridData;
-      const head = ['Nutrient', ...grid.allWeeks.map(w=>w.label)];
-      const body = grid.nutrients.map(n=>[
-        n.name,
-        ...grid.allWeeks.map(w=>{
-          const r=n.rates[`${w.stage}_${w.week}`];
-          return r ? `${formatValue(r*calculationResults.reservoirSize)} ml` : '-';
-        })
-      ]);
+        const grid = calculationResults.gridData;
+        const head = ['Nutrient', ...grid.allWeeks.map(w=>w.label)];
+        const body = grid.nutrients.map(n=>[
+          n.name,
+          ...grid.allWeeks.map(w=>{
+            const r=n.rates[`${w.stage}_${w.week}`];
+            return r ? `${formatValue(r*calculationResults.reservoirSize)} ml` : '-';
+          })
+        ]);
 
-      doc.autoTable({
-        startY:y, head:[head], body,
-        theme:'grid',
-        headStyles:{ fillColor:[53,88,74], textColor:[255,255,255], fontStyle:'bold' },
-        styles:{ fontSize:8, cellPadding:3, halign:'center' },
-        columnStyles:{ 0:{ halign:'left', fontStyle:'bold' } },
-        margin:{ left:14, right:14 }
-      });
+        doc.autoTable({
+          startY: Math.max(y, brandKit?.contentStart ?? y), head:[head], body,
+          theme:'grid',
+          headStyles:{ fillColor:[53,88,74], textColor:[255,255,255], fontStyle:'bold' },
+          styles:{ fontSize:8, cellPadding:3, halign:'center' },
+          columnStyles:{ 0:{ halign:'left', fontStyle:'bold' } },
+          margin:{ top: brandKit?.contentStart ?? y, left:14, right:14 }
+        });
+      }
+      doc.save(`${title.replace(/[^a-z0-9]/gi,'_')}.pdf`);
+    }catch(err){
+      console.error('Failed to generate Nutrient Program PDF', err);
     }
-    doc.save(`${title.replace(/[^a-z0-9]/gi,'_')}.pdf`);
   }
 
   /* ===========================================================
