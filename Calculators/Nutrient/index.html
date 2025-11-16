@@ -21,6 +21,15 @@
         <div class="subtitle">Estimate per-litre and time-based costs for your feed programme</div>
       </div>
 
+      <div class="saved-weeks-toggle">
+        <div class="toggle-container">
+          <span>Show Saved Weeks for Harvest</span>
+          <div class="toggle" id="nutrientSavedWeeksToggle" role="switch" aria-checked="false" tabindex="0">
+            <div class="toggle-slider"></div>
+          </div>
+        </div>
+      </div>
+
       <div id="nutrientSavedWeeks" class="saved-weeks-widget" style="display:none;">
         <div class="widget-title">📘 Saved Weeks for Harvest</div>
         <div id="nutrientSavedWeeksList"></div>
@@ -111,6 +120,24 @@
   const SAVED_WEEK_CALC_LABELS = { nutrient: 'Nutrients', water: 'Water', electricity: 'Electricity' };
   const SAVED_WEEK_STAGE_LABELS = { vegetative: 'Vegetative', flowering: 'Flowering' };
   let latestWeeklyTotal = null;
+  let nutrientSavedWeeksVisible = false;
+
+  function applyNutrientSavedWeeksVisibility(){
+    const widget = document.getElementById('nutrientSavedWeeks');
+    if(widget){
+      widget.style.display = nutrientSavedWeeksVisible ? 'block' : 'none';
+    }
+    const toggle = document.getElementById('nutrientSavedWeeksToggle');
+    if(toggle){
+      toggle.classList.toggle('active', nutrientSavedWeeksVisible);
+      toggle.setAttribute('aria-checked', nutrientSavedWeeksVisible ? 'true' : 'false');
+    }
+  }
+
+  function setNutrientSavedWeeksVisibility(show){
+    nutrientSavedWeeksVisible = !!show;
+    applyNutrientSavedWeeksVisibility();
+  }
   function saveBridgeData(calculator, payload){
     try{
       if(typeof window === 'undefined' || !window.localStorage) return;
@@ -183,9 +210,9 @@
     const body = $('nutrientSavedWeeksList');
     if(!widget || !body) return;
     const summary = getSavedWeeksSummary();
-    widget.style.display = 'block';
     if(summary.totalCount === 0){
       body.innerHTML = '<div class="sw-empty">No weeks saved yet. Save a week after running the Nutrient, Water, or Electricity calculators.</div>';
+      applyNutrientSavedWeeksVisibility();
       return;
     }
     const sections = [];
@@ -200,6 +227,7 @@
       }
     });
     body.innerHTML = sections.join('');
+    applyNutrientSavedWeeksVisibility();
   }
 
   function resetNutrientWeekPanel(){
@@ -517,6 +545,18 @@
     if (calcBtn) calcBtn.addEventListener('click', calculate);
     if (dlBtn) dlBtn.addEventListener('click', downloadPDF);
     if (saveBtn) saveBtn.addEventListener('click', handleNutrientWeekSave);
+    const savedWeeksToggle = document.getElementById('nutrientSavedWeeksToggle');
+    if(savedWeeksToggle){
+      const toggleVisibility = ()=> setNutrientSavedWeeksVisibility(!nutrientSavedWeeksVisible);
+      savedWeeksToggle.addEventListener('click', (e)=>{ e.preventDefault(); toggleVisibility(); });
+      savedWeeksToggle.addEventListener('keydown', (e)=>{
+        if(e.key === 'Enter' || e.key === ' '){
+          e.preventDefault();
+          toggleVisibility();
+        }
+      });
+    }
+    setNutrientSavedWeeksVisibility(false);
     updateNutrientSavedWeeksWidget();
     if(typeof window !== 'undefined'){
       window.addEventListener('storage', event=>{
