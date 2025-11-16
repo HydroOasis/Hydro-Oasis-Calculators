@@ -82,8 +82,10 @@
   #ecalc .btn:active{ transform:translateY(1px); }
   #ecalc .btn-primary{ background:var(--btn); color:var(--btn-text); border-color:var(--btn); }
   #ecalc .btn-primary:hover{ background:var(--btn-hover); border-color:var(--btn-hover); }
-  #ecalc .btn-secondary{ background:#f3f5f1; color:#1f3b33; border-color:#d9e2de; }
-  #ecalc .btn-secondary:hover{ background:#e8eee9; }
+  #ecalc .btn-secondary,
+  #ecalc .btn-ghost{ background:#f3f5f1; color:#1f3b33; border-color:#d9e2de; }
+  #ecalc .btn-secondary:hover,
+  #ecalc .btn-ghost:hover{ background:#e8eee9; }
   #ecalc .btn-success{ background:#10b981; color:#fff; border-color:#10b981; }
   #ecalc .btn-success:hover{ background:#059669; border-color:#059669; }
   #ecalc .btn-danger{ background:#ef4444; color:#fff; border-color:#ef4444; }
