@@ -4,7 +4,142 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Electricity Cost Calculator</title>
-  <link rel="stylesheet" href="../../shared/styles/calculators.css">
+  <!-- Inline styles so GitHub preview/local copies preserve the design -->
+  <style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Inter:wght@400;500;600;700;800&display=swap');
+
+#ecalc{
+  --bg:#FDFBF4; --text:#333; --heading:#2D5C4E;
+  --btn:#2D5C4E; --btn-hover:#A76DAB; --btn-text:#fff;
+  --card:#fff; --card-border:#E7E5DC; --icon:#2D5C4E; --err:#BE5C5C;
+  --sec-border:#D9E2DE; --sec-head-bg:#F3F7F5; --sec-head-text:#2D5C4E;
+  --tile-bg:#FFFFFF; --tile-border:#E7E5DC; --tile-label:#5C6F69; --tile-value:#2D5C4E;
+
+  position:relative;
+  color:var(--text);
+  line-height:1.6;
+  min-height:100%;
+  font-family:'Nunito',system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial,sans-serif;
+  max-width: var(--page-width, 1200px);
+  margin-left:auto; margin-right:auto;
+  padding-left:clamp(12px,4vw,24px);
+  padding-right:clamp(12px,4vw,24px);
+  background:transparent;
+}
+#ecalc *{ margin:0; padding:0; box-sizing:border-box; }
+#ecalc .container{ width:100%; max-width:1100px; margin:18px auto; padding:20px; background:var(--card); border:1px solid var(--card-border); border-radius:16px; box-shadow:0 6px 20px rgba(0,0,0,.06); position:relative; overflow:hidden; }
+#ecalc .container>*{ position:relative; z-index:2; }
+#ecalc .wm-img{ position:absolute; right:-28px; bottom:-28px; width:260px; opacity:.06; pointer-events:none; user-select:none; z-index:0; filter:saturate(.95) contrast(.95); }
+@media (min-width:768px){ #ecalc .wm-img{ width:320px; } }
+
+#ecalc .header{ text-align:center; padding:30px 16px 22px; margin:0 0 16px; }
+#ecalc .header h1{ margin:0 0 6px; font-size:clamp(26px,3.2vw,36px); font-weight:800; color:var(--heading); line-height:1.2; font-family:'Inter',system-ui,sans-serif; }
+#ecalc .header .subtitle{ font-size:14px; font-weight:500; color:#456E62; }
+#ecalc .muted{ font-size:.9rem; color:#6B7C77; }
+
+#ecalc .section{ background:#fff; border:1px solid var(--sec-border); border-radius:12px; padding:16px; margin-bottom:16px; }
+#ecalc .section-title{ display:flex; align-items:center; gap:8px; margin:2px 0 10px; font-size:18px; font-weight:800; color:var(--heading); font-family:'Inter',system-ui,sans-serif; }
+
+#ecalc .form-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:14px; margin-bottom:10px; position:relative; z-index:1; }
+#ecalc .form-group{ display:flex; flex-direction:column; }
+#ecalc .form-group label{ font-weight:700; color:var(--heading); margin-bottom:6px; font-size:.95em; }
+#ecalc .form-group input, #ecalc .form-group select{ padding:12px; border:1px solid #D1D1D1; border-radius:10px; font-size:16px; background:#fff; color:#31473a; transition: box-shadow .12s ease, border-color .12s ease; }
+#ecalc .form-group input:focus, #ecalc .form-group select:focus{ outline:none; border-color:var(--heading); box-shadow:0 0 0 3px rgba(45,92,78,.18); }
+
+#ecalc .toggle-container{ display:flex; align-items:center; gap:10px; }
+#ecalc .toggle{ position:relative; width:52px; height:28px; border-radius:14px; cursor:pointer; background:#cbd5e1; border:1px solid #94a3b8; transition:background-color .15s ease, transform .06s ease, border-color .15s ease; box-shadow: inset 0 0 0 1px rgba(0,0,0,.04); }
+#ecalc .toggle:active{ transform:scale(.98); }
+#ecalc .toggle.active{ background:#16a34a; border-color:#0f8a3a; box-shadow:0 0 0 3px rgba(22,163,74,.18) inset; }
+#ecalc .toggle-slider{ position:absolute; top:3px; left:3px; width:22px; height:22px; background:#fff; border-radius:50%; transition:transform .15s ease; box-shadow:0 1px 2px rgba(0,0,0,.2); }
+#ecalc .toggle.active .toggle-slider{ transform:translateX(24px); }
+#ecalc .toggles-row{ display:flex; flex-wrap:wrap; gap:16px; align-items:center; margin-top:8px; }
+
+#ecalc .btn{ display:inline-flex; align-items:center; justify-content:center; padding:12px 18px; border:1px solid transparent; border-radius:12px; font-size:16px; font-weight:700; cursor:pointer; transition:.15s; gap:8px; text-align:center; white-space:nowrap; font-family:'Inter',system-ui,sans-serif; box-shadow:0 1px 0 rgba(0,0,0,.03); }
+#ecalc .btn:hover{ filter:brightness(1.03); }
+#ecalc .btn:active{ transform:translateY(1px); }
+#ecalc .btn-primary{ background:var(--btn); color:var(--btn-text); border-color:var(--btn); }
+#ecalc .btn-primary:hover{ background:var(--btn-hover); border-color:var(--btn-hover); }
+#ecalc .btn-secondary,
+#ecalc .btn-ghost{ background:#f3f5f1; color:#1f3b33; border-color:#d9e2de; }
+#ecalc .btn-secondary:hover,
+#ecalc .btn-ghost:hover{ background:#e8eee9; }
+#ecalc .btn-success{ background:#10b981; color:#fff; border-color:#10b981; }
+#ecalc .btn-success:hover{ background:#059669; border-color:#059669; }
+#ecalc .btn-danger{ background:#ef4444; color:#fff; border-color:#ef4444; }
+#ecalc .btn-danger:hover{ background:#dc2626; border-color:#dc2626; }
+#ecalc .btn-x, #ecalc .remove-day-group{ background:#ef4444; color:#fff; border:none; border-radius:10px; padding:6px 10px; font-size:14px; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; line-height:1; transition: transform .1s ease, filter .15s ease, background-color .15s ease; }
+#ecalc .btn-x:hover, #ecalc .remove-day-group:hover{ background:#dc2626; }
+#ecalc .btn-x:active, #ecalc .remove-day-group:active{ transform:scale(.96); }
+
+#ecalc .time-range{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:10px; padding:12px; background:#fcfaf3; border-radius:8px; border:1px solid #e3e2d7; }
+#ecalc .time-row{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; width:100%; min-width:0; }
+#ecalc .time-input{ padding:10px 12px; border:1px solid #c4c8b8; border-radius:8px; font-size:14px; background:#fff; color:#31473a; transition: box-shadow .12s ease, border-color .12s ease; min-width:110px; }
+#ecalc .time-input:focus{ outline:none; border-color:var(--heading); box-shadow:0 0 0 3px rgba(45,92,78,.18); }
+
+#ecalc .day-range-group{ border:1px dashed #e3e2d7; border-radius:10px; padding:12px; margin-bottom:12px; background:#fffef8; position:relative; overflow:hidden; }
+#ecalc .days-row{ display:flex; align-items:center; gap:8px; justify-content:space-between; flex-wrap:wrap; width:100%; }
+#ecalc .days-selector{ display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:8px; flex:1; width:100%; min-width:0; }
+#ecalc .day-btn{ display:flex; align-items:center; justify-content:center; width:100%; height:44px; padding:0 10px; border:1px solid #c4c8b8; background:#fff; border-radius:8px; cursor:pointer; font-size:14px; font-weight:700; color:#31473a; transition: background-color .12s ease, border-color .12s ease, transform .06s ease; text-align:center; overflow:hidden; text-overflow:ellipsis; }
+#ecalc .day-btn:hover{ background:#f3f7f5; border-color:#b8c2b5; }
+#ecalc .day-btn:active{ transform:scale(.98); }
+#ecalc .day-btn.active{ background:var(--btn); color:#fff; border-color:var(--btn); }
+
+#ecalc .time-range[data-all-day="1"] .time-row .to,
+#ecalc .time-range[data-allday="1"] .time-row .to,
+#ecalc .time-row .toggle.active ~ .to{ display:none; }
+
+#ecalc .equipment-card{ position:relative; border:1px solid var(--sec-border); border-radius:12px; padding:14px; margin-top:12px; background:#fff; }
+#ecalc .equipment-card > .remove-btn{ position:absolute; top:10px; right:10px; }
+#ecalc .equipment-header{ display:flex; align-items:center; justify-content:space-between; }
+#ecalc .equipment-title{ font-weight:800; color:#2f3e39; font-family:'Inter',system-ui; }
+
+#ecalc .results-section{ border:1px solid var(--sec-border); border-radius:12px; padding:12px; background:#fff; margin-top:14px; }
+#ecalc .results-section .section-title{ display:flex; align-items:center; gap:8px; margin:0 0 8px; background:var(--sec-head-bg); color:var(--sec-head-text); padding:8px 10px; border-radius:9px; font-weight:800; font-size:14px; font-family:'Inter',system-ui,sans-serif; }
+#ecalc .results-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; margin-top:8px; }
+#ecalc .result-item{ background:var(--tile-bg); border:1px solid var(--tile-border); border-radius:10px; padding:10px 12px; text-align:center; box-shadow:0 2px 6px rgba(0,0,0,.03); }
+#ecalc .result-label{ font-size:12px; color:var(--tile-label); font-weight:700; letter-spacing:.2px; }
+#ecalc .result-value{ margin-top:4px; font-size:18px; font-weight:800; color:var(--tile-value); }
+
+#ecalc .error-message{ color:var(--err); background:#fef2f2; border:1px solid var(--err); padding:12px; border-radius:8px; margin-top:10px; font-size:14px; font-weight:700; text-align:left; }
+
+#ecalc .modal{ position:fixed; inset:0; background:rgba(0,0,0,.5); display:none; align-items:center; justify-content:center; z-index:1000; }
+#ecalc .modal-content{ background:#fff; padding:24px; border-radius:12px; max-width:560px; width:90%; max-height:80%; overflow-y:auto; border:1px solid var(--card-border); position:relative; z-index:1001; box-shadow:0 6px 20px rgba(0,0,0,.12); }
+#ecalc .modal-header{ display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+#ecalc .modal-title{ font-size:1.15rem; font-weight:800; color:var(--heading); font-family:'Inter',system-ui,sans-serif; }
+#ecalc .close-btn{ background:none; border:none; font-size:24px; cursor:pointer; color:var(--text); }
+#ecalc .modal.show{ display:flex; }
+#ecalc .close-btn:hover{ filter:brightness(1.2); }
+#ecalc .close-btn:active{ transform:scale(.96); }
+
+@media (max-width:768px){
+  #ecalc{ padding-left:16px; padding-right:16px; }
+  #ecalc .container{ max-width:680px; margin:14px auto; padding:14px; border-radius:14px; }
+  #ecalc .header{ padding:18px 8px 10px; }
+  #ecalc .header h1{ font-size:clamp(22px,5.2vw,28px); }
+  #ecalc .header .subtitle{ font-size:13px; }
+  #ecalc .section{ padding:14px; margin-bottom:14px; }
+  #ecalc .form-grid{ grid-template-columns:1fr; gap:10px; }
+  #ecalc .time-range{ flex-direction:column; align-items:stretch; gap:8px; }
+  #ecalc .time-row{ gap:8px; }
+  #ecalc .time-row span{ order:2; }
+  #ecalc .time-input{ width:100%; font-size:16px; }
+  #ecalc .toggles-row{ gap:12px; }
+  #ecalc .btn{ padding:12px 14px; font-size:15px; width:100%; }
+  #ecalc .group-actions{ flex-direction:column; }
+  #ecalc .results-grid{ grid-template-columns:1fr 1fr; gap:8px; }
+  #ecalc .days-selector{ grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
+  #ecalc .day-btn{ height:48px; font-size:16px; }
+  #ecalc .remove-day-group{ margin-left:auto; }
+  #ecalc .wm-img{ display:none; }
+  #ho-watermark{ display:none; }
+  #ecalc .cta-row{ position:sticky; bottom:8px; z-index:20; background:transparent; padding-top:6px; }
+  #ecalc .cta-row .btn{ border-radius:14px; }
+  #ecalc .modal-content{ width:94%; padding:16px; border-radius:14px; }
+}
+
+#ho-watermark{ position:fixed; right:16px; bottom:12px; background:rgba(45,92,78,.08); color:#2D5C4E; border:1px solid #E7E5DC; border-radius:10px; padding:6px 10px; font:600 12px/1 'Inter',system-ui,sans-serif; backdrop-filter:blur(2px); z-index:9999; pointer-events:none; }
+@view-transition { navigation:auto; }
+  </style>
 
   <!-- SDKs -->
   <script src="/_sdk/element_sdk.js"></script>
@@ -12,7 +147,595 @@
 
   <!-- jsPDF -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="../../shared/pdf-branding.js"></script>
+  <script>
+  (function(global){
+    'use strict';
+
+    const BRAND_URLS = {
+      logo: 'https://cdn.shopify.com/s/files/1/0709/5261/6094/files/Hydro_Oasis_Logo.svg?v=1750645434',
+      nepenthes: 'https://cdn.shopify.com/s/files/1/0709/5261/6094/files/Nepenthes_Mascot.png?v=1750645317',
+      cactus: 'https://cdn.shopify.com/s/files/1/0709/5261/6094/files/Cactus_Mascot.png?v=1750645317'
+    };
+
+    const assetCache = {};
+
+    function readBlobAsDataURL(blob){
+      return new Promise((resolve, reject)=>{
+        const reader = new FileReader();
+        reader.onload = ()=> resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+    }
+
+    function loadImageAsset(url){
+      if(!url) return Promise.resolve(null);
+      if(!assetCache[url]){
+        assetCache[url] = fetch(url, { mode: 'cors' })
+          .then(resp=>resp.blob())
+          .then(readBlobAsDataURL)
+          .then(dataUrl=>new Promise(resolve=>{
+            const img = new Image();
+            img.onload = ()=> resolve({ dataUrl, width: img.naturalWidth || img.width || 1, height: img.naturalHeight || img.height || 1 });
+            img.onerror = ()=> resolve({ dataUrl, width: 1, height: 1 });
+            img.src = dataUrl;
+          }))
+          .catch(err=>{ console.warn('[Hydro Oasis] Unable to load branding asset', url, err); return null; });
+      }
+      return assetCache[url];
+    }
+
+    function getHeightFromWidth(asset, width){
+      const originalWidth = asset?.width || width || 1;
+      const originalHeight = asset?.height || width || 1;
+      return width * (originalHeight / originalWidth);
+    }
+
+    function getWidthFromHeight(asset, height){
+      const originalWidth = asset?.width || height || 1;
+      const originalHeight = asset?.height || height || 1;
+      return height * (originalWidth / originalHeight);
+    }
+
+    function drawBrandHeader(doc, assets, options){
+      if(!doc) return options.startY ?? 20;
+      const prevFont = typeof doc.getFont === 'function' ? doc.getFont() : null;
+      const prevSize = typeof doc.getFontSize === 'function' ? doc.getFontSize() : null;
+      const pageWidth = doc.internal.pageSize.getWidth();
+      let cursorY = options.startY ?? 12;
+      let drewSomething = false;
+
+      if(assets.logo?.dataUrl){
+        const logoWidth = options.logoWidth || 44;
+        const logoHeight = getHeightFromWidth(assets.logo, logoWidth);
+        const x = (pageWidth - logoWidth) / 2;
+        doc.addImage(assets.logo.dataUrl, 'PNG', x, cursorY, logoWidth, logoHeight);
+        cursorY += logoHeight + (options.logoSpacing ?? 4);
+        drewSomething = true;
+      }
+
+      const brandTitle = options.brandTitle || 'Hydro Oasis';
+      const fontSize = options.brandFontSize || 22;
+      const fontName = options.brandFont || 'helvetica';
+      if(typeof doc.setFont === 'function'){ doc.setFont(fontName, 'bold'); }
+      if(typeof doc.setFontSize === 'function'){ doc.setFontSize(fontSize); }
+      const textWidth = doc.getTextWidth ? doc.getTextWidth(brandTitle) : 0;
+      const textX = textWidth ? (pageWidth - textWidth) / 2 : pageWidth / 2;
+      const scale = doc.internal.scaleFactor || 1;
+      const fontHeight = fontSize / scale;
+      const baseline = cursorY + fontHeight;
+      doc.text(brandTitle, textX, baseline);
+      drewSomething = true;
+
+      const textCenterY = baseline - fontHeight / 2;
+      const mascotHeight = options.mascotHeight || 18;
+      const spacing = options.mascotSpacing || 6;
+      const margin = options.mascotMargin || 8;
+
+      if(assets.nepenthes?.dataUrl){
+        const width = getWidthFromHeight(assets.nepenthes, mascotHeight);
+        const x = Math.max(margin, textX - width - spacing);
+        const y = textCenterY - mascotHeight / 2;
+        doc.addImage(assets.nepenthes.dataUrl, 'PNG', x, y, width, mascotHeight);
+      }
+
+      if(assets.cactus?.dataUrl){
+        const width = getWidthFromHeight(assets.cactus, mascotHeight);
+        const x = Math.min(pageWidth - width - margin, textX + textWidth + spacing);
+        const y = textCenterY - mascotHeight / 2;
+        doc.addImage(assets.cactus.dataUrl, 'PNG', x, y, width, mascotHeight);
+      }
+
+      if(prevFont && typeof doc.setFont === 'function'){
+        doc.setFont(prevFont.fontName || 'helvetica', prevFont.fontStyle || 'normal');
+      }
+      if(prevSize && typeof doc.setFontSize === 'function'){
+        doc.setFontSize(prevSize);
+      }
+
+      return drewSomething ? baseline + (options.headerPadding ?? 6) : cursorY;
+    }
+
+    function addWatermarkToPage(doc, cactus, options){
+      if(!cactus?.dataUrl) return;
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      const width = options.watermarkWidth || 36;
+      const height = getHeightFromWidth(cactus, width);
+      const margin = options.watermarkMargin || 14;
+      const x = pageWidth - width - margin;
+      const y = pageHeight - height - margin;
+      let resetOpacity = null;
+      if(typeof doc.setGState === 'function' && typeof doc.GState === 'function'){
+        try{
+          doc.setGState(new doc.GState({ opacity: options.watermarkOpacity ?? 0.12 }));
+          resetOpacity = ()=>{ doc.setGState(new doc.GState({ opacity: 1 })); };
+        }catch(err){ resetOpacity = null; }
+      }
+      doc.addImage(cactus.dataUrl, 'PNG', x, y, width, height);
+      if(resetOpacity) resetOpacity();
+    }
+
+    function patchAddPage(doc, assets, options){
+      if(doc.__hoBrandingPatched) return;
+      const originalAddPage = doc.addPage.bind(doc);
+      doc.addPage = function(...args){
+        originalAddPage(...args);
+        if(assets.logo || assets.nepenthes || assets.cactus){
+          drawBrandHeader(this, assets, options);
+        }
+        if(assets.cactus){
+          addWatermarkToPage(this, assets.cactus, options);
+        }
+        return this;
+      };
+      doc.__hoBrandingPatched = true;
+    }
+
+    async function decorate(doc, options = {}){
+      if(!doc || !doc.internal?.pageSize){
+        const start = options.startY ?? 20;
+        const gap = options.contentGap ?? 10;
+        return { headerBottom: start, contentStart: start + gap };
+      }
+
+      const assets = await Promise.all([
+        loadImageAsset(BRAND_URLS.logo),
+        loadImageAsset(BRAND_URLS.nepenthes),
+        loadImageAsset(BRAND_URLS.cactus)
+      ]).then(([logo, nepenthes, cactus])=>({ logo, nepenthes, cactus }));
+
+      const headerBottom = drawBrandHeader(doc, assets, options);
+      if(assets.cactus){
+        addWatermarkToPage(doc, assets.cactus, options);
+      }
+      patchAddPage(doc, assets, options);
+
+      const gap = options.contentGap ?? 10;
+      return {
+        assets,
+        headerBottom,
+        contentStart: (headerBottom ?? (options.startY ?? 20)) + gap
+      };
+    }
+
+    global.hydroPdfBranding = { decorate };
+  })(window);
+  </script>
+
+  <!-- Embed the tariff data so standalone copies do not rely on external fetches -->
+  <script id="embedded-tariffs-data" type="application/json">
+{
+  "retailers": {
+    "actewagl": {
+      "displayName": "ActewAGL",
+      "regions": ["act"],
+      "plans": {
+        "home-plan-flat": {
+          "title": "Home Plan - Flat Rate",
+          "byRegion": { "act": { "on": 32.56, "off": 32.56 } },
+          "windows": { "on": [{ "start": "00:00", "end": "23:59", "days": [0,1,2,3,4,5,6] }], "off": [] }
+        },
+        "home-tou": {
+          "title": "Home Time of Use Plan",
+          "byRegion": { "act": { "on": 43.34, "off": 26.4, "shoulder": 29.8845 } },
+          "windows": {
+            "on": [
+              { "start": "07:00", "end": "09:00", "days": [1,2,3,4,5] },
+              { "start": "17:00", "end": "20:00", "days": [1,2,3,4,5] }
+            ],
+            "shoulder": [
+              { "start": "09:00", "end": "17:00", "days": [1,2,3,4,5] },
+              { "start": "20:00", "end": "22:00", "days": [1,2,3,4,5] }
+            ],
+            "off": [
+              { "start": "22:00", "end": "07:00", "days": [0,1,2,3,4,5,6] },
+              { "start": "00:00", "end": "23:59", "days": [0,6] }
+            ]
+          }
+        }
+      }
+    },
+
+    "agl": {
+      "displayName": "AGL",
+      "regions": ["national"],
+      "plans": {
+        "home-plan-flat": {
+          "title": "Home Plan - Flat Rate",
+          "byRegion": { "national": { "on": 40.183, "off": 40.183 } },
+          "windows": { "on": [{ "start": "00:00", "end": "23:59", "days": [0,1,2,3,4,5,6] }], "off": [] }
+        },
+        "home-tou": {
+          "title": "Home Time of Use Plan",
+          "byRegion": { "national": { "on": 59.301, "off": 27.071, "shoulder": 33.044 } },
+          "windows": {
+            "on": [{ "start": "16:00", "end": "21:00", "days": [0,1,2,3,4,5,6] }],
+            "shoulder": [
+              { "start": "09:00", "end": "17:00", "days": [1,2,3,4,5] },
+              { "start": "20:00", "end": "22:00", "days": [1,2,3,4,5] }
+            ],
+            "off": [{ "start": "21:00", "end": "09:00", "days": [0,1,2,3,4,5,6] }]
+          }
+        }
+      }
+    },
+
+    "alinta": {
+      "displayName": "Alinta Energy",
+      "regions": ["national"],
+      "plans": {
+        "standard-contract-flat-est": {
+          "title": "Standard Contract (est.) - Flat",
+          "byRegion": { "national": { "on": 21.45, "off": 21.45 } },
+          "windows": { "on": [{ "start": "00:00", "end": "23:59", "days": [0,1,2,3,4,5,6] }], "off": [] }
+        }
+      }
+    },
+
+    "amber": {
+      "displayName": "Amber Electric",
+      "regions": ["national"],
+      "plans": {
+        "standard-contract-flat-est": {
+          "title": "Standard Contract (est.) - Flat",
+          "byRegion": { "national": { "on": 38.42, "off": 38.42 } },
+          "windows": { "on": [{ "start": "00:00", "end": "23:59", "days": [0,1,2,3,4,5,6] }], "off": [] }
+        }
+      }
+    },
+
+    "aurora": {
+      "displayName": "Aurora Energy (TAS)",
+      "regions": ["tas"],
+      "plans": {
+        "tariff-31-flat": {
+          "title": "Tariff 31 - Residential Flat",
+          "byRegion": { "tas": { "on": 29.0535, "off": 29.0535 } },
+          "windows": { "on": [{ "start": "00:00", "end": "23:59", "days": [0,1,2,3,4,5,6] }], "off": [] }
+        },
+"tariff-93-tou": {
+  "title": "Tariff 93 - Time of Use",
+  "byRegion": { "tas": { "on": 35.4782, "off": 16.6862 } },
+  "windows": {
+    "on": [
+      { "start": "07:00", "end": "10:00", "days": [1,2,3,4,5] },
+      { "start": "16:00", "end": "21:00", "days": [1,2,3,4,5] }
+    ],
+    "off": [
+      { "start": "10:00", "end": "16:00", "days": [1,2,3,4,5] },
+      { "start": "21:00", "end": "07:00", "days": [1,2,3,4,5] },
+      { "start": "00:00", "end": "23:59", "days": [0,6] }
+    ]
+  }
+},
+        "tariff-62-night": {
+          "title": "Tariff 62 - Controlled Load (Night)",
+          "byRegion": { "tas": { "on": 14.3078, "off": 14.3078 } },
+          "windows": { "on": [{ "start": "00:00", "end": "23:59", "days": [0,1,2,3,4,5,6] }], "off": [] }
+        }
+      }
+    },
+
+    "ergon": {
+      "displayName": "Ergon Energy (QLD)",
+      "regions": ["qld-regional"],
+      "plans": {
+        "t11-flat": {
+          "title": "Tariff 11 - Flat",
+          "byRegion": { "qld-regional": { "on": 32.973, "off": 32.973 } },
+          "windows": { "on": [{ "start": "00:00", "end": "23:59", "days": [0,1,2,3,4,5,6] }], "off": [] }
+        },
+        "t12d-tou": {
+          "title": "Tariff 12D - TOU",
+          "byRegion": { "qld-regional": { "on": 45.712, "off": 22.68, "shoulder": 28.035 } },
+          "windows": {
+            "on": [{ "start": "16:00", "end": "21:00", "days": [1,2,3,4,5] }],
+            "shoulder": [{ "start": "21:00", "end": "11:00", "days": [0,1,2,3,4,5,6] }],
+            "off": [{ "start": "11:00", "end": "16:00", "days": [1,2,3,4,5] }]
+          }
+        }
+      }
+    },
+
+    "energex": {
+      "displayName": "Energex (QLD SEQ)",
+      "regions": ["qld-seq"],
+      "plans": {
+        "res-tou": {
+          "title": "Residential TOU",
+          "byRegion": { "qld-seq": { "on": 31.21, "off": 21.84, "shoulder": 25.4 } },
+          "windows": {
+            "on": [{ "start": "16:00", "end": "21:00", "days": [1,2,3,4,5] }],
+            "off": [{ "start": "11:00", "end": "16:00", "days": [1,2,3,4,5] }],
+            "shoulder": [
+              { "start": "21:00", "end": "07:00", "days": [0,1,2,3,4,5,6] },
+              { "start": "07:00", "end": "11:00", "days": [1,2,3,4,5] },
+              { "start": "00:00", "end": "23:59", "days": [0,6] }
+            ]
+          }
+        }
+      }
+    },
+
+    "momentum": {
+      "displayName": "Momentum Energy",
+      "regions": ["national"],
+      "plans": {
+        "flat": {
+          "title": "Residential Flat",
+          "byRegion": { "national": { "on": 46.72, "off": 46.72 } },
+          "windows": { "on": [{ "start": "00:00", "end": "23:59", "days": [0,1,2,3,4,5,6] }], "off": [] }
+        },
+        "tou": {
+          "title": "Residential TOU",
+          "byRegion": { "national": { "on": 46.82, "off": 23.99 } },
+          "windows": {
+            "on": [{ "start": "15:00", "end": "21:00", "days": [0,1,2,3,4,5,6] }],
+            "off": [{ "start": "21:00", "end": "15:00", "days": [0,1,2,3,4,5,6] }]
+          }
+        }
+      }
+    },
+
+    "origin": {
+      "displayName": "Origin Energy",
+      "regions": ["national"],
+      "plans": {
+        "flat": {
+          "title": "Residential Flat",
+          "byRegion": { "national": { "on": 28.71, "off": 28.71 } },
+          "windows": { "on": [{ "start": "00:00", "end": "23:59", "days": [0,1,2,3,4,5,6] }], "off": [] }
+        },
+        "tou": {
+          "title": "Residential TOU",
+          "byRegion": { "national": { "on": 37.19, "off": 24.41 } },
+          "windows": {
+            "on": [{ "start": "15:00", "end": "21:00", "days": [0,1,2,3,4,5,6] }],
+            "off": [{ "start": "21:00", "end": "15:00", "days": [0,1,2,3,4,5,6] }]
+          }
+        }
+      }
+    },
+
+    "sapower": {
+      "displayName": "SA Power Networks",
+      "regions": ["sa"],
+      "plans": {
+        "res-single-flat": {
+          "title": "Residential Single Rate - Flat",
+          "byRegion": { "sa": { "on": 7.26, "off": 7.26 } },
+          "windows": { "on": [{ "start": "00:00", "end": "23:59", "days": [0,1,2,3,4,5,6] }], "off": [] }
+        },
+        "res-tou": {
+          "title": "Residential TOU",
+          "byRegion": { "sa": { "on": 18.95, "off": 9.47 } },
+          "windows": {
+            "on": [
+              { "start": "06:00", "end": "10:00", "days": [1,2,3,4,5,6,0] },
+              { "start": "16:00", "end": "23:59", "days": [1,2,3,4,5,6,0] }
+            ],
+            "off": [{ "start": "00:00", "end": "06:00", "days": [0,1,2,3,4,5,6] }]
+          }
+        }
+      }
+    },
+
+    "synergy": {
+      "displayName": "Synergy (WA)",
+      "regions": ["wa"],
+      "plans": {
+        "a1-flat": {
+          "title": "A1 Tariff - Flat",
+          "byRegion": { "wa": { "on": 32.3719, "off": 32.3719 } },
+          "windows": { "on": [{ "start": "00:00", "end": "23:59", "days": [0,1,2,3,4,5,6] }], "off": [] }
+        },
+        "midday-saver-tou": {
+          "title": "Midday Saver TOU",
+          "byRegion": { "wa": { "on": 53.8446, "off": 8.6151, "shoulder": 23.6916 } },
+          "windows": {
+            "on": [{ "start": "15:00", "end": "21:00", "days": [0,1,2,3,4,5,6] }],
+            "off": [{ "start": "09:00", "end": "15:00", "days": [0,1,2,3,4,5,6] }],
+            "shoulder": [
+              { "start": "21:00", "end": "09:00", "days": [0,1,2,3,4,5,6] }
+            ]
+          }
+        }
+      }
+    },
+
+    "powershop": {
+      "displayName": "Powershop",
+      "regions": ["vic"],
+      "plans": {
+        "vdo-single-rate": {
+          "title": "VDO Residential Single Rate (VIC)",
+          "byRegion": {
+            "ausnet": { "on": 38.51, "off": 38.51 },
+            "citipower": { "on": 28.71, "off": 28.71 },
+            "jemena": { "on": 32.52, "off": 32.52 },
+            "powercor": { "on": 32.92, "off": 32.92 },
+            "united": { "on": 31.74, "off": 31.74 }
+          },
+          "windows": { "on": [{ "start": "00:00", "end": "23:59", "days": [0,1,2,3,4,5,6] }], "off": [] }
+        },
+        "vdo-tou": {
+          "title": "VDO Time of Use (VIC, Peak 3pm–9pm daily)",
+          "byRegion": {
+            "ausnet": { "on": 49.32, "off": 28.69 },
+            "citipower": { "on": 37.19, "off": 24.41 },
+            "jemena": { "on": 39.25, "off": 27.10 },
+            "powercor": { "on": 42.65, "off": 27.72 },
+            "united": { "on": 41.20, "off": 26.65 }
+          },
+          "windows": {
+            "on": [{ "start": "15:00", "end": "21:00", "days": [0,1,2,3,4,5,6] }],
+            "off": [{ "start": "21:00", "end": "15:00", "days": [0,1,2,3,4,5,6] }]
+          }
+        },
+        "controlled-load": {
+          "title": "Controlled Load (VIC)",
+          "byRegion": {
+            "ausnet": { "on": 28.69, "off": 28.69 },
+            "citipower": { "on": 22.71, "off": 22.71 },
+            "jemena": { "on": 26.39, "off": 26.39 },
+            "powercor": { "on": 25.59, "off": 25.59 },
+            "united": { "on": 24.66, "off": 24.66 }
+          },
+          "windows": { "on": [{ "start": "00:00", "end": "23:59", "days": [0,1,2,3,4,5,6] }], "off": [] }
+        }
+      }
+    },
+
+    "lumo": {
+      "displayName": "Lumo Energy",
+      "regions": ["vic"],
+      "plans": {
+        "single-rate": {
+          "title": "Residential Single Rate",
+          "byRegion": {
+            "ausnet": { "on": 38.51, "off": 38.51 },
+            "citipower": { "on": 28.71, "off": 28.71 },
+            "jemena": { "on": 32.52, "off": 32.52 },
+            "powercor": { "on": 32.92, "off": 32.92 }
+          },
+          "windows": { "on": [{ "start": "00:00", "end": "23:59", "days": [0,1,2,3,4,5,6] }], "off": [] }
+        },
+        "two-rate": {
+          "title": "Residential Two Rate (Anytime + CL)",
+          "byRegion": {
+            "ausnet": { "on": 38.51, "off": 38.51 },
+            "citipower": { "on": 28.71, "off": 28.71 },
+            "jemena": { "on": 32.52, "off": 32.52 },
+            "powercor": { "on": 32.92, "off": 32.92 }
+          },
+          "windows": { "on": [{ "start": "00:00", "end": "23:59", "days": [0,1,2,3,4,5,6] }], "off": [] }
+        },
+        "tou-7day": {
+          "title": "Residential Time of Use (7-Day, Peak 3pm–9pm)",
+          "byRegion": {
+            "ausnet": { "on": 49.32, "off": 28.69 },
+            "citipower": { "on": 37.19, "off": 24.41 },
+            "jemena": { "on": 39.25, "off": 27.10 },
+            "powercor": { "on": 42.65, "off": 27.72 }
+          },
+          "windows": {
+            "on": [{ "start": "15:00", "end": "21:00", "days": [0,1,2,3,4,5,6] }],
+            "off": [{ "start": "21:00", "end": "15:00", "days": [0,1,2,3,4,5,6] }]
+          }
+        }
+      }
+    },
+
+"redenergy": {
+  "displayName": "Red Energy",
+  "regions": ["vic"],
+  "plans": {
+    "vdo-single-rate": {
+      "title": "VDO Residential Single Rate (CitiPower)",
+      "byRegion": {
+        "citipower": { "on": 27.33, "off": 27.33, "supply": 124.07 }
+      },
+      "windows": {
+        "on": [
+          { "start": "00:00", "end": "23:59", "days": [0,1,2,3,4,5,6] }
+        ],
+        "off": []
+      }
+    },
+
+    "vdo-tou": {
+      "title": "VDO 2-Period TOU (Residential)",
+      "byRegion": {
+        "ausnet":   { "on": 46.82, "off": 23.99, "supply": 141.46 },
+        "citipower":{ "on": 36.33, "off": 22.06, "supply": 124.07 },
+        "jemena":   { "on": 37.61, "off": 23.68, "supply": 123.01 },
+        "powercor": { "on": 40.40, "off": 23.65, "supply": 136.84 },
+        "united":   { "on": 38.37, "off": 22.99, "supply": 116.48 }
+      },
+      "windows": {
+        "on": [
+          { "start": "15:00", "end": "21:00", "days": [0,1,2,3,4,5,6] }
+        ],
+        "off": [
+          { "start": "21:00", "end": "15:00", "days": [0,1,2,3,4,5,6] }
+        ]
+      }
+    },
+
+    "controlled-load": {
+      "title": "VDO Controlled Load (Residential)",
+      "byRegion": {
+        "ausnet":   { "on": 23.99, "off": 23.99 },
+        "citipower":{ "on": 20.12, "off": 20.12 },
+        "jemena":   { "on": 23.14, "off": 23.14 },
+        "powercor": { "on": 21.22, "off": 21.22 },
+        "united":   { "on": 21.07, "off": 21.07 }
+      },
+      "windows": {
+        "on": [
+          { "start": "00:00", "end": "23:59", "days": [0,1,2,3,4,5,6] }
+        ],
+        "off": []
+      }
+    }
+  }
+},
+
+    "energyaustralia": {
+      "displayName": "EnergyAustralia",
+      "regions": ["vic"],
+      "plans": {
+        "peak-anytime": {
+          "title": "Residential Peak Anytime / Peak + Dedicated Circuit",
+          "byRegion": {
+            "citipower": { "on": 28.71, "off": 28.71 },
+            "jemena": { "on": 32.5199, "off": 32.5199 },
+            "powercor": { "on": 32.9199, "off": 32.9199 },
+            "united": { "on": 31.7399, "off": 31.7399 },
+            "ausnet": { "on": 38.5099, "off": 39.5499 }
+          },
+          "windows": { "on": [{ "start": "00:00", "end": "23:59", "days": [0,1,2,3,4,5,6] }], "off": [] }
+        },
+        "7day-tou": {
+          "title": "Residential 7-Day Time of Use / TOU + Dedicated Circuit",
+          "byRegion": {
+            "citipower": { "on": 37.1899, "off": 24.4099 },
+            "jemena": { "on": 39.25, "off": 27.10 },
+            "powercor": { "on": 42.6499, "off": 27.72 },
+            "united": { "on": 41.1999, "off": 26.6499 },
+            "ausnet": { "on": 49.3199, "off": 28.6899 }
+          },
+          "windows": {
+            "on": [{ "start": "15:00", "end": "21:00", "days": [0,1,2,3,4,5,6] }],
+            "off": [{ "start": "21:00", "end": "15:00", "days": [0,1,2,3,4,5,6] }]
+          }
+        }
+      }
+    }
+  }
+}
+  </script>
 
 
 
@@ -528,8 +1251,19 @@ function handleElectricWeekSave(){
 }
 
 /* ========= External tariffs ========= */
-const TARIFFS_URL = "https://cdn.shopify.com/s/files/1/0709/5261/6094/files/Electricity_Tariffs.json?v=1763176275";
+const REMOTE_TARIFFS_URL = "https://cdn.shopify.com/s/files/1/0709/5261/6094/files/Electricity_Tariffs.json?v=1763176275";
+const LOCAL_TARIFFS_URL = "../../data/electricity_tariffs.json";
 let tariffsData = null;
+const embeddedTariffs = (()=>{
+  try{
+    const el = document.getElementById('embedded-tariffs-data');
+    if(!el) return null;
+    return JSON.parse(el.textContent || '{}');
+  }catch(err){
+    console.warn('Unable to parse embedded tariff data:', err);
+    return null;
+  }
+})();
 const regionLabels = { vic:"VIC", tas:"TAS", citipower:"VIC – CitiPower", powercor:"VIC – Powercor", jemena:"VIC – Jemena", ausnet:"VIC – AusNet", united:"VIC – United Energy" };
 
 function validateTariffsSchema(json){
@@ -562,22 +1296,51 @@ function validateTariffsSchema(json){
   });
 }
 
+async function fetchTariffsFromUrl(url){
+  const res = await fetch(url, { cache:"no-store" });
+  if(!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+}
+
 async function fetchTariffsOnce(){
   if (tariffsData) return tariffsData;
   const status = document.getElementById("fetch-status");
+  if (status) status.innerHTML = "Loading tariffs…";
+
+  const errors = [];
+  const tryUse = (data, sourceLabel)=>{
+    if(!data) return false;
+    validateTariffsSchema(data);
+    tariffsData = data;
+    if (status) status.innerHTML = `<span style='color:#10b981;'>Tariffs loaded (${sourceLabel}).</span>`;
+    return true;
+  };
+
   try{
-    if (status) status.innerHTML = "Loading tariffs…";
-    const res = await fetch(TARIFFS_URL, { cache:"no-store" });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const json = await res.json();
-    validateTariffsSchema(json);
-    tariffsData = json;
-    if (status) status.innerHTML = "<span style='color:#10b981;'>Tariffs loaded.</span>";
-    return tariffsData;
-  }catch(err){
-    if (status) status.innerHTML = `<div class="error-message">Failed to load tariffs file at ${TARIFFS_URL}: ${err.message}</div>`;
-    throw err;
+    if(embeddedTariffs && tryUse(embeddedTariffs, 'embedded data')){
+      return tariffsData;
+    }
+  }catch(err){ errors.push(`Embedded data: ${err.message}`); }
+
+  const urlSources = [
+    { url: LOCAL_TARIFFS_URL, label: 'local data file' },
+    { url: REMOTE_TARIFFS_URL, label: 'Shopify CDN' }
+  ];
+
+  for(const source of urlSources){
+    try{
+      const json = await fetchTariffsFromUrl(source.url);
+      if(tryUse(json, source.label)) return tariffsData;
+    }catch(err){
+      errors.push(`${source.label}: ${err.message}`);
+    }
   }
+
+  const errorMessage = errors.length ? errors.join('<br>') : 'Unknown error';
+  if(status){
+    status.innerHTML = `<div class="error-message">Failed to load tariffs.<br>${errorMessage}</div>`;
+  }
+  throw new Error(`Unable to load tariffs: ${errorMessage}`);
 }
 
 /* ========= SDK init ========= */
@@ -1149,18 +1912,156 @@ function displayTotals(t){
 }
 
 /* ========= PDF ========= */
+(function(global){
+  function escapePdfText(str){
+    return String(str || '')
+      .replace(/\\/g,'\\\\')
+      .replace(/\(/g,'\\(')
+      .replace(/\)/g,'\\)')
+      .replace(/[\r\n]/g,' ');
+  }
+
+  function mmToPt(value){
+    return (Number(value)||0)*72/25.4;
+  }
+
+  function buildSimplePdfString(pages, widthMm, heightMm){
+    const mmWidth=widthMm||210;
+    const mmHeight=heightMm||297;
+    const widthPt=mmToPt(mmWidth);
+    const heightPt=mmToPt(mmHeight);
+    const normalizedPages = pages.length ? pages : [{ lines: [] }];
+    const numPages = normalizedPages.length;
+    const totalObjects = 4 + numPages*2;
+    const objects = new Array(totalObjects+1).fill('');
+    const catalogNum = 1;
+    const pagesNum = 2;
+    const fontNormalNum = 3;
+    const fontBoldNum = 4;
+    const contentStart = 5;
+    const pageStart = contentStart + numPages;
+    objects[catalogNum] = `<< /Type /Catalog /Pages ${pagesNum} 0 R >>`;
+    const kidRefs = [];
+    for(let i=0;i<numPages;i++){
+      kidRefs.push(`${pageStart+i} 0 R`);
+    }
+    objects[pagesNum] = `<< /Type /Pages /Count ${numPages} /Kids [${kidRefs.join(' ')}] >>`;
+    objects[fontNormalNum] = `<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>`;
+    objects[fontBoldNum] = `<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>`;
+
+    normalizedPages.forEach((page, idx)=>{
+      const lines = Array.isArray(page.lines) ? page.lines : [];
+      const commands = lines.map(line=>{
+        const fontKey = line.fontWeight==='bold' ? 'F2' : 'F1';
+        const fontSize = Number(line.fontSize)||12;
+        const x = mmToPt(line.x);
+        const y = heightPt - mmToPt(line.y);
+        return `BT /${fontKey} ${fontSize} Tf 1 0 0 1 ${x.toFixed(2)} ${y.toFixed(2)} Tm (${escapePdfText(line.text)}) Tj ET`;
+      }).join('\n');
+      const contentObjNum = contentStart+idx;
+      const contentBody = commands;
+      objects[contentObjNum] = `<< /Length ${contentBody.length} >>\nstream\n${contentBody}\nendstream`;
+      const pageObjNum = pageStart+idx;
+      objects[pageObjNum] = `<< /Type /Page /Parent ${pagesNum} 0 R /MediaBox [0 0 ${widthPt.toFixed(2)} ${heightPt.toFixed(2)}] /Resources << /Font << /F1 ${fontNormalNum} 0 R /F2 ${fontBoldNum} 0 R >> >> /Contents ${contentObjNum} 0 R >>`;
+    });
+
+    let pdf = '%PDF-1.4\n';
+    const offsets = new Array(objects.length).fill(0);
+    for(let i=1;i<objects.length;i++){
+      offsets[i] = pdf.length;
+      pdf += `${i} 0 obj\n${objects[i]}\nendobj\n`;
+    }
+    const xrefPos = pdf.length;
+    pdf += `xref\n0 ${objects.length}\n0000000000 65535 f \n`;
+    for(let i=1;i<objects.length;i++){
+      pdf += `${String(offsets[i]).padStart(10,'0')} 00000 n \n`;
+    }
+    pdf += `trailer << /Size ${objects.length} /Root ${catalogNum} 0 R >>\nstartxref\n${xrefPos}\n%%EOF`;
+    return pdf;
+  }
+
+  function createSimplePdfBlob(pages, widthMm, heightMm){
+    const pdfString = buildSimplePdfString(pages, widthMm, heightMm);
+    return new Blob([pdfString], { type:'application/pdf' });
+  }
+
+  function newPage(){
+    return { lines: [] };
+  }
+
+  class HydroSimplePdfDoc{
+    constructor(){
+      this.__isHydroFallback = true;
+      this.pageWidth = 210;
+      this.pageHeight = 297;
+      this.internal = { pageSize: { height: this.pageHeight } };
+      this.pages = [newPage()];
+      this.fontSize = 12;
+      this.fontWeight = 'normal';
+    }
+    get currentPage(){
+      return this.pages[this.pages.length-1];
+    }
+    addPage(){
+      this.pages.push(newPage());
+    }
+    setFontSize(size){
+      const parsed = Number(size);
+      if(!Number.isNaN(parsed)) this.fontSize = parsed;
+    }
+    setFont(_family, weight){
+      if(weight) this.fontWeight = weight==='bold'?'bold':'normal';
+    }
+    text(str,x,y){
+      const textValue = str==null ? '' : String(str);
+      this.currentPage.lines.push({
+        text: textValue,
+        x: Number(x)||0,
+        y: Number(y)||0,
+        fontSize: this.fontSize,
+        fontWeight: this.fontWeight
+      });
+    }
+    save(filename){
+      const blob = createSimplePdfBlob(this.pages, this.pageWidth, this.pageHeight);
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename || 'document.pdf';
+      document.body.appendChild(link);
+      link.click();
+      setTimeout(()=>{
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }, 0);
+    }
+  }
+
+  global.HydroSimplePdfDoc = HydroSimplePdfDoc;
+})(window);
+
 function getJsPdfCtor(){
   const globalPdf=window.jspdf || window.jspPDF || window.jsPDF;
   if(!globalPdf) return null;
   return typeof globalPdf==='function'?globalPdf:(globalPdf.jsPDF||null);
 }
 
+function getPdfEngine(){
+  const ctor=getJsPdfCtor();
+  if(ctor) return { ctor, supportsBranding:true };
+  if(window.HydroSimplePdfDoc) return { ctor: window.HydroSimplePdfDoc, supportsBranding:false };
+  return null;
+}
+
 async function downloadPDF(){
-  const JsPdf=getJsPdfCtor();
-  if(!JsPdf) return;
+  const engine=getPdfEngine();
+  if(!engine){
+    alert('PDF downloads are not available in this preview environment. Please open the calculator directly from your browser.');
+    return;
+  }
   try{
-    const doc=new JsPdf();
-    const branding = window.hydroPdfBranding;
+    const doc=new engine.ctor();
+    const branding = engine.supportsBranding ? window.hydroPdfBranding : null;
     const brandKit = branding?.decorate ? await branding.decorate(doc, {
       watermarkOpacity: 0.12,
       watermarkWidth: 38,
