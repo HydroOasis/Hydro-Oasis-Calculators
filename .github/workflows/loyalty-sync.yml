@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: loyalty-sync
+  group: ${{ github.event_name == 'workflow_dispatch' && 'loyalty-sync-manual' || 'loyalty-sync-schedule' }}
   cancel-in-progress: true
 
 jobs:
