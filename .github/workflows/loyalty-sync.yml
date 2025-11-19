@@ -1,0 +1,35 @@
+name: Loyalty Sync
+
+on:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: loyalty-sync
+  cancel-in-progress: true
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install --upgrade pip
+
+      - name: Run sync
+        env:
+          RE_KEY: ${{ secrets.RE_KEY }}
+          SHOP_STORE: ${{ secrets.SHOP_STORE }}
+          SHOP_TOKEN: ${{ secrets.SHOP_TOKEN }}
+          PYTHONUNBUFFERED: "1"
+          MAX_RE_CUSTOMERS_PER_CYCLE: "10"
+          MAX_RE_SALES_PER_CUSTOMER:  "200"
+        run: python -u sync_loyalty.py
